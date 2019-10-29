@@ -4,7 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.simra.app</groupId>
+
+    <parent>
+        <groupId>com.simra.app</groupId>
+        <artifactId>backend</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+
     <artifactId>csvimporter</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Simra-csv-importer</name>
@@ -24,23 +32,12 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
+        <!-- Dependencies in local backend scope. -->
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>5.0</version>
         </dependency>
-
     </dependencies>
 
 

@@ -1,0 +1,36 @@
+# IntelliJ Idea:
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+# maven:
+
+# Maven:
+target/
+overlays/
+.m2/
+.mvn/timing.properties
+
+# Eclipse:
+.classpath
+.project
+.settings/
+
+
+# Sass:
+.sass-cache/
+*.css.map
+
+# NPM:
+/**/node/
+/**/node_modules/
+
+# Logs:
+*.log
+*.out
+.npm-debug.log*
+*.pid
+
+# OS X:
+.DS_Store
