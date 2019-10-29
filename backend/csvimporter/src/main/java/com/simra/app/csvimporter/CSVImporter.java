@@ -42,7 +42,7 @@ public class CSVImporter {
         try {
             digest = MessageDigest.getInstance(ns.getString("type"));
         } catch (NoSuchAlgorithmException e) {
-            logger.error(String.format("Could not get instance of algorithm %s: %s",
+            logger.error(String.format("Could not get file type %s: %s",
                     ns.getString("type"), e.getMessage()));
             System.exit(1);
         }
