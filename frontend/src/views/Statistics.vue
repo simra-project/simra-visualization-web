@@ -2,7 +2,7 @@
     <div class="hero-body">
         <div class="container" style="text-align: center">
             <p class="title">
-                About
+                Statistics
             </p>
 
             TODO
@@ -13,7 +13,7 @@
 <script>
 
 export default {
-    name: "about",
+    name: "statistics",
     components: {},
 };
 </script>
