@@ -1,18 +1,16 @@
 package main.java.com.simra.app.csvimporter;
 
+import main.java.com.simra.app.csvimporter.handler.ProfileFileIOHandler;
+import main.java.com.simra.app.csvimporter.handler.RideFileIOHandler;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import org.apache.log4j.Logger;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CSVImporter {
-
-    private static final Logger logger = Logger.getLogger(CSVImporter.class);
-
 
     public static void main(String[] args) throws ArgumentParserException {
         ArgumentParser parser = ArgumentParsers.newFor("CSVImporter").build()
@@ -30,11 +28,15 @@ public class CSVImporter {
             parser.handleError(e);
             System.exit(1);
         }
-        String type= ns.getString("type");
-        if(type.isEmpty()) throw new ArgumentParserException(parser);
-        for (String name : ns.<String> getList("file")) {
+        String type = ns.getString("type");
+        if (type.isEmpty()) throw new ArgumentParserException(parser);
+        for (String name : ns.<String>getList("file")) {
             Path path = Paths.get(name);
-            logger.info(path.getFileName());
+            if (type.contains("p")) {
+                new ProfileFileIOHandler(path);
+            } else if (type.contains("r")) {
+               new RideFileIOHandler(path);
+            }
         }
 
     }
