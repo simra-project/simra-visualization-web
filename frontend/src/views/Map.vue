@@ -16,18 +16,99 @@
                 </div>
             </div>
         </l-control>
+        <!--    Stellt eine Route dar    -->
+        <l-polyline
+            v-for="line in polylines"
+            :key="line.id"
+            :lat-lngs="line.points"
+            color="red"
+        />
+        <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
+        <vue2-leaflet-marker-cluster>
+            <l-marker v-for="m in markers" :lat-lng="m.latlng">
+                <l-popup :content="m.description"></l-popup>
+            </l-marker>
+        </vue2-leaflet-marker-cluster>
     </l-map>
 </template>
 
 <script>
-import { LMap, LTileLayer, LControl } from "vue2-leaflet";
+import { LMap, LTileLayer, LControl, LPolyline, LMarker, LPopup } from "vue2-leaflet";
 import { ToastProgrammatic as Toast } from "buefy";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
+import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
+
+// Mock REST API
+let mock = new MockAdapter(axios);
+mock.onGet('/api/routes').reply(200, {
+    routes: [
+        {
+            id: "route1",
+            points: [
+                { lat: 52.512641, lng: 13.323587},
+                { lat: 52.512984, lng: 13.328403},
+                { lat: 52.513053, lng: 13.330226},
+                { lat: 52.512568, lng: 13.330560},
+            ],
+        },
+        {
+            id: "route2",
+            points: [
+                { lat: 52.509599, lng: 13.325507},
+                { lat: 52.510089, lng: 13.324842},
+                { lat: 52.511460, lng: 13.322932},
+                { lat: 52.511930, lng: 13.322465},
+                { lat: 52.512168, lng: 13.322610},
+                { lat: 52.512412, lng: 13.322880},
+                { lat: 52.512882, lng: 13.322869},
+                { lat: 52.513140, lng: 13.322612},
+                { lat: 52.513682, lng: 13.322644},
+                { lat: 52.514505, lng: 13.322574},
+                { lat: 52.514750, lng: 13.322563},
+            ],
+        }
+    ]
+});
+
+mock.onGet('/api/markers').reply(200, {
+    markers: [
+        {
+            id: "Incident 1",
+            latlng: {
+                lat: 52.512830,
+                lng: 13.322887
+            },
+            description: "Auto hat mich beim Einfaedeln fast mitgenommen!"
+        },
+        {
+            id: "Incident 2",
+            latlng: {
+                lat: 52.512719,
+                lng: 13.324711
+            },
+            description: "Wurde von ein paar Vertretern auf ein Jobangebot angesprochen..."
+        },
+        {
+            id: "Incident 3",
+            latlng: {
+                lat: 52.509777,
+                lng: 13.325281
+            },
+            description: "Viel zu lange Schlangen in der Mensa."
+        }
+    ]
+});
 
 export default {
     components: {
         LMap,
         LTileLayer,
         LControl,
+        LPolyline,
+        Vue2LeafletMarkerCluster,
+        LMarker,
+        LPopup
     },
     data () {
         return {
@@ -37,6 +118,8 @@ export default {
             bounds: null,
             showTrips: true,
             showAccidents: true,
+            polylines: [],
+            markers: [],
         };
     },
     methods: {
@@ -71,10 +154,28 @@ export default {
             this.showFakeLoading();
         },
     },
+    // Laden der Daten aus der API
+    mounted() {
+        axios
+            .get("/api/routes")
+            .then(
+                response=>{
+                    this.polylines = response.data.routes;
+                }
+            );
+        axios
+            .get("/api/markers")
+            .then(
+                response=>{
+                    this.markers = response.data.markers;
+                }
+            );
+    }
 };
 </script>
 
 <style scoped lang="scss">
+
     .vue2leaflet-map {
         height: 100%;
         width: 100%;
@@ -94,4 +195,7 @@ export default {
             margin-bottom: 8px;
         }
     }
+
+    @import "~leaflet.markercluster/dist/MarkerCluster.css";
+    @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
 </style>
