@@ -15,7 +15,7 @@ public abstract class ApplicationFileVersion {
      *
      * @return the app version
      */
-    String getAppVersion() {
+    public String getAppVersion() {
         return appVersion;
     }
 
@@ -33,7 +33,7 @@ public abstract class ApplicationFileVersion {
      *
      * @return the file version
      */
-    int getFileVersion() {
+    public int getFileVersion() {
         return fileVersion;
     }
 
@@ -51,7 +51,7 @@ public abstract class ApplicationFileVersion {
      *
      * @return the file id
      */
-    String getFileId() {
+    public String getFileId() {
         return fileId;
     }
 
