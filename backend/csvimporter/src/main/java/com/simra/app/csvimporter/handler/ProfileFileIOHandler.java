@@ -19,7 +19,8 @@ public class ProfileFileIOHandler extends FileIOHandler {
 
     public ProfileFileIOHandler(Path path) {
         super(path);
-        this.fileParse();
+        if (this.canOpenFile())
+            this.fileParse();
     }
 
     @Override
@@ -44,6 +45,7 @@ public class ProfileFileIOHandler extends FileIOHandler {
                     .withType(Profile.class).build().parse();
             if (!profileBeans.isEmpty()) {
                 Profile profile = (Profile) profileBeans.get(0);
+                profile.setFileId(this.getPath().getFileName().toString());
                 profile.setAppVersion(arrOfStr[0]);
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));
                 logger.info(profile.toString());

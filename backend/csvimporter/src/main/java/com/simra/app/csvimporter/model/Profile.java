@@ -1,33 +1,21 @@
 package main.java.com.simra.app.csvimporter.model;
 
 
+/**
+ * The User Profile Model.
+ */
 public class Profile extends ProfileCSV {
-    private String appVersion;
-    private int fileVersion;
 
+    /**
+     * Instantiates a new Profile.
+     */
     public Profile(){
-        //default constructor
-    }
-
-    public String getAppVersion() {
-        return appVersion;
-    }
-
-    public void setAppVersion(String appVersion) {
-        this.appVersion = appVersion;
-    }
-
-    public int getFileVersion() {
-        return fileVersion;
-    }
-
-    public void setFileVersion(int fileVersion) {
-        this.fileVersion = fileVersion;
+        super();
     }
 
     @Override
     public String toString() {
-        return String.format("[appVersion:%s, fileVersion=%s, CSV: %s ]",
-                this.appVersion, this.fileVersion, super.toString());
+        return String.format("[fileID: %s, appVersion:%s, fileVersion=%s, CSV: %s ]",
+                this.getFileId(), this.getAppVersion(), this.getFileVersion(), super.toString());
     }
 }
