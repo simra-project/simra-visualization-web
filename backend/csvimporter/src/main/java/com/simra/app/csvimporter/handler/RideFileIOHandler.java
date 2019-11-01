@@ -3,6 +3,7 @@ package main.java.com.simra.app.csvimporter.handler;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
+import main.java.com.simra.app.csvimporter.model.RideCSV;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -54,7 +55,7 @@ public class RideFileIOHandler extends FileIOHandler {
                 this.incidentParse(incidentContent, this.getPath());
             }
             if (rideContent.length() > 0) {
-                this.rideParse();
+                this.rideParse(rideContent, this.getPath());
             }
 
         } catch (IOException e ) {
@@ -90,19 +91,44 @@ public class RideFileIOHandler extends FileIOHandler {
                 item.setFileId(path.getFileName().toString());
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
-                logger.info(item.getFileId());
-                logger.info(item.getFileVersion());
-                logger.info(item.getAppVersion());
-
             });
         } catch (Exception e) {
             logger.error(e);
         }
     }
 
-    private void rideParse() {
+    private void rideParse(StringBuilder rideContent, Path path) {
+        try (Scanner scanner = new Scanner(rideContent.toString())) {
+            scanner.nextLine();
+            String fileAppLine = scanner.nextLine();
+            String[] arrOfStr = fileAppLine.split(FILEVERSIONSPLITTER);
 
-        // ride parser left
+            StringBuilder rideCSVwithHeader = new StringBuilder();
+            while (scanner.hasNextLine()) {
+                String currentLine = scanner.nextLine();
+                /*
+                 * add ride information only if it has location data.
+                 */
+                if (currentLine.trim().length()> 0 && !currentLine.isEmpty() && !currentLine.trim().startsWith(",") ) {
+                    rideCSVwithHeader.append(currentLine.trim()).append("\r\n");
+                }
+            }
+
+
+            List<RideCSV> rideBeans = new CsvToBeanBuilder<RideCSV>(new StringReader(rideCSVwithHeader.toString().trim()))
+                    .withType(RideCSV.class).build().parse();
+
+            rideBeans.forEach(item -> {
+               item.setFileId(path.getFileName().toString());
+               item.setAppVersion(arrOfStr[0]);
+               item.setFileVersion(Integer.parseInt(arrOfStr[1]));
+            });
+
+
+        }catch (Exception e){
+            logger.error(e);
+        }
+
     }
 
 }
