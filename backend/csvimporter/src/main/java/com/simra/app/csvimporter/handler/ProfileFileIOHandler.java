@@ -48,7 +48,6 @@ public class ProfileFileIOHandler extends FileIOHandler {
                 profile.setFileId(this.getPath().getFileName().toString());
                 profile.setAppVersion(arrOfStr[0]);
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));
-                logger.info(profile.toString());
             }
 
 

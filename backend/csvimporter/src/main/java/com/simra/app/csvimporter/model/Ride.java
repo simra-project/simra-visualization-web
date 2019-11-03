@@ -12,7 +12,6 @@ public class Ride {
     }
 
     public Ride(List<RideCSV> rideBeans, List<IncidentCSV> incidents){
-        // default constructor
         this.rideBeans=rideBeans;
         this.incidents= incidents;
     }
