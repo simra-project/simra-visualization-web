@@ -12,6 +12,8 @@ pom.xml
     -- pom.xml
         -- csvimporter
             --pom.xml
+        -- SimRa-Visualization-API
+            --pom.xml
 -- frontend
     -- pom.xml
 ```
