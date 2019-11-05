@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/SimRa-Visualization.iml" filepath="$PROJECT_DIR$/.idea/SimRa-Visualization.iml" />
       <module fileurl="file://$PROJECT_DIR$/backend/SimRa-Visualization-API.iml" filepath="$PROJECT_DIR$/backend/SimRa-Visualization-API.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/SimRa-Visualization-API/SimRaVisualizationAPI.iml" filepath="$PROJECT_DIR$/backend/SimRa-Visualization-API/SimRaVisualizationAPI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/backend.iml" filepath="$PROJECT_DIR$/backend/backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/api/gs-rest-service.iml" filepath="$PROJECT_DIR$/api/gs-rest-service.iml" />
     </modules>
   </component>
