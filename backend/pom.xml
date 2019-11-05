@@ -15,13 +15,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-
-    <organization>
-        <name>TU-Berlin</name>
-    </organization>
-
     <modules>
-        <module>csvimporter</module>
+        <module>SimRa-Visualization-API</module>
         <!-- Add your modules here -->
     </modules>
 

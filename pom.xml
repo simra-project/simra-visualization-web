@@ -8,6 +8,7 @@
     <artifactId>visualisation</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+
     <packaging>pom</packaging>
     <name>Simra-Visualization</name>
     <description>Simra-Visualization application.</description>
