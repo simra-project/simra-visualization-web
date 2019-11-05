@@ -16,6 +16,13 @@
                 </div>
             </div>
         </l-control>
+        <l-control position="bottomright">
+            <div class="overlay overlay-debug">
+                <div>Zoom: {{ zoom }}</div>
+                <div>Center: {{ center }}</div>
+                <div>Bounds: {{ bounds }}</div>
+            </div>
+        </l-control>
         <!--    Stellt eine Route dar    -->
         <l-polyline
             v-if="showTrips"
@@ -172,6 +179,16 @@ export default {
         .subtitle {
             color: #4a4a4a;
             margin-bottom: 8px;
+        }
+
+        &.overlay-debug {
+            opacity: 0.5;
+            transition: opacity 0.5s;
+            max-width: 400px;
+
+            &:hover {
+                opacity: 1;
+            }
         }
     }
 
