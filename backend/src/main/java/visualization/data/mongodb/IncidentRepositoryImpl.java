@@ -23,12 +23,12 @@ public class IncidentRepositoryImpl implements IncidentRepository {
     public RideResource getAllRideIncidents() {
 
         HashMap<String, Double> map = new HashMap();
-        map.put("lat",52.512830);
-        map.put("long",13.322887);
+        map.put("lat", 52.512830);
+        map.put("long", 13.322887);
 
-        IncidentResource incidentResource = new IncidentResource(1,map, "Stau in der Mensa");
-        IncidentResource incidentResource2 = new IncidentResource(2,map, "MongoDB");
-        IncidentResource incidentResource3 = new IncidentResource(3,map, "Stau in der Mensa");
+        IncidentResource incidentResource = new IncidentResource(1, map, "Stau in der Mensa");
+        IncidentResource incidentResource2 = new IncidentResource(2, map, "MongoDB");
+        IncidentResource incidentResource3 = new IncidentResource(3, map, "Stau in der Mensa");
         List<IncidentResource> incidents = new ArrayList<>();
         incidents.add(incidentResource);
         incidents.add(incidentResource2);

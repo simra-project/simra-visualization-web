@@ -13,24 +13,23 @@ This is the place where we can do some number crunching and other postprocessing
  */
 
 @Service
-public class IncidentServiceImpl implements IncidentService{
+public class IncidentServiceImpl implements IncidentService {
 
     @Autowired
     private IncidentRepository incidentRepository;
 
     @Override
-    public RideResource getIncidents(){
+    public RideResource getIncidents() {
 
         RideResource rideResource = incidentRepository.getAllRideIncidents();
         return rideResource;
     }
 
     @Override
-    public RideResource getIncidentsByRideId(int rideId){
+    public RideResource getIncidentsByRideId(int rideId) {
 
         RideResource rideResource = incidentRepository.getRideIncidentsById(rideId);
         return rideResource;
     }
-
 
 }

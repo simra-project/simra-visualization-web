@@ -5,9 +5,9 @@ import org.springframework.data.repository.Repository;
 import visualization.web.resources.RideResource;
 
 
-public interface IncidentRepository extends Repository<JSONObject, Integer>{
+public interface IncidentRepository extends Repository<JSONObject, Integer> {
 
-  RideResource getAllRideIncidents();
-  RideResource getRideIncidentsById(int rideId);
+    RideResource getAllRideIncidents();
+    RideResource getRideIncidentsById(int rideId);
 
 }
