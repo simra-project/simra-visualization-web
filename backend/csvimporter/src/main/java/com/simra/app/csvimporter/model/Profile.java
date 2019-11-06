@@ -9,7 +9,7 @@ public class Profile extends ProfileCSV {
     /**
      * Instantiates a new Profile.
      */
-    public Profile(){
+    public Profile() {
         super();
     }
 

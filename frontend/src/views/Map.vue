@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LControl, LPolyline, LMarker, LPopup } from "vue2-leaflet";
+import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";

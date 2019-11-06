@@ -35,7 +35,7 @@ public class CSVImporter {
             if (type.contains("p")) {
                 new ProfileFileIOHandler(path);
             } else if (type.contains("r")) {
-               new RideFileIOHandler(path);
+                new RideFileIOHandler(path);
             }
         }
 
