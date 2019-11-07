@@ -217,4 +217,11 @@ public class RideCSV extends ApplicationFileVersion {
     public void setC(String c) {
         this.c = c;
     }
+
+
+    public String toString(){
+        return String.format("lat: %s lon: %s X:%s Y:%s Z:%s timeStamp:%s acc:%s a:%s b:%s c:%s",
+                this.lat, this.lon, this.X, this.Y, this.Z, this.timeStamp, this.acc, this.a,
+                this.b, this.c);
+    }
 }

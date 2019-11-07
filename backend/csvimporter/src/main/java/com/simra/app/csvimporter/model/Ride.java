@@ -12,8 +12,11 @@ public class Ride {
     }
 
     public Ride(List<RideCSV> rideBeans, List<IncidentCSV> incidents) {
-        this.rideBeans = rideBeans;
-        this.incidents = incidents;
+        if (!rideBeans.isEmpty() && !incidents.isEmpty()){
+            this.rideBeans = rideBeans;
+            this.incidents = incidents;
+
+        }
     }
 
     public List getRideBeans() {

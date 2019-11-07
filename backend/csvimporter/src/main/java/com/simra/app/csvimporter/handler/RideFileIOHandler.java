@@ -2,7 +2,9 @@ package main.java.com.simra.app.csvimporter.handler;
 
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
+import main.java.com.simra.app.csvimporter.filter.RamerDouglasPeuckerFilter;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
+import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
 import org.apache.log4j.Logger;
 
@@ -19,7 +21,7 @@ public class RideFileIOHandler extends FileIOHandler {
     private static final Logger logger = Logger.getLogger(RideFileIOHandler.class);
 
     private static final String FILEVERSIONSPLITTER = "#";
-
+    private Ride ride;
 
     public RideFileIOHandler(Path path) {
         super(path);
@@ -31,6 +33,8 @@ public class RideFileIOHandler extends FileIOHandler {
         /*
          * parses ride file, as its has different structure.
          */
+        this.ride= new Ride();
+
         try (BufferedReader reader = Files.newBufferedReader(this.getPath(), StandardCharsets.UTF_8)) {
             StringBuilder incidentContent = new StringBuilder();
             StringBuilder rideContent = new StringBuilder();
@@ -56,6 +60,14 @@ public class RideFileIOHandler extends FileIOHandler {
             }
             if (rideContent.length() > 0) {
                 this.rideParse(rideContent, this.getPath());
+            }
+
+            if(!this.ride.getRideBeans().isEmpty()) {
+                this.ride.getRideBeans().forEach(item -> {
+                    logger.info(item.toString());
+                });
+                List<RideCSV> optimisedRideBeans = RamerDouglasPeuckerFilter.douglasPeucker(this.ride.getRideBeans(), 0.2);
+                optimisedRideBeans.forEach(item-> logger.info(item.toString()));
             }
 
         } catch (IOException e) {
@@ -92,6 +104,8 @@ public class RideFileIOHandler extends FileIOHandler {
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
             });
+
+            this.ride.setIncidents(incidentBeans);
         } catch (Exception e) {
             logger.error(e);
         }
@@ -123,6 +137,7 @@ public class RideFileIOHandler extends FileIOHandler {
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
             });
+            this.ride.setRideBeans(rideBeans);
 
         } catch (Exception e) {
             logger.error(e);
