@@ -3,6 +3,7 @@ package main.java.com.simra.app.csvimporter.handler;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
 import main.java.com.simra.app.csvimporter.filter.RamerDouglasPeuckerFilter;
+import main.java.com.simra.app.csvimporter.filter.RideFilter;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
@@ -23,9 +24,12 @@ public class RideFileIOHandler extends FileIOHandler {
     private static final String FILEVERSIONSPLITTER = "#";
     private Ride ride;
 
+    private RideFilter rideFilter = new RideFilter();
+
     public RideFileIOHandler(Path path) {
         super(path);
         this.fileParse();
+        this.ride = rideFilter.fillerRide(this.ride);
     }
 
     @Override
