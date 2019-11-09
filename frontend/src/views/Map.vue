@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LControl, LPolyline, LMarker, LPopup } from "vue2-leaflet";
+import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
@@ -120,8 +120,8 @@ export default {
     data() {
         return {
             url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
-            zoom: 15,
-            center: [52.5125322, 13.3269446],
+            zoom: this.$route.query.z || 15,
+            center: [this.$route.query.lat || 52.5125322, this.$route.query.long || 13.3269446],
             bounds: null,
             showTrips: true,
             showIncidents: true,
@@ -135,9 +135,20 @@ export default {
         },
         centerUpdated(center) {
             this.center = center;
+            this.updateUrlQuery();
         },
         boundsUpdated(bounds) {
             this.bounds = bounds;
+        },
+        updateUrlQuery() {
+            this.$router.replace({
+                name: "mapQuery",
+                params: {
+                    lat: this.center.lat,
+                    long: this.center.lng,
+                    zoom: this.zoom,
+                },
+            });
         },
     },
     // Laden der Daten aus der API

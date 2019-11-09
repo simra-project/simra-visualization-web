@@ -13,6 +13,12 @@ const routes = [
     },
     {
         path: "/map",
+        name: 'map',
+        component: Map,
+    },
+    {
+        path: "/map?lat=:lat&long=:long&z=:zoom",
+        name: 'mapQuery',
         component: Map,
     },
     {

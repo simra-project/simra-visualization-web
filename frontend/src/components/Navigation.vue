@@ -14,7 +14,16 @@
 
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
-                <router-link to="/map" class="navbar-item">Map</router-link>
+
+                <b-navbar-dropdown label="Map">
+                    <router-link
+                        v-for="location in locations"
+                        :to="{ name: 'mapQuery', params: { lat:  location.lat, long: location.long, zoom:  location.zoom } }"
+                        v-slot="{ href, navigate, isActive }">
+                        <b-navbar-item :href="href" :active="isActive">{{ location.name }}</b-navbar-item>
+                    </router-link>
+                </b-navbar-dropdown>
+
                 <router-link to="/statistics" class="navbar-item">Statistics</router-link>
                 <router-link to="/about" class="navbar-item">About</router-link>
             </div>
@@ -35,6 +44,9 @@
 <script>
 export default {
     name: "Navigation",
+    props: {
+        locations: Array,
+    },
 };
 </script>
 
