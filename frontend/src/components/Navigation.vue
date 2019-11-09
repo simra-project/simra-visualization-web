@@ -18,7 +18,7 @@
                 <b-navbar-dropdown label="Map">
                     <router-link
                         v-for="location in locations"
-                        :to="{ name: 'mapQuery', params: { lat:  location.lat, long: location.long, zoom:  location.zoom } }"
+                        :to="{ name: 'mapQuery', params: { lat:  location.lat, lng: location.lng, zoom:  location.zoom } }"
                         v-slot="{ href, navigate, isActive }">
                         <b-navbar-item :href="href" :active="isActive">{{ location.name }}</b-navbar-item>
                     </router-link>

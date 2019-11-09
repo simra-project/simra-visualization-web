@@ -16,8 +16,8 @@ export default {
     data() {
         return {
             locations: [ // TODO: echte Positionen herausfinden
-                { name: "Berlin", lat: 52.94838, long: 20.47383, zoom: 7 },
-                { name: "Bern", lat: 38.94838, long: 120.47383, zoom: 10 },
+                { name: "Berlin", lat: 52.94838, lng: 20.47383, zoom: 7 },
+                { name: "Bern", lat: 38.94838, lng: 120.47383, zoom: 10 },
             ],
         };
     },
