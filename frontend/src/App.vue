@@ -2,7 +2,7 @@
     <div id="app">
         <Navigation :locations="locations"></Navigation>
 
-        <section class="hero is-link is-fullheight-with-navbar">
+        <section class="hero is-fullheight-with-navbar">
             <router-view></router-view>
         </section>
     </div>
@@ -23,3 +23,10 @@ export default {
     },
 };
 </script>
+
+<style lang="scss" scoped>
+    .hero {
+        background-color: #f3f3f3;
+    }
+
+</style>

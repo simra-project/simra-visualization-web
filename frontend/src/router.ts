@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Map from "@/views/Map.vue";
 import Statistics from "@/views/Statistics.vue";
 import About from "@/views/About.vue";
+import Admin from "@/views/Admin.vue";
 
 Vue.use(VueRouter);
 
@@ -28,6 +29,10 @@ const routes = [
     {
         path: "/about",
         component: About,
+    },
+    {
+        path: "/admin",
+        component: Admin,
     },
 ];
 
