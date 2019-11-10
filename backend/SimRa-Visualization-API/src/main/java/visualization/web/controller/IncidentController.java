@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import visualization.service.IncidentService;
+import visualization.web.resources.IncidentResource;
 import visualization.web.resources.RideResource;
+
+import java.util.List;
 
 
 /*
@@ -23,13 +26,8 @@ public class IncidentController {
     private IncidentService incidentService;
 
     @GetMapping(value = "/incident")
-    public HttpEntity<RideResource> getIncidents(@RequestParam(value = "rideid") int rideId) {
+    public HttpEntity<List<IncidentResource>> getIncidents(@RequestParam(value = "rideid") int rideId) {
         return ResponseEntity.ok(incidentService.getIncidentsByRideId(rideId));
-    }
-
-    @GetMapping(value = "/incident/all")
-    public HttpEntity<RideResource> getIncidents() {
-        return ResponseEntity.ok(incidentService.getIncidents());
     }
 
 }

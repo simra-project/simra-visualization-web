@@ -1,13 +1,12 @@
 package visualization.data.mongodb;
 
-import org.json.JSONObject;
-import org.springframework.data.repository.Repository;
-import visualization.web.resources.RideResource;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import visualization.data.mongodb.entities.IncidentEntity;
+
+import java.util.List;
 
 
-public interface IncidentRepository extends Repository<JSONObject, Integer> {
-
-    RideResource getAllRideIncidents();
-    RideResource getRideIncidentsById(int rideId);
+public interface IncidentRepository extends MongoRepository<IncidentEntity, String> {
+    List<IncidentEntity> findByRideId(int rideId);
 
 }
