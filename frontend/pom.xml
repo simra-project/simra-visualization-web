@@ -11,22 +11,20 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>backend</artifactId>
+    <artifactId>frontend</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
 
     <organization>
         <name>TU-Berlin</name>
     </organization>
 
     <modules>
-        <module>SimRa-Visualization-API</module>
-        <module>csvimporter</module>
         <!-- Add your modules here -->
     </modules>
 
     <dependencies>
-        <!-- Dependencies in complete backend scope. -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
