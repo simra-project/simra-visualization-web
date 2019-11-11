@@ -26,10 +26,10 @@ public class RideFileIOHandler extends FileIOHandler {
 
     private RideFilter rideFilter = new RideFilter();
 
-    public RideFileIOHandler(Path path) {
+    public RideFileIOHandler(Path path, Float minAccuracy, Double rdpEpsilon) {
         super(path);
         this.fileParse();
-        this.ride = rideFilter.fillerRide(this.ride);
+        this.ride = rideFilter.filterRide(this.ride, minAccuracy, rdpEpsilon);
     }
 
     @Override
