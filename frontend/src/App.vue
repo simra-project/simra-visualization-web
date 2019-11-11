@@ -15,9 +15,9 @@ export default {
     components: { Navigation },
     data() {
         return {
-            locations: [ // TODO: echte Positionen herausfinden
-                { name: "Berlin", lat: 52.94838, lng: 20.47383, zoom: 7 },
-                { name: "Bern", lat: 38.94838, lng: 120.47383, zoom: 10 },
+            locations: [
+                { name: "Berlin", lat: 52.506818, lng: 13.40229, zoom: 11 },
+                { name: "Bern", lat: 46.944696, lng: 7.447443, zoom: 13 },
             ],
         };
     },

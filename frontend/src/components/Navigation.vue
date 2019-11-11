@@ -15,12 +15,16 @@
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
 
-                <b-navbar-dropdown label="Map">
+                <b-navbar-dropdown :hoverable="true" :class="{'dropdown-active': this.$route.path.startsWith('/map')}" boxed>
+                    <template v-slot:label>
+                        <router-link to="/map" tag="span">Map</router-link>
+                    </template>
+
                     <router-link
                         v-for="location in locations"
-                        :to="{ name: 'mapQuery', params: { lat:  location.lat, lng: location.lng, zoom:  location.zoom } }"
-                        v-slot="{ href, navigate, isActive }">
-                        <b-navbar-item :href="href" :active="isActive">{{ location.name }}</b-navbar-item>
+                        :to="{ name: 'mapQuery', params: { lat:  location.lat, lng: location.lng, zoom: location.zoom } }"
+                        v-slot="{ href }">
+                        <b-navbar-item :href="href"><span class="icon"><i class="fas fa-city"></i></span> {{ location.name }}</b-navbar-item>
                     </router-link>
                 </b-navbar-dropdown>
 
@@ -51,13 +55,22 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    nav.navbar {
+        z-index: 500;
+    }
+
     .navbar-item {
-        &.is-active {
+        &.is-active,
+        &.dropdown-active {
             background-color: #f4f4f4 !important;
         }
 
         img {
             max-height: 2.25rem;
         }
+    }
+
+    .navbar-dropdown .navbar-item .icon {
+        margin-right: 4px;
     }
 </style>
