@@ -15,7 +15,7 @@ import java.util.List;
 public class ProfileFileIOHandler extends FileIOHandler {
     private static final Logger logger = Logger.getLogger(ProfileFileIOHandler.class);
 
-    private static final String FILEVERSIONSPLITTER= "#";
+    private static final String FILEVERSIONSPLITTER = "#";
 
     public ProfileFileIOHandler(Path path) {
         super(path);
@@ -27,14 +27,14 @@ public class ProfileFileIOHandler extends FileIOHandler {
     public void fileParse() {
         try (BufferedReader reader =
                      new BufferedReader(new FileReader(String.valueOf(this.getPath())))) {
-            String line= reader.readLine();
+            String line = reader.readLine();
             String[] arrOfStr = line.split(FILEVERSIONSPLITTER);
 
             StringBuilder profileCSVwithHeader = new StringBuilder();
             while (line != null) {
 
                 line = reader.readLine();
-                if(line != null){
+                if (line != null) {
                     profileCSVwithHeader.append(line);
                     profileCSVwithHeader.append("\r\n");
                 }
@@ -50,8 +50,7 @@ public class ProfileFileIOHandler extends FileIOHandler {
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));
             }
 
-
-        }catch (IOException e){
+        } catch (IOException e) {
             logger.error(e);
         }
     }

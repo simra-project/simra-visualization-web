@@ -31,7 +31,7 @@ public class RideFileIOHandler extends FileIOHandler {
         /*
          * parses ride file, as its has different structure.
          */
-        try (BufferedReader reader = Files.newBufferedReader(this.getPath(), StandardCharsets.UTF_8)){
+        try (BufferedReader reader = Files.newBufferedReader(this.getPath(), StandardCharsets.UTF_8)) {
             StringBuilder incidentContent = new StringBuilder();
             StringBuilder rideContent = new StringBuilder();
 
@@ -58,7 +58,7 @@ public class RideFileIOHandler extends FileIOHandler {
                 this.rideParse(rideContent, this.getPath());
             }
 
-        } catch (IOException e ) {
+        } catch (IOException e) {
             logger.error(e);
         }
     }
@@ -79,7 +79,7 @@ public class RideFileIOHandler extends FileIOHandler {
 
             ColumnPositionMappingStrategy<IncidentCSV> strategy = new ColumnPositionMappingStrategy<>();
             strategy.setType(IncidentCSV.class);
-            String[] memberFieldsToBindTo = {"key","lat","lon","ts","bike","childCheckBox","trailerCheckBox","pLoc","incident","i1","i2","i3","i4","i5","i6","i7","i8","i9","scary","desc","i10"};
+            String[] memberFieldsToBindTo = {"key", "lat", "lon", "ts", "bike", "childCheckBox", "trailerCheckBox", "pLoc", "incident", "i1", "i2", "i3", "i4", "i5", "i6", "i7", "i8", "i9", "scary", "desc", "i10"};
             strategy.setColumnMapping(memberFieldsToBindTo);
 
             List<IncidentCSV> incidentBeans = new CsvToBeanBuilder<IncidentCSV>(new StringReader(incidentCSVwithHeader.toString()))
@@ -109,7 +109,7 @@ public class RideFileIOHandler extends FileIOHandler {
                 /*
                  * add ride information only if it has location data.
                  */
-                if (currentLine.trim().length()> 0 && !currentLine.isEmpty() && !currentLine.trim().startsWith(",") ) {
+                if (currentLine.trim().length() > 0 && !currentLine.isEmpty() && !currentLine.trim().startsWith(",")) {
                     rideCSVwithHeader.append(currentLine.trim()).append("\r\n");
                 }
             }
@@ -119,13 +119,12 @@ public class RideFileIOHandler extends FileIOHandler {
                     .withType(RideCSV.class).build().parse();
 
             rideBeans.forEach(item -> {
-               item.setFileId(path.getFileName().toString());
-               item.setAppVersion(arrOfStr[0]);
-               item.setFileVersion(Integer.parseInt(arrOfStr[1]));
+                item.setFileId(path.getFileName().toString());
+                item.setAppVersion(arrOfStr[0]);
+                item.setFileVersion(Integer.parseInt(arrOfStr[1]));
             });
 
-
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e);
         }
 

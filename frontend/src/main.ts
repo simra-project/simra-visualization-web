@@ -9,8 +9,8 @@ import Buefy from "buefy";
 import "buefy/dist/buefy.css";
 
 // Fix vue-loader/webpack error (https://github.com/KoRiGaN/Vue2Leaflet/issues/28)
-import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css'; // Re-uses images from ~leaflet package
-import 'leaflet-defaulticon-compatibility';
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css"; // Re-uses images from ~leaflet package
+import "leaflet-defaulticon-compatibility";
 
 
 Vue.config.productionTip = false;

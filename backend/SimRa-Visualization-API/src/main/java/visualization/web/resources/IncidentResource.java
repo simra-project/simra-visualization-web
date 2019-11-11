@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
@@ -19,11 +20,14 @@ Representation of an Incident
 public class IncidentResource {
 
     @JsonProperty
+    private int rideId;
+
+    @JsonProperty
     private int incidentId;
 
     @JsonProperty
-    private HashMap<String, Double> latlong;
+    private ArrayList latlong;
 
     @JsonProperty
-    private String description;
+    private long timeStamp;
 }

@@ -7,13 +7,13 @@ public class Ride {
     private List rideBeans;
     private List incidents;
 
-    public Ride(){
+    public Ride() {
         // default constructor
     }
 
-    public Ride(List<RideCSV> rideBeans, List<IncidentCSV> incidents){
-        this.rideBeans=rideBeans;
-        this.incidents= incidents;
+    public Ride(List<RideCSV> rideBeans, List<IncidentCSV> incidents) {
+        this.rideBeans = rideBeans;
+        this.incidents = incidents;
     }
 
     public List getRideBeans() {

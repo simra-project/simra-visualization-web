@@ -8,11 +8,11 @@ public abstract class FileIOHandler {
     private Path path;
 
     FileIOHandler(Path path) {
-        this.path=path;
+        this.path = path;
     }
 
-    public boolean canOpenFile(){
-        File file= new File(String.valueOf(this.path.toFile()));
+    public boolean canOpenFile() {
+        File file = new File(String.valueOf(this.path.toFile()));
         return file.canRead();
     }
 
@@ -20,8 +20,8 @@ public abstract class FileIOHandler {
         return path;
     }
 
-    public void setPath(Path path){
-        this.path=path;
+    public void setPath(Path path) {
+        this.path = path;
     }
 
     public abstract void fileParse();
