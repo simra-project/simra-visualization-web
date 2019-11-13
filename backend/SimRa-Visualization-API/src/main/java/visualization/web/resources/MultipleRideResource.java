@@ -8,7 +8,7 @@ import visualization.web.resources.geoJSON.LineString;
 import java.util.List;
 
 /*
-Representation of a Ride
+Representation of multiple Rides
  */
 
 @Getter
@@ -17,12 +17,9 @@ Representation of a Ride
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude
-public class RideResource {
+public class MultipleRideResource {
 
     @JsonProperty
-    private int rideId;
-
-    @JsonProperty
-    private LineString ride;
+    private List<RideResource> rides;
 
 }

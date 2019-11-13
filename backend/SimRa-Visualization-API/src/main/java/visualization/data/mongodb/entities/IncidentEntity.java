@@ -3,9 +3,9 @@ package visualization.data.mongodb.entities;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import visualization.web.resources.geoJSON.Point;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.Serializable;
 
 @Getter
 @Setter
@@ -15,12 +15,58 @@ import java.util.HashMap;
 @Document(collection="incidents")
 public class IncidentEntity {
 
+    //TODO: Build Entity according to MongoDB Schema or vice versa
+    //https://stackoverflow.com/questions/56624690/composite-primary-key-using-mongodb-and-spring-data-jpa
     @Id
-    private String id;
+    private CompositeKey rideIdKey;
+
     private int rideId;
+
     private int key;
-    private ArrayList map;
+
+    private Point incident;
+
     private long timeStamp;
 
+    private Boolean child;
+
+    private Boolean trailer;
+
+    private int phoneLocation;
+
+    private int incidentType;
+
+    private Boolean scary;
+
+    private String description;
+
+    private Boolean i1Bus;
+
+    private Boolean i2Cyclist;
+
+    private Boolean i3Pedestrian;
+
+    private Boolean i4DeliveryVan;
+
+    private Boolean i5Truck;
+
+    private Boolean i6Motorcycle;
+
+    private Boolean i7Car;
+
+    private Boolean i8Taxi;
+
+    private Boolean i9Other;
+
+    private Boolean i10EScooter;
+
+
+    // Incident Key made of rideId and key
+    @Getter
+    @Setter
+    static class CompositeKey implements Serializable {
+        private int rideId;
+        private int key;
+    }
 
 }

@@ -1,14 +1,15 @@
 package visualization.service;
 
-import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
-import visualization.web.resources.RideResource;
 
 import java.util.List;
 
 public interface IncidentService {
 
-    //RideResource getIncidents();
+    IncidentResource getIncident(int rideId, int key);
+
     List<IncidentResource> getIncidentsByRideId(int rideId);
+
+    List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance);
 
 }

@@ -81,7 +81,9 @@ import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import VGeosearch from 'vue2-leaflet-geosearch';
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
-import { ApiService } from "@/services/ApiService";
+// import { ApiService } from "@/services/ApiService";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 
 import 'vue-slider-component/theme/default.css';
 
