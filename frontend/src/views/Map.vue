@@ -74,12 +74,11 @@
 
 <script>
 import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
+import { ApiService } from "@/services/ApiService";
 
 
 // Mock REST API
@@ -158,8 +157,8 @@ export default {
     data() {
         return {
             url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
-            zoom: 15,
-            center: [52.5125322, 13.3269446],
+            zoom: parseInt(this.$route.query.z) || 15,
+            center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
             showTrips: true,
             showIncidents: true,
@@ -179,9 +178,20 @@ export default {
         },
         centerUpdated(center) {
             this.center = center;
+            this.updateUrlQuery();
         },
         boundsUpdated(bounds) {
             this.bounds = bounds;
+        },
+        updateUrlQuery() {
+            this.$router.replace({
+                name: "mapQuery",
+                params: {
+                    lat: this.center.lat,
+                    lng: this.center.lng,
+                    zoom: this.zoom,
+                },
+            });
         },
     },
     // Laden der Daten aus der API

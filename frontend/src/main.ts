@@ -6,6 +6,7 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 
+import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import Buefy from "buefy";

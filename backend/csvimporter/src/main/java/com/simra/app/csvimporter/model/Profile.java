@@ -4,7 +4,7 @@ package main.java.com.simra.app.csvimporter.model;
 /**
  * The User Profile Model.
  */
-public class Profile extends ProfileCSV {
+public class Profile extends ProfileCSV implements MongoDocument {
 
     /**
      * Instantiates a new Profile.
@@ -18,4 +18,5 @@ public class Profile extends ProfileCSV {
         return String.format("[fileID: %s, appVersion:%s, fileVersion=%s, CSV: %s ]",
                 this.getFileId(), this.getAppVersion(), this.getFileVersion(), super.toString());
     }
+
 }
