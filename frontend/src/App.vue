@@ -3,7 +3,7 @@
         <Navigation :locations="locations"></Navigation>
 
         <section class="hero is-fullheight-with-navbar">
-            <router-view></router-view>
+            <router-view :locations="locations"></router-view>
         </section>
     </div>
 </template>

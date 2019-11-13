@@ -70,6 +70,10 @@ class ApiService {
     static async loadIncidents() {
         return (await axios.get("/api/markers")).data.markers;
     }
+
+    static async startDataProcessing() {
+        return (await axios.get("/api/actions/startDataProcessing")).data;
+    }
 }
 
 export { ApiService };
