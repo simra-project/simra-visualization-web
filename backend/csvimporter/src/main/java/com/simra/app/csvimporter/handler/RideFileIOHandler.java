@@ -34,8 +34,7 @@ public class RideFileIOHandler extends FileIOHandler {
         dbService = new DBService();
         dbService.DbRideConnect();
         this.ride = new Ride();
-        this.rideFilter.setMinAccuracy(minAccuracy);
-        this.rideFilter.setRdpEpsilon(rdpEpsilon);
+        this.rideFilter = new RideFilter(minAccuracy, rdpEpsilon);
         this.fileParse();
     }
 

@@ -4,7 +4,7 @@ import main.java.com.simra.app.csvimporter.model.Ride
 import main.java.com.simra.app.csvimporter.model.RideCSV
 import org.apache.log4j.Logger
 
-class RideFilter(var minAccuracy: Float, var rdpEpsilon: Double) {
+class RideFilter(private val minAccuracy: Float, private val rdpEpsilon: Double) {
 
     private val logger = Logger.getLogger(RideFilter::class.java)
 
