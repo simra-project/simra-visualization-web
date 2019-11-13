@@ -1,11 +1,12 @@
 package main.java.com.simra.app.csvimporter.model;
 
 import com.opencsv.bean.CsvBindByName;
+import org.bson.Document;
 
 /**
  * The Incident csv model.
  */
-public class IncidentCSV extends ApplicationFileVersion {
+public class IncidentCSV extends ApplicationFileVersion implements MongoDocument {
 
     @CsvBindByName
     private int key;
@@ -446,5 +447,36 @@ public class IncidentCSV extends ApplicationFileVersion {
      */
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    /**
+     * To document object document.
+     *
+     * @return the document
+     */
+    public Document toDocumentObject(){
+        Document document= new Document();
+        document.put("key", this.key);
+        document.put("lat", this.lat);
+        document.put("lon", this.lon);
+        document.put("ts", this.ts);
+        document.put("bike", this.bike);
+        document.put("childCheckBox", this.childCheckBox);
+        document.put("trailerCheckBox", this.trailerCheckBox);
+        document.put("pLoc", this.pLoc);
+        document.put("incident", this.incident);
+        document.put("i1", this.i1);
+        document.put("i2", this.i2);
+        document.put("i3", this.i3);
+        document.put("i4", this.i4);
+        document.put("i5", this.i5);
+        document.put("i6", this.i6);
+        document.put("i7", this.i7);
+        document.put("i8", this.i8);
+        document.put("i9", this.i9);
+        document.put("i10", this.i10);
+        document.put("scary", this.scary);
+        document.put("description", this.desc);
+        return document;
     }
 }
