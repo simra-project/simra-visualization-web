@@ -3,11 +3,7 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import visualization.web.resources.geoJSON.MultiPoint;
 import visualization.web.resources.geoJSON.Point;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /*
 Representation of an Incident
@@ -20,6 +16,9 @@ Representation of an Incident
 @AllArgsConstructor
 @JsonInclude
 public class IncidentResource {
+
+    @JsonProperty
+    private int rideId;
 
     @JsonProperty
     private int key;

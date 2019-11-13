@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
 import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
-import visualization.web.resources.RideResource;
+import visualization.web.resources.geoJSON.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 
 /*
 
-This is the place where we can do some number crunching and other postprocessing
+This is the place where we can do some number crunching and other postprocessing for Incidents
 
  */
 
@@ -25,22 +25,29 @@ public class IncidentServiceImpl implements IncidentService {
 
 
     @Override
+    public IncidentResource getIncident(int rideId, int key) {
+        // TODO: create rideIdKey from rideId and key
+        int rideIdKey = 123;
+        IncidentEntity incidentEntity = incidentRepository.findById(rideIdKey);
+        // TODO: transform Incident Entity to incidentResource
+        return null;
+    }
+
+    @Override
     public List<IncidentResource> getIncidentsByRideId(int rideId) {
 
+        List<IncidentResource> incidents = new ArrayList();
         List<IncidentEntity> incidentEntities = incidentRepository.findByRideId(rideId);
         System.out.println(incidentEntities.toString());
+        // TODO: transform Incident Entities to Incident Resources
+        return incidents;
+    }
 
-        List<IncidentResource> convertedIncidentResource = new ArrayList();
-        for(IncidentEntity incidentEntity:incidentEntities){
-            IncidentResource r = new IncidentResource();
-            r.setIncidentId(incidentEntity.getKey());
-            r.setRideId(incidentEntity.getRideId());
-            r.setTimeStamp(incidentEntity.getTimeStamp());
-            r.setLatlong(incidentEntity.getMap());
-            convertedIncidentResource.add(r);
-        }
-
-        return convertedIncidentResource;
+    @Override
+    public List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance) {
+        Point location = new Point(latitude, longitude);
+        incidentRepository.findByLocationNear(location, minDistance, maxDistance);
+        return null;
     }
 
 }

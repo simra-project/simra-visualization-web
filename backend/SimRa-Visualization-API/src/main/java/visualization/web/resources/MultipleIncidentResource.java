@@ -20,8 +20,5 @@ Representation of multiple Incidents
 public class MultipleIncidentResource {
 
     @JsonProperty
-    private int rideId;
-
-    @JsonProperty
     private List<IncidentResource> incidents;
 }
