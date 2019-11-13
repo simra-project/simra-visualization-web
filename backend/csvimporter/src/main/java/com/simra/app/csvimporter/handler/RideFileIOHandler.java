@@ -25,7 +25,7 @@ public class RideFileIOHandler extends FileIOHandler {
     private static final String FILEVERSIONSPLITTER = "#";
     private Ride ride;
 
-    private RideFilter rideFilter = new RideFilter();
+    private RideFilter rideFilter;
 
     private static DBService dbService;
 
@@ -34,8 +34,9 @@ public class RideFileIOHandler extends FileIOHandler {
         dbService = new DBService();
         dbService.DbRideConnect();
         this.ride = new Ride();
+        this.rideFilter.setMinAccuracy(minAccuracy);
+        this.rideFilter.setRdpEpsilon(rdpEpsilon);
         this.fileParse();
-        this.ride = rideFilter.filterRide(this.ride, minAccuracy, rdpEpsilon);
     }
 
     @Override
@@ -74,11 +75,12 @@ public class RideFileIOHandler extends FileIOHandler {
                 this.ride.getRideBeans().forEach(item -> {
                     logger.info(item.toString());
                 });
-                List<RideCSV> optimisedRideBeans = RamerDouglasPeuckerFilter.douglasPeucker(this.ride.getRideBeans(), 0.2);
+                List<RideCSV> optimisedRideBeans = rideFilter.filterRide(this.ride);
                 optimisedRideBeans.forEach(item-> logger.info(item.toString()));
+                this.ride.setRideBeans(optimisedRideBeans);
             }
 
-            dbService.getCollection().insertOne(ride.toDocumentObject());
+            dbService.getCollection().insertOne(this.ride.toDocumentObject());
 
         } catch (IOException e) {
             logger.error(e);
