@@ -10,7 +10,11 @@ import net.sourceforge.argparse4j.inf.Namespace;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
 public class CSVImporter {
+
+    private static Float DEFAULT_COORDINATE_MIN_ACCURACY = 12f;
+    private static Double DEFAULT_RDP_EPSILON = 0.0000001;
 
     public static void main(String[] args) throws ArgumentParserException {
         ArgumentParser parser = ArgumentParsers.newFor("CSVImporter").build()
@@ -21,6 +25,10 @@ public class CSVImporter {
                 .help("Specify file type r <- ride, p <- profile");
         parser.addArgument("file").nargs("*")
                 .help("File to read");
+        parser.addArgument("-a", "--accuracy")
+                .help("Minimum accuracy of to be processed coordinates").setDefault(DEFAULT_COORDINATE_MIN_ACCURACY).type(Float.class);
+        parser.addArgument("-e", "--epsilon")
+                .help("Epsilon Parameter of RDP-Algorithm").setDefault(DEFAULT_RDP_EPSILON).type(Double.class);
         Namespace ns = null;
         try {
             ns = parser.parseArgs(args);
@@ -35,10 +43,10 @@ public class CSVImporter {
             if (type.contains("p")) {
                 new ProfileFileIOHandler(path);
             } else if (type.contains("r")) {
-                new RideFileIOHandler(path);
+                Float minAccuracy = ns.getFloat("accuracy");
+                Double rdpEpsilon = ns.getDouble("epsilon");
+                new RideFileIOHandler(path, minAccuracy, rdpEpsilon);
             }
         }
-
     }
-
 }
