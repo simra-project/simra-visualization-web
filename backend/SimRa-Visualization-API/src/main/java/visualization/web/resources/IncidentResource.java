@@ -3,6 +3,8 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import visualization.web.resources.geoJSON.MultiPoint;
+import visualization.web.resources.geoJSON.Point;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,14 +22,60 @@ Representation of an Incident
 public class IncidentResource {
 
     @JsonProperty
-    private int rideId;
+    private int key;
 
     @JsonProperty
-    private int incidentId;
-
-    @JsonProperty
-    private ArrayList latlong;
+    private Point incident;
 
     @JsonProperty
     private long timeStamp;
+
+    @JsonProperty
+    private Boolean child;
+
+    @JsonProperty
+    private Boolean trailer;
+
+    @JsonProperty
+    private int phoneLocation;
+
+    @JsonProperty
+    private int incidentType;
+
+    @JsonProperty
+    private Boolean scary;
+
+    @JsonProperty
+    private String description;
+
+    @JsonProperty
+    private Boolean i1Bus;
+
+    @JsonProperty
+    private Boolean i2Cyclist;
+
+    @JsonProperty
+    private Boolean i3Pedestrian;
+
+    @JsonProperty
+    private Boolean i4DeliveryVan;
+
+    @JsonProperty
+    private Boolean i5Truck;
+
+    @JsonProperty
+    private Boolean i6Motorcycle;
+
+    @JsonProperty
+    private Boolean i7Car;
+
+    @JsonProperty
+    private Boolean i8Taxi;
+
+    @JsonProperty
+    private Boolean i9Other;
+
+    @JsonProperty
+    private Boolean i10EScooter;
+
 }

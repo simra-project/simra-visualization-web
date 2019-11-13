@@ -12,14 +12,14 @@ import visualization.web.resources.IncidentResource;
 import java.util.List;
 
 
-/*
+/*⁄ø
 
-This is the place where we communicate with the frontend regarding Incident Queries
+This is the place where we communicate with the frontend
 
  */
 
 @RestController
-public class IncidentController {
+public class RideController {
 
     @Autowired
     private IncidentService incidentService;
