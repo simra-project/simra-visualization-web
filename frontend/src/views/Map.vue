@@ -78,7 +78,9 @@ import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
-import { ApiService } from "@/services/ApiService";
+// import { ApiService } from "@/services/ApiService";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 
 
 // Mock REST API
