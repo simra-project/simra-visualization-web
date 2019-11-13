@@ -1,80 +1,72 @@
-package visualization.web.resources;
+package visualization.data.mongodb.entities;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import visualization.web.resources.geoJSON.Point;
 
-/*
-Representation of an Incident
- */
+import java.io.Serializable;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude
-public class IncidentResource {
+@Document(collection="incidents")
+public class IncidentEntity {
 
-    @JsonProperty
+    //TODO: Build Entity according to MongoDB Schema or vice versa
+    //https://stackoverflow.com/questions/56624690/composite-primary-key-using-mongodb-and-spring-data-jpa
+    @Id
+    private CompositeKey rideIdKey;
+
     private int rideId;
 
-    @JsonProperty
     private int key;
 
-    @JsonProperty
     private Point incident;
 
-    @JsonProperty
     private long timeStamp;
 
-    @JsonProperty
     private Boolean child;
 
-    @JsonProperty
     private Boolean trailer;
 
-    @JsonProperty
     private int phoneLocation;
 
-    @JsonProperty
     private int incidentType;
 
-    @JsonProperty
     private Boolean scary;
 
-    @JsonProperty
     private String description;
 
-    @JsonProperty
     private Boolean i1Bus;
 
-    @JsonProperty
     private Boolean i2Cyclist;
 
-    @JsonProperty
     private Boolean i3Pedestrian;
 
-    @JsonProperty
     private Boolean i4DeliveryVan;
 
-    @JsonProperty
     private Boolean i5Truck;
 
-    @JsonProperty
     private Boolean i6Motorcycle;
 
-    @JsonProperty
     private Boolean i7Car;
 
-    @JsonProperty
     private Boolean i8Taxi;
 
-    @JsonProperty
     private Boolean i9Other;
 
-    @JsonProperty
     private Boolean i10EScooter;
+
+
+    // Incident Key made of rideId and key
+    @Getter
+    @Setter
+    static class CompositeKey implements Serializable {
+        private int rideId;
+        private int key;
+    }
 
 }

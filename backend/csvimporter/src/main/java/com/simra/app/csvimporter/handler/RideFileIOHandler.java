@@ -4,6 +4,7 @@ import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
 import main.java.com.simra.app.csvimporter.filter.RamerDouglasPeuckerFilter;
 import main.java.com.simra.app.csvimporter.filter.RideFilter;
+import main.java.com.simra.app.csvimporter.dbservice.DBService;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
@@ -26,8 +27,13 @@ public class RideFileIOHandler extends FileIOHandler {
 
     private RideFilter rideFilter = new RideFilter();
 
+    private static DBService dbService;
+
     public RideFileIOHandler(Path path, Float minAccuracy, Double rdpEpsilon) {
         super(path);
+        dbService = new DBService();
+        dbService.DbRideConnect();
+        this.ride = new Ride();
         this.fileParse();
         this.ride = rideFilter.filterRide(this.ride, minAccuracy, rdpEpsilon);
     }
@@ -37,8 +43,6 @@ public class RideFileIOHandler extends FileIOHandler {
         /*
          * parses ride file, as its has different structure.
          */
-        this.ride= new Ride();
-
         try (BufferedReader reader = Files.newBufferedReader(this.getPath(), StandardCharsets.UTF_8)) {
             StringBuilder incidentContent = new StringBuilder();
             StringBuilder rideContent = new StringBuilder();
@@ -47,7 +51,7 @@ public class RideFileIOHandler extends FileIOHandler {
             String line = reader.readLine();
 
             while (line != null) {
-                if (line.contains("=========================") || line.contains("===================")) {
+                if (line.contains("==")) {
                     switchStream = true;
                 }
                 if (switchStream) {
@@ -73,6 +77,8 @@ public class RideFileIOHandler extends FileIOHandler {
                 List<RideCSV> optimisedRideBeans = RamerDouglasPeuckerFilter.douglasPeucker(this.ride.getRideBeans(), 0.2);
                 optimisedRideBeans.forEach(item-> logger.info(item.toString()));
             }
+
+            dbService.getCollection().insertOne(ride.toDocumentObject());
 
         } catch (IOException e) {
             logger.error(e);
@@ -108,7 +114,6 @@ public class RideFileIOHandler extends FileIOHandler {
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
             });
-
             this.ride.setIncidents(incidentBeans);
         } catch (Exception e) {
             logger.error(e);

@@ -4,15 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import visualization.service.IncidentService;
-import visualization.web.resources.RideResource;
+import visualization.web.resources.IncidentResource;
+
+import java.util.List;
 
 
 /*
 
-This is the place where we communicate with the frontend
+This is the place where we communicate with the frontend regarding Incident Queries
 
  */
 
@@ -22,14 +25,26 @@ public class IncidentController {
     @Autowired
     private IncidentService incidentService;
 
-    @GetMapping(value = "/incident")
-    public HttpEntity<RideResource> getIncidents(@RequestParam(value = "rideid") int rideId) {
+    // get exactly one incident by rideId and adding the ?key=XY as request parameter
+    @GetMapping(value = "/rides/{rideId}/incidents")
+    public HttpEntity<IncidentResource> getIncident(@PathVariable int rideId,
+                                                    @RequestParam(value = "key") int key) {
+        return ResponseEntity.ok(incidentService.getIncident(rideId, key));
+    }
+
+    // get all incidents of one ride by id
+    @GetMapping(value = "/rides/{rideId}/incidents")
+    public HttpEntity<List<IncidentResource>> getRideIncidents(@PathVariable int rideId) {
         return ResponseEntity.ok(incidentService.getIncidentsByRideId(rideId));
     }
 
-    @GetMapping(value = "/incident/all")
-    public HttpEntity<RideResource> getIncidents() {
-        return ResponseEntity.ok(incidentService.getIncidents());
+    // get all incidents in range minDistance and maxDistance around a Point (lat, long)
+    @GetMapping(value = "/incidents")
+    public HttpEntity<List<IncidentResource>> getIncidents(@RequestParam(value = "lat") double latitude,
+                                                           @RequestParam(value = "long") double longitude,
+                                                           @RequestParam(value = "min") int minDistance,
+                                                           @RequestParam(value = "max") int maxDistance) {
+        return ResponseEntity.ok(incidentService.getIncidentsInRange(latitude, longitude, minDistance, maxDistance));
     }
 
 }

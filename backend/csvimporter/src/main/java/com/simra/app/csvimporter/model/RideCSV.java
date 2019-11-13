@@ -1,11 +1,12 @@
 package main.java.com.simra.app.csvimporter.model;
 
 import com.opencsv.bean.CsvBindByName;
+import org.bson.Document;
 
 /**
  * The type Ride csv.
  */
-public class RideCSV extends ApplicationFileVersion {
+public class RideCSV extends ApplicationFileVersion implements MongoDocument {
 
     @CsvBindByName
     private String lat;
@@ -216,6 +217,30 @@ public class RideCSV extends ApplicationFileVersion {
      */
     public void setC(String c) {
         this.c = c;
+    }
+
+
+    /**
+     * To document object document.
+     *
+     * @return the document
+     */
+    public Document toDocumentObject(){
+        Document document= new Document();
+        document.put("fileId", this.getFileId());
+        document.put("appVersion", this.getAppVersion());
+        document.put("fileVersion", this.getFileVersion());
+        document.put("lat", this.lat);
+        document.put("lon", this.lon);
+        document.put("X", this.X);
+        document.put("Y", this.Y);
+        document.put("Z", this.Z);
+        document.put("timeStamp", this.timeStamp);
+        document.put("acc", this.acc);
+        document.put("a", this.a);
+        document.put("b", this.b);
+        document.put("c", this.c);
+        return document;
     }
 
 

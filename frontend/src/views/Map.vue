@@ -5,6 +5,7 @@
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated">
         <l-tile-layer :url="url"></l-tile-layer>
+        <v-geosearch :options="geosearchOptions"></v-geosearch>
         <l-control position="topright">
             <div class="overlay">
                 <p class="subtitle is-5" hidden>Filter</p>
@@ -14,6 +15,37 @@
                 <div class="field">
                     <b-switch v-model="showIncidents">Show Incidents</b-switch>
                 </div>
+
+                <!-- Sliders to fine tune heatmap settings.               -->
+                MaxZoom
+                <vue-slider
+                    class="slider"
+                    :min="0"
+                    :max="18"
+                    :interval="1"
+                    tooltip="focus"
+                    v-model="heatmapMaxZoom">
+                </vue-slider>
+
+                Radius
+                <vue-slider
+                    class="slider"
+                    :min="0"
+                    :max="100"
+                    :interval="1"
+                    tooltip="focus"
+                    v-model="heatmapRadius">
+                </vue-slider>
+
+                Blur
+                <vue-slider
+                    class="slider"
+                    :min="0"
+                    :max="100"
+                    :interval="1"
+                    tooltip="focus"
+                    v-model="heatmapBlur">
+                </vue-slider>
             </div>
         </l-control>
         <l-control position="bottomright">
@@ -32,7 +64,8 @@
             color="red"
         />
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
-        <vue2-leaflet-marker-cluster v-if="showIncidents">
+        <Vue2LeafletHeatmap v-if="zoom<=heatmapMaxZoom&&showAccidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
+        <vue2-leaflet-marker-cluster v-else-if="showAccidents">
             <l-marker v-for="m in markers" :lat-lng="m.latlng">
                 <l-popup :content="m.description"></l-popup>
             </l-marker>
@@ -42,9 +75,17 @@
 
 <script>
 import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
+import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
+import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
+import VGeosearch from 'vue2-leaflet-geosearch';
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
+// import { ApiService } from "@/services/ApiService";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
+
+import 'vue-slider-component/theme/default.css';
 
 // Mock REST API
 let mock = new MockAdapter(axios);
@@ -116,17 +157,29 @@ export default {
         Vue2LeafletMarkerCluster,
         LMarker,
         LPopup,
+        Vue2LeafletHeatmap,
+        VueSlider,
+        VGeosearch
     },
     data() {
         return {
             url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
-            zoom: 15,
-            center: [52.5125322, 13.3269446],
+            zoom: parseInt(this.$route.query.z) || 15,
+            center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
             showTrips: true,
             showIncidents: true,
             polylines: [],
             markers: [],
+            incident_heatmap: [],
+            heatmapMaxZoom: 15,
+            heatmapMinOpacity: 0.75,
+            heatmapMaxPointIntensity: 1.0,
+            heatmapRadius: 25,
+            heatmapBlur: 15,
+            geosearchOptions: {
+                provider: new OpenStreetMapProvider()
+            }
         };
     },
     methods: {
@@ -135,9 +188,20 @@ export default {
         },
         centerUpdated(center) {
             this.center = center;
+            this.updateUrlQuery();
         },
         boundsUpdated(bounds) {
             this.bounds = bounds;
+        },
+        updateUrlQuery() {
+            this.$router.replace({
+                name: "mapQuery",
+                params: {
+                    lat: this.center.lat,
+                    lng: this.center.lng,
+                    zoom: this.zoom,
+                },
+            });
         },
     },
     // Laden der Daten aus der API
@@ -154,7 +218,12 @@ export default {
             .then(
                 response => {
                     this.markers = response.data.markers;
-                },
+                    // Workaround to bug in heatmap. Overwriting the array, e.g., arr=[], causes the heatmap to be empty
+                    while(this.incident_heatmap.length > 0) {this.incident_heatmap.length.pop();}
+                    for (var i = 0; i < this.markers.length; i++) {
+                        this.incident_heatmap.push([this.markers[i].latlng.lat, this.markers[i].latlng.lng, 1])
+                    }
+                }
             );
     },
 };
@@ -192,6 +261,17 @@ export default {
         }
     }
 
+    /* Workaround to class selector not working for the geosearch form. */
+    div {
+        div {
+            color: black;
+        }
+    }
+
+
     @import "~leaflet.markercluster/dist/MarkerCluster.css";
     @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
+    @import '~leaflet-geosearch/dist/style.css';
+    @import '~leaflet-geosearch/assets/css/leaflet.css';
+
 </style>

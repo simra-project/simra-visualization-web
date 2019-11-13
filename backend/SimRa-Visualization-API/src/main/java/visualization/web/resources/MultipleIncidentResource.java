@@ -3,12 +3,12 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import visualization.web.resources.geoJSON.LineString;
+import visualization.web.resources.geoJSON.MultiPoint;
 
 import java.util.List;
 
 /*
-Representation of a Ride
+Representation of multiple Incidents
  */
 
 @Getter
@@ -17,12 +17,8 @@ Representation of a Ride
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude
-public class RideResource {
+public class MultipleIncidentResource {
 
     @JsonProperty
-    private int rideId;
-
-    @JsonProperty
-    private LineString ride;
-
+    private List<IncidentResource> incidents;
 }
