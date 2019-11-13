@@ -64,8 +64,8 @@
             color="red"
         />
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
-        <Vue2LeafletHeatmap v-if="zoom<=heatmapMaxZoom&&showAccidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
-        <vue2-leaflet-marker-cluster v-else-if="showAccidents">
+        <Vue2LeafletHeatmap v-if="zoom<=heatmapMaxZoom&&showIncidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
+        <vue2-leaflet-marker-cluster v-else-if="showIncidents">
             <l-marker v-for="m in markers" :lat-lng="m.latlng">
                 <l-popup :content="m.description"></l-popup>
             </l-marker>
