@@ -2,6 +2,8 @@ package main.java.com.simra.app.csvimporter.handler;
 
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
+import main.java.com.simra.app.csvimporter.filter.RamerDouglasPeuckerFilter;
+import main.java.com.simra.app.csvimporter.filter.RideFilter;
 import main.java.com.simra.app.csvimporter.dbservice.DBService;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
@@ -21,17 +23,18 @@ public class RideFileIOHandler extends FileIOHandler {
     private static final Logger logger = Logger.getLogger(RideFileIOHandler.class);
 
     private static final String FILEVERSIONSPLITTER = "#";
+    private Ride ride;
 
+    private RideFilter rideFilter;
 
     private static DBService dbService;
 
-    private Ride ride;
-
-    public RideFileIOHandler(Path path) {
+    public RideFileIOHandler(Path path, Float minAccuracy, Double rdpEpsilon) {
         super(path);
         dbService = new DBService();
         dbService.DbRideConnect();
         this.ride = new Ride();
+        this.rideFilter = new RideFilter(minAccuracy, rdpEpsilon);
         this.fileParse();
     }
 
@@ -66,7 +69,17 @@ public class RideFileIOHandler extends FileIOHandler {
             if (rideContent.length() > 0) {
                 this.rideParse(rideContent, this.getPath());
             }
-            dbService.getCollection().insertOne(ride.toDocumentObject());
+
+            if(!this.ride.getRideBeans().isEmpty()) {
+                this.ride.getRideBeans().forEach(item -> {
+                    logger.info(item.toString());
+                });
+                List<RideCSV> optimisedRideBeans = rideFilter.filterRide(this.ride);
+                optimisedRideBeans.forEach(item-> logger.info(item.toString()));
+                this.ride.setRideBeans(optimisedRideBeans);
+            }
+
+            dbService.getCollection().insertOne(this.ride.toDocumentObject());
 
         } catch (IOException e) {
             logger.error(e);
