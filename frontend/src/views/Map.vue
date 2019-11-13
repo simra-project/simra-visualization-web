@@ -5,6 +5,7 @@
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated">
         <l-tile-layer :url="url"></l-tile-layer>
+        <v-geosearch :options="geosearchOptions"></v-geosearch>
         <l-control position="topright">
             <div class="overlay">
                 <p class="subtitle is-5" hidden>Filter</p>
@@ -72,9 +73,11 @@ import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/default.css'
+import VueSlider from 'vue-slider-component';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
+import VGeosearch from 'vue2-leaflet-geosearch';
 
+import 'vue-slider-component/theme/default.css';
 
 // Mock REST API
 let mock = new MockAdapter(axios);
@@ -147,7 +150,8 @@ export default {
         LMarker,
         LPopup,
         Vue2LeafletHeatmap,
-        VueSlider
+        VueSlider,
+        VGeosearch
     },
     data () {
         return {
@@ -164,7 +168,10 @@ export default {
             heatmapMinOpacity: 0.75,
             heatmapMaxPointIntensity: 1.0,
             heatmapRadius: 25,
-            heatmapBlur: 15
+            heatmapBlur: 15,
+            geosearchOptions: {
+                provider: new OpenStreetMapProvider()
+            }
         };
     },
     methods: {
@@ -246,6 +253,17 @@ export default {
         }
     }
 
+    /* Workaround to class selector not working for the geosearch form. */
+    div {
+        div {
+            color: black;
+        }
+    }
+
+
     @import "~leaflet.markercluster/dist/MarkerCluster.css";
     @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
+    @import '~leaflet-geosearch/dist/style.css';
+    @import '~leaflet-geosearch/assets/css/leaflet.css';
+
 </style>
