@@ -21,12 +21,5 @@ This is the place where we communicate with the frontend
 @RestController
 public class RideController {
 
-    @Autowired
-    private IncidentService incidentService;
-
-    @GetMapping(value = "/incident")
-    public HttpEntity<List<IncidentResource>> getIncidents(@RequestParam(value = "rideid") int rideId) {
-        return ResponseEntity.ok(incidentService.getIncidentsByRideId(rideId));
-    }
 
 }

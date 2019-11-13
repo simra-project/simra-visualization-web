@@ -25,16 +25,16 @@ public class IncidentServiceImpl implements IncidentService {
 
 
     @Override
-    public IncidentResource getIncident(int rideId, int key) {
+    public IncidentResource getIncident(String rideId, int key) {
         // TODO: create rideIdKey from rideId and key
-        int rideIdKey = 123;
-        IncidentEntity incidentEntity = incidentRepository.findById(rideIdKey);
+
+        //IncidentEntity incidentEntity = incidentRepository.findById(rideIdKey);
         // TODO: transform Incident Entity to incidentResource
         return null;
     }
 
     @Override
-    public List<IncidentResource> getIncidentsByRideId(int rideId) {
+    public List<IncidentResource> getIncidentsByRideId(String rideId) {
 
         List<IncidentResource> incidents = new ArrayList();
         List<IncidentEntity> incidentEntities = incidentRepository.findByRideId(rideId);
@@ -46,7 +46,7 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     public List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance) {
         Point location = new Point(latitude, longitude);
-        incidentRepository.findByLocationNear(location, minDistance, maxDistance);
+        //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
         return null;
     }
 

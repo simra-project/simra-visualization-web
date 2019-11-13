@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface IncidentService {
 
-    IncidentResource getIncident(int rideId, int key);
+    IncidentResource getIncident(String rideId, int key);
 
-    List<IncidentResource> getIncidentsByRideId(int rideId);
+    List<IncidentResource> getIncidentsByRideId(String rideId);
 
     List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance);
 

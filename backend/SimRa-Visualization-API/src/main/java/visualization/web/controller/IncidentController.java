@@ -27,14 +27,14 @@ public class IncidentController {
 
     // get exactly one incident by rideId and adding the ?key=XY as request parameter
     @GetMapping(value = "/rides/{rideId}/incidents")
-    public HttpEntity<IncidentResource> getIncident(@PathVariable int rideId,
+    public HttpEntity<IncidentResource> getIncident(@PathVariable String rideId,
                                                     @RequestParam(value = "key") int key) {
         return ResponseEntity.ok(incidentService.getIncident(rideId, key));
     }
 
     // get all incidents of one ride by id
-    @GetMapping(value = "/rides/{rideId}/incidents")
-    public HttpEntity<List<IncidentResource>> getRideIncidents(@PathVariable int rideId) {
+    @GetMapping(value = "/rides/{rideId}/incidents/all")
+    public HttpEntity<List<IncidentResource>> getRideIncidents(@PathVariable String rideId) {
         return ResponseEntity.ok(incidentService.getIncidentsByRideId(rideId));
     }
 

@@ -26,7 +26,7 @@ public class Point extends Geometry {
 	}
 
 
-	public Point getCoordinates() {
+	public Coordinates[] getCoordinates() {
 		return coordinates;
 	}
 

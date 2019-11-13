@@ -12,9 +12,9 @@ public interface IncidentRepository extends MongoRepository<IncidentEntity, Stri
     //TODO: Define proper DB Schema
     //TODO: Test queries with real data
 
-    List<IncidentEntity> findByRideId(int rideId);
-    IncidentEntity findById(int rideIdKey);
-    List<IncidentEntity> findByLocationNear(Point location, int minDistance, int maxDinstance);
+    List<IncidentEntity> findByRideId(String rideId);
+    IncidentEntity findByRideIdKey(String rideIdKey);
+    //List<IncidentEntity> findByLocationNear(Point location, int minDistance, int maxDistance);
 
     /* reference:
         https://docs.mongodb.com/manual/geospatial-queries/
