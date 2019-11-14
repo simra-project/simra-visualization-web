@@ -42,9 +42,8 @@ public class IncidentController {
     @GetMapping(value = "/incidents")
     public HttpEntity<List<IncidentResource>> getIncidentsNear(@RequestParam(value = "lat") double latitude,
                                                                @RequestParam(value = "long") double longitude,
-                                                               @RequestParam(value = "min") int minDistance,
                                                                @RequestParam(value = "max") int maxDistance) {
-        return ResponseEntity.ok(incidentService.getIncidentsInRange(latitude, longitude, minDistance, maxDistance));
+        return ResponseEntity.ok(incidentService.getIncidentsInRange(latitude, longitude, maxDistance));
     }
 
 }

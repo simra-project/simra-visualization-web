@@ -10,6 +10,6 @@ public interface IncidentService {
 
     List<IncidentResource> getIncidentsByRideId(String rideId);
 
-    List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance);
+    List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int maxDistance);
 
 }

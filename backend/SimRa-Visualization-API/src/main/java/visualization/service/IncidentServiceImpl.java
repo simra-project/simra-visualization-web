@@ -38,7 +38,7 @@ public class IncidentServiceImpl implements IncidentService {
                     incidentResource.setCoordinates(incidentEntity.getCoordinates());
                     incidentResource.setTs(incidentEntity.getTs());
                 }
-                );
+        );
         return incidentResource;
     }
 
@@ -57,15 +57,14 @@ public class IncidentServiceImpl implements IncidentService {
         Point coordinates = new Point(latitude, longitude);
         //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
         IncidentResource incidentResource = new IncidentResource();
-        Optional<IncidentEntity> optional = incidentRepository.findById(compositeKey);
-        optional.ifPresent(incidentEntity -> {
-                    incidentResource.setRideId(incidentEntity.getRideId());
-                    incidentResource.setKey(incidentEntity.getKey());
-                    incidentResource.setCoordinates(incidentEntity.getCoordinates());
-                    incidentResource.setTs(incidentEntity.getTs());
-                }
-        );
-        return incidentResource;
-    }
+        List<IncidentEntity> incidentEntities = incidentRepository.findByCoordinatesNear(coordinates, maxDistance);
 
+        incidentResource.setRideId(incidentEntity.getRideId());
+        incidentResource.setKey(incidentEntity.getKey());
+        incidentResource.setCoordinates(incidentEntity.getCoordinates());
+        incidentResource.setTs(incidentEntity.getTs());
+        return incidentResource;
+
+
+    }
 }
