@@ -29,11 +29,17 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResource getIncident(int rideId, int key) {
         // TODO: create rideIdKey from rideId and key
 
-
+        IncidentResource incidentResource = new IncidentResource();
         IncidentEntity.CompositeKey compositeKey = new IncidentEntity.CompositeKey(rideId, key);
-        Optional<IncidentEntity> incidentEntity = incidentRepository.findById(compositeKey);
-        System.out.println("hat funktioniert: " + incidentEntity.toString());
-        return null;
+        Optional<IncidentEntity> optional = incidentRepository.findById(compositeKey);
+        optional.ifPresent(incidentEntity -> {
+                    incidentResource.setRideId(incidentEntity.getRideId());
+                    incidentResource.setKey(incidentEntity.getKey());
+                    incidentResource.setCoordinates(incidentEntity.getCoordinates());
+                    incidentResource.setTs(incidentEntity.getTs());
+                }
+                );
+        return incidentResource;
     }
 
     @Override
@@ -47,10 +53,19 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance) {
-        Point location = new Point(latitude, longitude);
+    public List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int maxDistance) {
+        Point coordinates = new Point(latitude, longitude);
         //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
-        return null;
+        IncidentResource incidentResource = new IncidentResource();
+        Optional<IncidentEntity> optional = incidentRepository.findById(compositeKey);
+        optional.ifPresent(incidentEntity -> {
+                    incidentResource.setRideId(incidentEntity.getRideId());
+                    incidentResource.setKey(incidentEntity.getKey());
+                    incidentResource.setCoordinates(incidentEntity.getCoordinates());
+                    incidentResource.setTs(incidentEntity.getTs());
+                }
+        );
+        return incidentResource;
     }
 
 }

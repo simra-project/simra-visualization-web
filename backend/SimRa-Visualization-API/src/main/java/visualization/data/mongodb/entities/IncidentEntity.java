@@ -26,7 +26,7 @@ public class IncidentEntity {
 
     private Point coordinates;
 
-    private long timeStamp;
+    private long ts;
 
     private Boolean child;
 

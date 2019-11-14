@@ -24,10 +24,10 @@ public class IncidentResource {
     private int key;
 
     @JsonProperty
-    private Point incident;
+    private Point coordinates;
 
     @JsonProperty
-    private long timeStamp;
+    private long ts;
 
     @JsonProperty
     private Boolean child;
