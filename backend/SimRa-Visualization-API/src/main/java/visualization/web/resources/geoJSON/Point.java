@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("Point")
 public class Point extends Geometry {
 
-	private Coordinates[] coordinates;
+	private double[] coordinates;
 
 	private Point() {
 		super(Point.class.getSimpleName());
@@ -13,24 +13,23 @@ public class Point extends Geometry {
 
 	public Point(double longitude, double latitude) {
 		this();
-		coordinates[0].setLongitude(longitude);
-		coordinates[1].setLatitude(latitude);
+		coordinates[0] = longitude;
+		coordinates[1] = latitude;
 	}
 
-	public Point(double longitude, double latitude, double altitude, long timestamp) {
+	public Point(double longitude, double latitude, double altitude) {
 		this();
-		coordinates[0].setLongitude(longitude);
-		coordinates[1].setLatitude(latitude);
-		coordinates[2].setAltitude(altitude);
-		coordinates[3].setTimestamp(timestamp);
+		coordinates[0] = longitude;
+		coordinates[1] = latitude;
+		coordinates[2] = altitude ;
 	}
 
 
-	public Coordinates[] getCoordinates() {
+	public double[] getCoordinates() {
 		return coordinates;
 	}
 
-	public void setCoordinates(Coordinates[] coordinates) {
+	public void setCoordinates(double[] coordinates) {
 		this.coordinates = coordinates;
 	}
 
