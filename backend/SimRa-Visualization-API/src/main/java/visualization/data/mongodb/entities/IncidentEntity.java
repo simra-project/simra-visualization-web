@@ -18,13 +18,13 @@ public class IncidentEntity {
     //TODO: Build Entity according to MongoDB Schema or vice versa
     //https://stackoverflow.com/questions/56624690/composite-primary-key-using-mongodb-and-spring-data-jpa
     @Id
-    private CompositeKey rideIdKey;
+    private CompositeKey id;
 
     private int rideId;
 
     private int key;
 
-    private Point incident;
+    private Point coordinates;
 
     private long timeStamp;
 

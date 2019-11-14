@@ -15,6 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class LineString extends Geometry {
 
-	private List<Coordinates[]> coordinates;
+	private List<double[]> coordinates;
 
 }
