@@ -2,8 +2,9 @@ package visualization.web.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mongodb.client.model.geojson.Point;
 import lombok.*;
-import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 
 /*
 Representation of an Incident
@@ -24,7 +25,7 @@ public class IncidentResource {
     private int key;
 
     @JsonProperty
-    private Point coordinates;
+    private GeoJsonPoint coordinates;
 
     @JsonProperty
     private long ts;

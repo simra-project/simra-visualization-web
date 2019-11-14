@@ -1,7 +1,9 @@
 package visualization.service;
 
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
 import visualization.data.mongodb.entities.IncidentEntity;
@@ -35,7 +37,7 @@ public class IncidentServiceImpl implements IncidentService {
         optional.ifPresent(incidentEntity -> {
                     incidentResource.setRideId(incidentEntity.getRideId());
                     incidentResource.setKey(incidentEntity.getKey());
-                    incidentResource.setCoordinates(incidentEntity.getCoordinates());
+                    incidentResource.setCoordinates(incidentEntity.getLocation());
                     incidentResource.setTs(incidentEntity.getTs());
                 }
         );
@@ -54,17 +56,18 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public List<IncidentResource> getIncidentsInRange(double longitude, double latitude, int maxDistance) {
+        //Position coordinates = new Position(longitude, latitude);
+        GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         System.out.println("wir sind hier 1. " + longitude + " " + latitude);
-        Point map = new Point(longitude, latitude);
-        //incidentRepository.findByCoordinatesNear(location, minDistance, maxDistance);
+        //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
         List<IncidentResource> incidentResources = new ArrayList<IncidentResource>();
-        List<IncidentEntity> incidentEntities = incidentRepository.findByCoordinatesNear(map, maxDistance);
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
         System.out.println("wir sind hier 2. ");
         for(IncidentEntity incidentEntity:incidentEntities) {
             IncidentResource incidentResource = new IncidentResource();
             incidentResource.setRideId(incidentEntity.getRideId());
             incidentResource.setKey(incidentEntity.getKey());
-            incidentResource.setCoordinates(incidentEntity.getCoordinates());
+            incidentResource.setCoordinates(incidentEntity.getLocation());
             incidentResource.setTs(incidentEntity.getTs());
             incidentResources.add(incidentResource);
         }

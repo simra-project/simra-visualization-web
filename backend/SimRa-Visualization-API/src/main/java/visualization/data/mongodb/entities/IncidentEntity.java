@@ -1,8 +1,9 @@
 package visualization.data.mongodb.entities;
 
+import com.mongodb.client.model.geojson.Point;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -24,7 +25,7 @@ public class IncidentEntity {
 
     private int key;
 
-    private Point coordinates;
+    private GeoJsonPoint location;
 
     private long ts;
 
