@@ -3,7 +3,7 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import visualization.web.resources.geoJSON.Point;
+import org.springframework.data.geo.Point;
 
 /*
 Representation of an Incident

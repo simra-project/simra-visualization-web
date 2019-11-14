@@ -15,7 +15,7 @@ public interface IncidentRepository extends MongoRepository<IncidentEntity, Inci
 
     List<IncidentEntity> findByRideId(String rideId);
     Optional<IncidentEntity> findById(IncidentEntity.CompositeKey id);
-    List<IncidentEntity> findByLocationNear(Point location, int maxDistance);
+    List<IncidentEntity> findByCoordinatesNear(Point coordinates, int maxDistance);
 
     /* reference:
         https://docs.mongodb.com/manual/geospatial-queries/

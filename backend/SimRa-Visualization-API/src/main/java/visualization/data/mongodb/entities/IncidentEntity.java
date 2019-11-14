@@ -2,8 +2,8 @@ package visualization.data.mongodb.entities;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.mapping.Document;
-import visualization.web.resources.geoJSON.Point;
 
 import java.io.Serializable;
 

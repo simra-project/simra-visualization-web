@@ -56,9 +56,9 @@ public class IncidentServiceImpl implements IncidentService {
     public List<IncidentResource> getIncidentsInRange(double longitude, double latitude, int maxDistance) {
         System.out.println("wir sind hier 1. " + longitude + " " + latitude);
         Point map = new Point(longitude, latitude);
-        //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
+        //incidentRepository.findByCoordinatesNear(location, minDistance, maxDistance);
         List<IncidentResource> incidentResources = new ArrayList<IncidentResource>();
-        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(map, maxDistance);
+        List<IncidentEntity> incidentEntities = incidentRepository.findByCoordinatesNear(map, maxDistance);
         System.out.println("wir sind hier 2. ");
         for(IncidentEntity incidentEntity:incidentEntities) {
             IncidentResource incidentResource = new IncidentResource();

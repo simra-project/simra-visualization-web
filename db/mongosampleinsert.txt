@@ -20,11 +20,11 @@ db.rides.insert(
 
 db.incidents.insert(
 [
-{_id: {rideId:1, key:0},rideId:1,key:0,location:{ type : "Point", coordinates: [ 52.49043 , 13.23565]} ,ts:1567578451259},
-{_id: {rideId:1, key:1},rideId:1,key:1,location:{ type : "Point", coordinates: [ 52.49043 , 13.23565]} ,ts:1567577189365},
-{_id: {rideId:1, key:2},rideId:1,key:2,location:{ type : "Point", coordinates: [ 52.49032 , 13.23328]} ,ts:1567578377724},
-{_id: {rideId:1, key:3},rideId:1,key:3,location:{ type : "Point", coordinates: [ 52.49047 , 13.24700]} ,ts:1567578307435}
+{_id: {rideId:1, key:0},rideId:1,key:0,coordinates: [ 52.49043 , 13.23565] ,ts:1567578451259},
+{_id: {rideId:1, key:1},rideId:1,key:1,coordinates: [ 52.49043 , 13.23565] ,ts:1567577189365},
+{_id: {rideId:1, key:2},rideId:1,key:2,coordinates: [ 52.49032 , 13.23328] ,ts:1567578377724},
+{_id: {rideId:1, key:3},rideId:1,key:3,coordinates: [ 52.49047 , 13.24700] ,ts:1567578307435}
 ]
 )
 
-db.incidents.ensureIndex( {coordinates: "2dsphere" })
+db.incidents.ensureIndex( {coordinates: "2d" })
