@@ -2,10 +2,12 @@ package visualization.web.resources.geoJSON;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import java.util.ArrayList;
+
 @JsonTypeName("Point")
 public class Point extends Geometry {
 
-	private double[] coordinates;
+	private ArrayList<Double> coordinates;
 
 	private Point() {
 		super(Point.class.getSimpleName());
@@ -13,23 +15,23 @@ public class Point extends Geometry {
 
 	public Point(double longitude, double latitude) {
 		this();
-		coordinates[0] = longitude;
-		coordinates[1] = latitude;
+		coordinates.add(0, longitude);
+		coordinates.add(1, longitude);
 	}
 
 	public Point(double longitude, double latitude, double altitude) {
 		this();
-		coordinates[0] = longitude;
-		coordinates[1] = latitude;
-		coordinates[2] = altitude ;
+		coordinates.add(0, longitude);
+		coordinates.add(1, longitude);
+		coordinates.add(2, altitude);
 	}
 
 
-	public double[] getCoordinates() {
+	public ArrayList<Double> getCoordinates() {
 		return coordinates;
 	}
 
-	public void setCoordinates(double[] coordinates) {
+	public void setCoordinates(ArrayList<Double> coordinates) {
 		this.coordinates = coordinates;
 	}
 

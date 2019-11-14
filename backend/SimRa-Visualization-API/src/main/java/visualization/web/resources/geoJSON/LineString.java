@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("LineString")
@@ -15,6 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 public class LineString extends Geometry {
 
-	private List<double[]> coordinates;
+	private ArrayList<Double> coordinates;
 
 }
