@@ -16,6 +16,6 @@ import java.util.List;
 @JsonTypeName("MultiPoint")
 public class MultiPoint extends Geometry {
 
-	private List<Coordinates[]> coordinates;
+	private List<double[]> coordinates;
 
 }

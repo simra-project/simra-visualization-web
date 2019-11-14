@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public abstract class Geometry {
 
+	// all geometries are based on https://github.com/MPriess/GeoJSON-POJO
+
 	protected String type;
 
 	public String getType() {
