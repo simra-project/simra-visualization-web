@@ -27,11 +27,10 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public IncidentResource getIncident(int rideId, int key) {
-        // TODO: create rideIdKey from rideId and key
-
 
         IncidentEntity.CompositeKey compositeKey = new IncidentEntity.CompositeKey(rideId, key);
         Optional<IncidentEntity> incidentEntity = incidentRepository.findById(compositeKey);
+
         System.out.println("hat funktioniert: " + incidentEntity.toString());
         return null;
     }
@@ -47,9 +46,9 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance) {
-        Point location = new Point(latitude, longitude);
-        //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
+    public List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int maxDistance) {
+        Point coordinates = new Point(latitude, longitude);
+        incidentRepository.findByCoordinatesNear(coordinates, maxDistance);
         return null;
     }
 

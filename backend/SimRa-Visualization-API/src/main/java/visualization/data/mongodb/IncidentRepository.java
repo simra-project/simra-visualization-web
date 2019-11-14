@@ -2,6 +2,7 @@ package visualization.data.mongodb;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import visualization.data.mongodb.entities.IncidentEntity;
+import visualization.web.resources.geoJSON.Point;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ public interface IncidentRepository extends MongoRepository<IncidentEntity, Inci
 
     List<IncidentEntity> findByRideId(String rideId);
     Optional<IncidentEntity> findById(IncidentEntity.CompositeKey id);
-    //List<IncidentEntity> findByLocationNear(Point location, int minDistance, int maxDistance);
+    List<IncidentEntity> findByCoordinatesNear(Point location, int maxDistance);
 
     /* reference:
         https://docs.mongodb.com/manual/geospatial-queries/
