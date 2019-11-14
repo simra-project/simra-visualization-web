@@ -27,7 +27,7 @@ public class IncidentController {
 
     // get exactly one incident by rideId and adding the ?key=XY as request parameter
     @GetMapping(value = "/rides/{rideId}/incidents")
-    public HttpEntity<IncidentResource> getIncident(@PathVariable String rideId,
+    public HttpEntity<IncidentResource> getIncident(@PathVariable int rideId,
                                                     @RequestParam(value = "key") int key) {
         return ResponseEntity.ok(incidentService.getIncident(rideId, key));
     }

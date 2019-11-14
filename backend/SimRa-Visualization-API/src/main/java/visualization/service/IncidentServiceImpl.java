@@ -9,6 +9,7 @@ import visualization.web.resources.geoJSON.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /*
@@ -25,11 +26,13 @@ public class IncidentServiceImpl implements IncidentService {
 
 
     @Override
-    public IncidentResource getIncident(String rideId, int key) {
+    public IncidentResource getIncident(int rideId, int key) {
         // TODO: create rideIdKey from rideId and key
 
-        //IncidentEntity incidentEntity = incidentRepository.findById(rideIdKey);
-        // TODO: transform Incident Entity to incidentResource
+
+        IncidentEntity.CompositeKey compositeKey = new IncidentEntity.CompositeKey(rideId, key);
+        Optional<IncidentEntity> incidentEntity = incidentRepository.findById(compositeKey);
+        System.out.println("hat funktioniert: " + incidentEntity.toString());
         return null;
     }
 

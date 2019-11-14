@@ -64,7 +64,8 @@ public class IncidentEntity {
     // Incident Key made of rideId and key
     @Getter
     @Setter
-    static class CompositeKey implements Serializable {
+    @AllArgsConstructor
+    public static class CompositeKey implements Serializable {
         private int rideId;
         private int key;
     }
