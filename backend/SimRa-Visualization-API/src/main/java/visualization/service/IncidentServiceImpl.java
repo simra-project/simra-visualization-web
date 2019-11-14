@@ -1,11 +1,11 @@
 package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
 import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
-import visualization.web.resources.geoJSON.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,17 +53,22 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int maxDistance) {
-        Point coordinates = new Point(latitude, longitude);
+    public List<IncidentResource> getIncidentsInRange(double longitude, double latitude, int maxDistance) {
+        System.out.println("wir sind hier 1. " + longitude + " " + latitude);
+        Point map = new Point(longitude, latitude);
         //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
-        IncidentResource incidentResource = new IncidentResource();
-        List<IncidentEntity> incidentEntities = incidentRepository.findByCoordinatesNear(coordinates, maxDistance);
-
-        incidentResource.setRideId(incidentEntity.getRideId());
-        incidentResource.setKey(incidentEntity.getKey());
-        incidentResource.setCoordinates(incidentEntity.getCoordinates());
-        incidentResource.setTs(incidentEntity.getTs());
-        return incidentResource;
+        List<IncidentResource> incidentResources = new ArrayList<IncidentResource>();
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(map, maxDistance);
+        System.out.println("wir sind hier 2. ");
+        for(IncidentEntity incidentEntity:incidentEntities) {
+            IncidentResource incidentResource = new IncidentResource();
+            incidentResource.setRideId(incidentEntity.getRideId());
+            incidentResource.setKey(incidentEntity.getKey());
+            incidentResource.setCoordinates(incidentEntity.getCoordinates());
+            incidentResource.setTs(incidentEntity.getTs());
+            incidentResources.add(incidentResource);
+        }
+        return incidentResources;
 
 
     }

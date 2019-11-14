@@ -7,7 +7,8 @@ import java.util.ArrayList;
 @JsonTypeName("Point")
 public class Point extends Geometry {
 
-	private ArrayList<Double> coordinates;
+	private ArrayList<Double> coordinates = new ArrayList<Double>();
+
 
 	private Point() {
 		super(Point.class.getSimpleName());
