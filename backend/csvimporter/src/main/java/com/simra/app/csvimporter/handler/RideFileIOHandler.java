@@ -27,6 +27,7 @@ public class RideFileIOHandler extends FileIOHandler {
     private Ride ride;
 
     private RideFilter rideFilter;
+    private MapMatchingService mapMatchingService = new MapMatchingService();
 
     private static DBService dbService;
 
@@ -80,7 +81,7 @@ public class RideFileIOHandler extends FileIOHandler {
                 this.ride.setRideBeans(optimisedRideBeans);
             }
 
-            List snappedRideBeans = new MapMatchingService().matchToMap(ride.getRideBeans());
+            List snappedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
             //TODO do sth with snappedRideBeans
             dbService.getCollection().insertOne(this.ride.toDocumentObject());
 
