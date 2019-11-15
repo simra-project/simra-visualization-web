@@ -5,6 +5,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import main.java.com.simra.app.csvimporter.filter.RamerDouglasPeuckerFilter;
 import main.java.com.simra.app.csvimporter.filter.RideFilter;
 import main.java.com.simra.app.csvimporter.dbservice.DBService;
+import main.java.com.simra.app.csvimporter.mapmatching.MapMatchingService;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
@@ -79,6 +80,8 @@ public class RideFileIOHandler extends FileIOHandler {
                 this.ride.setRideBeans(optimisedRideBeans);
             }
 
+            List snappedRideBeans = new MapMatchingService().matchToMap(ride.getRideBeans());
+            //TODO do sth with snappedRideBeans
             dbService.getCollection().insertOne(this.ride.toDocumentObject());
 
         } catch (IOException e) {
