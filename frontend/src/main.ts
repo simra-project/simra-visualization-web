@@ -1,7 +1,3 @@
-// import 'core-js'
-// import 'core-js/shim'
-// import '@babel/polyfill'
-
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";

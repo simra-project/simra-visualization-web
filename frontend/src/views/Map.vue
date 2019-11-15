@@ -1,16 +1,18 @@
 <template>
-    <l-map :zoom="zoom"
+    <l-map ref="map"
+           :zoom="zoom"
            :center="center"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
-           @update:bounds="boundsUpdated">
+           @update:bounds="boundsUpdated"
+           @click="clickedOnMap($event)">
         <l-tile-layer :url="url"></l-tile-layer>
         <v-geosearch :options="geosearchOptions"></v-geosearch>
         <l-control position="topright">
             <div class="overlay">
                 <p class="subtitle is-5" hidden>Filter</p>
                 <div class="field">
-                    <b-switch v-model="showTrips">Show Trips</b-switch>
+                    <b-switch v-model="showRoutes">Show Trips</b-switch>
                 </div>
                 <div class="field">
                     <b-switch v-model="showIncidents">Show Incidents</b-switch>
@@ -57,11 +59,12 @@
         </l-control>
         <!--    Stellt eine Route dar    -->
         <l-polyline
-            v-if="showTrips"
-            v-for="line in polylines"
-            :key="line.id"
-            :lat-lngs="line.points"
-            color="red"
+            v-if="showRoutes"
+            v-for="route in routes"
+            :key="route.id"
+            :lat-lngs="route.points"
+            :color="highlightedRouteId === route.id ? 'blue' : 'red'"
+            @click="clickedOnRoute($event, route.id)"
         />
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
         <Vue2LeafletHeatmap v-if="zoom<=heatmapMaxZoom&&showIncidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
@@ -77,15 +80,13 @@
 import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
-import { OpenStreetMapProvider } from 'leaflet-geosearch';
-import VGeosearch from 'vue2-leaflet-geosearch';
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/default.css'
+import { OpenStreetMapProvider } from "leaflet-geosearch";
+import VGeosearch from "vue2-leaflet-geosearch";
+import VueSlider from "vue-slider-component";
+import "vue-slider-component/theme/default.css";
 // import { ApiService } from "@/services/ApiService";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-
-import 'vue-slider-component/theme/default.css';
 
 // Mock REST API
 let mock = new MockAdapter(axios);
@@ -113,7 +114,7 @@ mock.onGet("/api/routes").reply(200, {
                 { lat: 52.513140, lng: 13.322612 },
                 { lat: 52.513682, lng: 13.322644 },
                 { lat: 52.514505, lng: 13.322574 },
-                { lat: 52.514750, lng: 13.322563 },
+                { lat: 52.484750, lng: 13.322563 },
             ],
         },
     ],
@@ -159,7 +160,7 @@ export default {
         LPopup,
         Vue2LeafletHeatmap,
         VueSlider,
-        VGeosearch
+        VGeosearch,
     },
     data() {
         return {
@@ -167,9 +168,10 @@ export default {
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            showTrips: true,
+            showRoutes: true,
             showIncidents: true,
-            polylines: [],
+            routes: [],
+            highlightedRouteId: null,
             markers: [],
             incident_heatmap: [],
             heatmapMaxZoom: 15,
@@ -178,8 +180,8 @@ export default {
             heatmapRadius: 25,
             heatmapBlur: 15,
             geosearchOptions: {
-                provider: new OpenStreetMapProvider()
-            }
+                provider: new OpenStreetMapProvider(),
+            },
         };
     },
     methods: {
@@ -203,6 +205,22 @@ export default {
                 },
             });
         },
+        clickedOnRoute(event, routeId) {
+            // Highlighting this route
+            this.highlightedRouteId = routeId;
+
+            // Fitting route into view if it's not already
+            let routeBounds = event.target.getBounds().pad(0.1);
+            if (!this.bounds.contains(routeBounds)) {
+                this.$refs.map.fitBounds(routeBounds);
+            }
+        },
+        clickedOnMap(event) {
+            if (event.originalEvent.target.nodeName !== 'path' && this.highlightedRouteId != null) {
+                // unfocus highlighted route
+                this.highlightedRouteId = null;
+            }
+        }
     },
     // Laden der Daten aus der API
     mounted() {
@@ -210,7 +228,7 @@ export default {
             .get("/api/routes")
             .then(
                 response => {
-                    this.polylines = response.data.routes;
+                    this.routes = response.data.routes;
                 },
             );
         axios
@@ -219,11 +237,13 @@ export default {
                 response => {
                     this.markers = response.data.markers;
                     // Workaround to bug in heatmap. Overwriting the array, e.g., arr=[], causes the heatmap to be empty
-                    while(this.incident_heatmap.length > 0) {this.incident_heatmap.length.pop();}
-                    for (var i = 0; i < this.markers.length; i++) {
-                        this.incident_heatmap.push([this.markers[i].latlng.lat, this.markers[i].latlng.lng, 1])
+                    while (this.incident_heatmap.length > 0) {
+                        this.incident_heatmap.length.pop();
                     }
-                }
+                    for (var i = 0; i < this.markers.length; i++) {
+                        this.incident_heatmap.push([this.markers[i].latlng.lat, this.markers[i].latlng.lng, 1]);
+                    }
+                },
             );
     },
 };
@@ -260,14 +280,6 @@ export default {
             }
         }
     }
-
-    /* Workaround to class selector not working for the geosearch form. */
-    div {
-        div {
-            color: black;
-        }
-    }
-
 
     @import "~leaflet.markercluster/dist/MarkerCluster.css";
     @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
