@@ -2,9 +2,9 @@ package main.java.com.simra.app.csvimporter.handler;
 
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import main.java.com.simra.app.csvimporter.filter.RamerDouglasPeuckerFilter;
 import main.java.com.simra.app.csvimporter.filter.RideFilter;
-import main.java.com.simra.app.csvimporter.dbservice.DBService;
+import main.java.com.simra.app.csvimporter.services.ConfigService;
+import main.java.com.simra.app.csvimporter.services.DBService;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
@@ -71,15 +71,21 @@ public class RideFileIOHandler extends FileIOHandler {
             }
 
             if(!this.ride.getRideBeans().isEmpty()) {
-                this.ride.getRideBeans().forEach(item -> {
-                    logger.info(item.toString());
-                });
+                if(Boolean.getBoolean(ConfigService.config.getProperty("debug"))){
+                    this.ride.getRideBeans().forEach(item -> {
+                        logger.info(item.toString());
+                    });
+                }
+
                 List<RideCSV> optimisedRideBeans = rideFilter.filterRide(this.ride);
-                optimisedRideBeans.forEach(item-> logger.info(item.toString()));
+                if(Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
+                    optimisedRideBeans.forEach(item -> logger.info(item.toString()));
+                }
                 this.ride.setRideBeans(optimisedRideBeans);
             }
 
             dbService.getCollection().insertOne(this.ride.toDocumentObject());
+            dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
 
         } catch (IOException e) {
             logger.error(e);

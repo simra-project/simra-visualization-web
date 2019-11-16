@@ -79,12 +79,16 @@ public class Ride implements MongoDocument {
         ArrayList rides = new ArrayList<Document>();
         this.rideBeans.forEach(ride-> rides.add(((RideCSV)ride).toDocumentObject()));
 
-        ArrayList incidents = new ArrayList<Document>();
-        this.incidents.forEach(incident-> incidents.add(((IncidentCSV)incident).toDocumentObject()));
         Document singleRide= new Document();
+        singleRide.put("rideId",((RideCSV)this.getRideBeans().get(0)).getFileId());
         singleRide.put("rides",rides);
-        singleRide.put("incidents",incidents);
         return singleRide;
+    }
+
+    public List<Document> incidentsDocuments(){
+        ArrayList incidentsList = new ArrayList<Document>();
+        this.incidents.forEach(incident-> incidentsList.add(((IncidentCSV)incident).toDocumentObject()));
+        return incidentsList;
     }
 
 }

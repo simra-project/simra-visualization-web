@@ -2,7 +2,7 @@ package main.java.com.simra.app.csvimporter.handler;
 
 
 import com.opencsv.bean.CsvToBeanBuilder;
-import main.java.com.simra.app.csvimporter.dbservice.DBService;
+import main.java.com.simra.app.csvimporter.services.DBService;
 import main.java.com.simra.app.csvimporter.model.Profile;
 import org.apache.log4j.Logger;
 

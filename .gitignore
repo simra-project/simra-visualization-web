@@ -126,3 +126,4 @@ $RECYCLE.BIN/
 /.idea/codeStyles/codeStyleConfig.xml
 /.idea/
 /.idea/compiler.xml
+/backend/csvimporter/target/
