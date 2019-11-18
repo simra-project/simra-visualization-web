@@ -3,6 +3,7 @@ package visualization.service;
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.geo.GeoJsonMultiPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
@@ -62,6 +63,10 @@ public class IncidentServiceImpl implements IncidentService {
         //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
         List<IncidentResource> incidentResources = new ArrayList<IncidentResource>();
         List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
+
+       //  GeoJsonMultiPoint test = new GeoJsonMultiPoint(point, point    , point );
+
+
         System.out.println("wir sind hier 2. ");
         for(IncidentEntity incidentEntity:incidentEntities) {
             IncidentResource incidentResource = new IncidentResource();

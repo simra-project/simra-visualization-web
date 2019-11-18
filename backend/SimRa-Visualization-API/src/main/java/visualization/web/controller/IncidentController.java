@@ -40,10 +40,10 @@ public class IncidentController {
 
     // get all incidents in range minDistance and maxDistance around a Point (lat, long)
     @GetMapping(value = "/incidents")
-    public HttpEntity<List<IncidentResource>> getIncidentsNear(@RequestParam(value = "lat") double latitude,
-                                                               @RequestParam(value = "long") double longitude,
+    public HttpEntity<List<IncidentResource>> getIncidentsNear(@RequestParam(value = "lon") double longitude,
+                                                               @RequestParam(value = "lat") double latitude,
                                                                @RequestParam(value = "max") int maxDistance) {
-        return ResponseEntity.ok(incidentService.getIncidentsInRange(latitude, longitude, maxDistance));
+        return ResponseEntity.ok(incidentService.getIncidentsInRange(longitude, latitude, maxDistance));
     }
 
 }

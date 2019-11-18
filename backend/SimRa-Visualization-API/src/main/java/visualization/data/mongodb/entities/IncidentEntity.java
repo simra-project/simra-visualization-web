@@ -16,7 +16,8 @@ import java.io.Serializable;
 @Document(collection="incidents")
 public class IncidentEntity {
 
-    //TODO: Build Entity according to MongoDB Schema or vice versa
+    //TODO: Build Entity according to MongoDB Schema or vice versa (extend geojson point with timestamp)
+    //TODO: Rideid als String
     //https://stackoverflow.com/questions/56624690/composite-primary-key-using-mongodb-and-spring-data-jpa
     @Id
     private CompositeKey id;
