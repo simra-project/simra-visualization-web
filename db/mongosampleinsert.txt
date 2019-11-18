@@ -1,28 +1,19 @@
 use simra
 
-db.incidents.insert(
-[
-{rideId:1,key:0, map:[52.49210,13.23735],ts:1567578451259},
-{rideId:1,key:1, map:[52.49043,13.23565],ts:1567577189365},
-{rideId:1,key:2, map:[52.49032,13.23328],ts:1567578377724},
-{rideId:1,key:3, map:[52.49047,13.24700],ts:1567578307435}
-]
-)
-
 db.rides.insert(
 [
-{rideId: 1,lat: "52.43087",lon:"13.26155", timeStamp: 1567575044325},
-{rideId:1,lat:"52.43030",lon:"13.26008", timeStamp: 1567575081125},
-{rideId:1,lat:"52.43103",lon:"13.25930", timeStamp: 1567575172884},
-{rideId:1,lat:"52.24333",lon:"13.25893", timeStamp: 1567575271036},
+{rideId:1,location: {type:"Point", coordinates: [ 52.43087,13.26155] },ts:1567575044325},
+{rideId:1,location: {type:"Point", coordinates: [ 52.43030,13.26008] },ts:1567575081125},
+{rideId:1,location: {type:"Point", coordinates: [ 52.43103,13.25930] },ts:1567575172884},
+{rideId:1,location: {type:"Point", coordinates: [ 52.24333,13.25893] },ts:1567575271036},
 ]
 )
 
 db.incidents.insert(
 [
-{_id: {rideId:1, key:0},rideId:1,key:0, location: {type:"Point", coordinates: [ 52.49043 , 13.23565] },ts:1567578451259},
+{_id: {rideId:1, key:0},rideId:1,key:0,location: {type:"Point", coordinates: [ 52.49043 , 13.23565] },ts:1567578451259},
 {_id: {rideId:1, key:1},rideId:1,key:1,location: {type:"Point", coordinates: [ 52.49043 , 13.23565] },ts:1567577189365},
-{_id: {rideId:1, key:2},rideId:1,key:2,locationn: {type:"Point", coordinates: [ 52.49032 , 13.23328] },ts:1567578377724},
+{_id: {rideId:1, key:2},rideId:1,key:2,location: {type:"Point", coordinates: [ 52.49032 , 13.23328] },ts:1567578377724},
 {_id: {rideId:1, key:3},rideId:1,key:3,location: {type:"Point", coordinates: [ 52.49047 , 13.24700] },ts:1567578307435}
 ]
 )

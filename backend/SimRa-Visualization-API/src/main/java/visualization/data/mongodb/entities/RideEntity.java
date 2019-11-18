@@ -23,7 +23,11 @@ public class RideEntity {
     private int rideId;
 
     //TODO: Find possibility to add timestamp to each coordinate point (should be valid for the whole project)
-    private GeoJsonMultiPoint location;
+    private GeoJsonPoint location;
+
+    private long ts;
+
+
 
     /* OR:
 
