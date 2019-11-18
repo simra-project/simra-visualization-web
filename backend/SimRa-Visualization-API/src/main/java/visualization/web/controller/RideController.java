@@ -23,6 +23,7 @@ This is the place where we communicate with the frontend
 @RestController
 public class RideController {
 
+    @Autowired
     private RideService rideService;
 
     @GetMapping(value = "/rides")
