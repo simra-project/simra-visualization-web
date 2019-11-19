@@ -59,7 +59,7 @@ public class ProfileDirectoryIOHandler extends DirectoryIOHandler {
 
     @Override
     void writeToDB() {
-        // TODO Update DB batch style (this.profiles). Empty this.profiles after update of DB
+        // TODO Update DB batch style (this.profiles)
         //dbService.getCollection().insertOne(this.ride.toDocumentObject());
         //dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
     }

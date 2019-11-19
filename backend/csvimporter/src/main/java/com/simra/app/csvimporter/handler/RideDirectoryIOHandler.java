@@ -157,7 +157,7 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
 
     @Override
     void writeToDB() {
-        // TODO Update DB batch style (this.rides). Empty this.rides after update of DB
+        // TODO Update DB batch style (this.rides)
         //dbService.getCollection().insertOne(this.ride.toDocumentObject());
         //dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
     }
