@@ -18,4 +18,6 @@ db.incidents.insert(
 ]
 )
 
+db.rides.createIndex( {location: "2dsphere" })
 db.incidents.createIndex( {location: "2dsphere" })
+

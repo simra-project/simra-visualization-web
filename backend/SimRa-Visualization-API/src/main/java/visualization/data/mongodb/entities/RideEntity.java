@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -23,9 +24,9 @@ public class RideEntity {
     private int rideId;
 
     //TODO: Find possibility to add timestamp to each coordinate point (should be valid for the whole project)
-    private GeoJsonPoint location;
+    private GeoJsonMultiPoint location;
 
-    private long ts;
+    private ArrayList ts;
 
 
 
