@@ -165,6 +165,13 @@ Info: So far only filtered data is pushed into the database.
     }
 }
 ```
+# Import CSV Data
+In order to import CSV Data, create a new Folder and insert the to be imported CSV Files. Note: Rides and Profiles can not be imported simultaneously.
+To import the CSV Files, use command line arguments like ```-t r -a 12 -e 0.00001 /home/user/Path/To/CSV_Data```
 
-
-TODO: Simultaneous import still in progress.
+| Parameter        |Mandatory     | Default Value | Description |
+| ---------------- |:------------:|:------------:|:------------:|
+|                  | Yes | - | Path to CSV Data |
+| ```-t``` / ```--type```| Yes | - | For Rides use ```r```, for Profiles use ```p``` |
+| ```-a``` / ```--accuracy```| No | 20 | Minimum acc-value of Coordinates that will pass Accuracy Filter |
+| ```-e``` / ```--epsilon``` | No | 0.0000001| Epsilon value of RDP-Algorithm |
