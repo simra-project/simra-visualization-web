@@ -21,7 +21,7 @@ public class RideEntity {
     //https://stackoverflow.com/questions/56624690/composite-primary-key-using-mongodb-and-spring-data-jpa
     //TODO: rideId als String
     @Id
-    private int rideId;
+    private String rideId;
 
     //TODO: Find possibility to add timestamp to each coordinate point (should be valid for the whole project)
     private GeoJsonMultiPoint location;

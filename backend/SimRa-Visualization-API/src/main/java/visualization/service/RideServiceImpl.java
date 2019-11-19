@@ -29,6 +29,21 @@ public class RideServiceImpl implements RideService {
     private RideRepository rideRepository;
 
     @Override
+    public RideResource getRideById(String rideId) {
+        // TODO: create rideIdKey from rideId and key
+
+        RideResource rideResource = new RideResource();
+        Optional<RideEntity> optional = rideRepository.findById(rideId);
+        optional.ifPresent(rideEntity -> {
+                    rideResource.setRideId(rideEntity.getRideId());
+                    rideResource.setCoordinates(rideEntity.getLocation());
+                    rideResource.setTs(rideEntity.getTs());
+                }
+        );
+        return rideResource;
+    }
+
+    @Override
     public List<RideResource> getRidesInRange(double latitude, double longitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         List<RideResource> rideResources = new ArrayList<RideResource>();

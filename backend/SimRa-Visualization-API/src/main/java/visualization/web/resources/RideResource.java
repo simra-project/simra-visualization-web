@@ -22,7 +22,7 @@ Representation of a Ride
 public class RideResource {
 
     @JsonProperty
-    private int rideId;
+    private String rideId;
 
     @JsonProperty
     private GeoJsonMultiPoint coordinates;

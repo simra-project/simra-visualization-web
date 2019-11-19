@@ -7,4 +7,5 @@ import java.util.List;
 public interface RideService {
 
     List<RideResource> getRidesInRange(double latitude, double longitude, int maxDistance);
+    RideResource getRideById(String rideId);
 }
