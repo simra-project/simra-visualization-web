@@ -2,7 +2,6 @@ package main.java.com.simra.app.csvimporter.handler;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 import main.java.com.simra.app.csvimporter.model.Profile;
-import main.java.com.simra.app.csvimporter.services.DBService;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -10,27 +9,25 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileFileIOHandler extends FileIOHandler {
-    private static final Logger logger = Logger.getLogger(ProfileFileIOHandler.class);
+public class ProfileDirectoryIOHandler extends DirectoryIOHandler {
+    private static final Logger logger = Logger.getLogger(ProfileDirectoryIOHandler.class);
 
     private static final String FILEVERSIONSPLITTER = "#";
 
-    private static DBService dbService;
+    private List<Profile> profiles = new ArrayList<>();
 
-    public ProfileFileIOHandler(Path path) {
-        super(path);
-        dbService = new DBService();
+    public ProfileDirectoryIOHandler(Path path) {
         dbService.DbProfileConnect();
-        if (this.canOpenFile())
-            this.fileParse();
+        parseDirectory(path);
     }
 
     @Override
-    public void fileParse() {
+    public void parseFile(Path file) {
         try (BufferedReader reader =
-                     new BufferedReader(new FileReader(String.valueOf(this.getPath())))) {
+                     new BufferedReader(new FileReader(String.valueOf(file)))) {
             String line = reader.readLine();
             String[] arrOfStr = line.split(FILEVERSIONSPLITTER);
 
@@ -48,14 +45,27 @@ public class ProfileFileIOHandler extends FileIOHandler {
                     .withType(Profile.class).build().parse();
             if (!profileBeans.isEmpty()) {
                 Profile profile = (Profile) profileBeans.get(0);
-                profile.setFileId(this.getPath().getFileName().toString());
+                profile.setFileId(file.getFileName().toString());
                 profile.setAppVersion(arrOfStr[0]);
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));
-                dbService.getCollection().insertOne(profile.toDocumentObject());
+
+                this.profiles.add(profile);
             }
 
         } catch (IOException e) {
             logger.error(e);
         }
+    }
+
+    @Override
+    void writeToDB() {
+        // TODO Update DB batch style (this.profiles). Empty this.profiles after update of DB
+        //dbService.getCollection().insertOne(this.ride.toDocumentObject());
+        //dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+    }
+
+    @Override
+    public Logger provideLogger(){
+        return logger;
     }
 }

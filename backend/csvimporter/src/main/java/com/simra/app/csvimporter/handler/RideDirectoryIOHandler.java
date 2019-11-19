@@ -8,7 +8,6 @@ import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
 import main.java.com.simra.app.csvimporter.services.ConfigService;
-import main.java.com.simra.app.csvimporter.services.DBService;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -17,35 +16,28 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class RideFileIOHandler extends FileIOHandler {
-    private static final Logger logger = Logger.getLogger(RideFileIOHandler.class);
+public class RideDirectoryIOHandler extends DirectoryIOHandler {
+    private static final Logger logger = Logger.getLogger(RideDirectoryIOHandler.class);
 
     private static final String FILEVERSIONSPLITTER = "#";
-    private Ride ride;
+    private List<Ride> rides = new ArrayList<>();
 
     private RideFilter rideFilter;
     private MapMatchingService mapMatchingService = new MapMatchingService();
 
-    private static DBService dbService;
-
-    public RideFileIOHandler(Path path, Float minAccuracy, Double rdpEpsilon) {
-        super(path);
-        dbService = new DBService();
+    public RideDirectoryIOHandler(Path path, Float minAccuracy, Double rdpEpsilon) {
         dbService.DbRideConnect();
-        this.ride = new Ride();
         this.rideFilter = new RideFilter(minAccuracy, rdpEpsilon);
-        this.fileParse();
+        parseDirectory(path);
     }
 
     @Override
-    public void fileParse() {
-        /*
-         * parses ride file, as its has different structure.
-         */
-        try (BufferedReader reader = Files.newBufferedReader(this.getPath(), StandardCharsets.UTF_8)) {
+    public void parseFile(Path file) {
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
             StringBuilder incidentContent = new StringBuilder();
             StringBuilder rideContent = new StringBuilder();
 
@@ -65,38 +57,38 @@ public class RideFileIOHandler extends FileIOHandler {
                 }
                 line = reader.readLine();
             }
+            Ride ride = new Ride();
             if (incidentContent.length() > 0) {
-                this.incidentParse(incidentContent, this.getPath());
+                this.incidentParse(ride, incidentContent, file);
             }
             if (rideContent.length() > 0) {
-                this.rideParse(rideContent, this.getPath());
+                this.rideParse(ride, rideContent, file);
             }
 
-            if (!this.ride.getRideBeans().isEmpty()) {
+            if (ride.getRideBeans().isEmpty()) {
                 if (Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
-                    this.ride.getRideBeans().forEach(item -> {
+                    ride.getRideBeans().forEach(item -> {
                         logger.info(item.toString());
                     });
                 }
 
-                List<RideCSV> optimisedRideBeans = rideFilter.filterRide(this.ride);
+                List<RideCSV> optimisedRideBeans = rideFilter.filterRide(ride);
                 if (Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
                     optimisedRideBeans.forEach(item -> logger.info(item.toString()));
                 }
-                this.ride.setRideBeans(optimisedRideBeans);
+                ride.setRideBeans(optimisedRideBeans);
             }
 
+            this.rides.add(ride);
             List snappedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
             //TODO do sth with snappedRideBeans
-            dbService.getCollection().insertOne(this.ride.toDocumentObject());
-            dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
 
         } catch (IOException e) {
             logger.error(e);
         }
     }
 
-    private void incidentParse(StringBuilder incidentContent, Path path) {
+    private void incidentParse(Ride ride, StringBuilder incidentContent, Path path) {
 
         try (Scanner scanner = new Scanner(incidentContent.toString())) {
             String firstLine = scanner.nextLine();
@@ -125,13 +117,13 @@ public class RideFileIOHandler extends FileIOHandler {
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
             });
-            this.ride.setIncidents(incidentBeans);
+            ride.setIncidents(incidentBeans);
         } catch (Exception e) {
             logger.error(e);
         }
     }
 
-    private void rideParse(StringBuilder rideContent, Path path) {
+    private void rideParse(Ride ride, StringBuilder rideContent, Path path) {
         try (Scanner scanner = new Scanner(rideContent.toString())) {
             scanner.nextLine();
             String fileAppLine = scanner.nextLine();
@@ -148,7 +140,6 @@ public class RideFileIOHandler extends FileIOHandler {
                 }
             }
 
-
             List<RideCSV> rideBeans = new CsvToBeanBuilder<RideCSV>(new StringReader(rideCSVwithHeader.toString().trim()))
                     .withType(RideCSV.class).build().parse();
 
@@ -157,10 +148,22 @@ public class RideFileIOHandler extends FileIOHandler {
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
             });
-            this.ride.setRideBeans(rideBeans);
+            ride.setRideBeans(rideBeans);
 
         } catch (Exception e) {
             logger.error(e);
         }
+    }
+
+    @Override
+    void writeToDB() {
+        // TODO Update DB batch style (this.rides). Empty this.rides after update of DB
+        //dbService.getCollection().insertOne(this.ride.toDocumentObject());
+        //dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+    }
+
+    @Override
+    public Logger provideLogger() {
+        return logger;
     }
 }
