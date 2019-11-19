@@ -74,9 +74,7 @@ public class RideFileIOHandler extends FileIOHandler {
 
             if (!this.ride.getRideBeans().isEmpty()) {
                 if (Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
-                    this.ride.getRideBeans().forEach(item -> {
-                        logger.info(item.toString());
-                    });
+                    this.ride.getRideBeans().forEach(item -> logger.info(item.toString()));
                 }
 
                 List<RideCSV> optimisedRideBeans = rideFilter.filterRide(this.ride);

@@ -1,8 +1,11 @@
 package main.java.com.simra.app.csvimporter.model;
 
+import com.mongodb.client.model.geojson.MultiPoint;
+import com.mongodb.client.model.geojson.Position;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -76,12 +79,23 @@ public class Ride implements MongoDocument {
      * @return the document
      */
     public Document toDocumentObject() {
-        ArrayList rides = new ArrayList<Document>();
-        this.rideBeans.forEach(ride -> rides.add(((RideCSV) ride).toDocumentObject()));
-
-        Document singleRide = new Document();
+       Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
-        singleRide.put("rides", rides);
+        ArrayList<Position> coordinates= new ArrayList<>();
+
+        this.rideBeans.forEach(ride -> {
+            RideCSV rideCSV= (RideCSV) ride;
+            List<Double> places = Arrays.asList(Double.parseDouble(rideCSV.getA()), Double.parseDouble(rideCSV.getLon()));
+            Position pos= new Position(places);
+            coordinates.add(pos);
+        });
+        MultiPoint coordinates_multi= new MultiPoint(coordinates);
+
+        singleRide.put("coordinates", coordinates_multi);
+        ArrayList ts = new ArrayList<String>();
+        this.rideBeans.forEach(ride -> ts.add(((RideCSV) ride).getTimeStamp()));
+        singleRide.put("ts", ts);
+
         return singleRide;
     }
 

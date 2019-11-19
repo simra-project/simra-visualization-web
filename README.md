@@ -81,15 +81,13 @@ Info: So far only filtered data is pushed into the database.
     "i10" : 0,
     "scary" : 0,
     "description" : "",
-    "location" : {
-        "geoPoint" : {
-            "type" : "Point",
-            "coordinates" : [ 
-                52.53395492, 
-                13.40533295
-            ]
-        },
-        "timestamp" : "1565797393462"
+    "timestamp" : 1567147746586,
+    "coordinates" : {
+        "type" : "Point",
+        "coordinates" : [ 
+            52.51170886, 
+            13.30756922
+        ]
     }
 }
 
@@ -97,26 +95,42 @@ Info: So far only filtered data is pushed into the database.
 - Ride DB Example (ridesCollection)
 ```json
 {
-    "_id" : "5dcfdffcb7f0892d17c2e6f9",
-    "rideId" : "VM2_-1430356997",
-    "rides" : [ 
-        {
-            "rideId" : "VM2_-1430356997",
-            "appVersion" : " 30",
-            "fileVersion" : 2,
-            "acc" : "8.576",
-            "location" : {
-                "geoPoint" : {
-                    "type" : "Point",
-                    "coordinates" : [ 
-                        52.52454926, 
-                        13.34476589
-                    ]
-                },
-                "timestamp" : "1565796355599"
-            }
-        }]
+    "_id" : "5dd42373b7f089bc429e1fd9",
+    "rideId" : "VM2_-1438740659",
+    "coordinates" : {
+        "type" : "MultiPoint",
+        "coordinates" : [ 
+            [ 
+                1.8196564, 
+                13.30653516
+            ], 
+            [ 
+                -0.18409729, 
+                13.30653733
+            ], 
+            [ 
+                0.12376404, 
+                13.30655848
+            ], 
+            [ 
+                0.08540344, 
+                13.30660544
+            ], 
+            [ 
+                0.23667908, 
+                13.30666846
+            ]
+        ]
+    },
+    "ts" : [ 
+          1567147661245, 
+          1567147664279, 
+          1567147667281, 
+          1567147670321, 
+          1567147673346
+    ]    
 }
+
 ```
 
 - Profile DB Example (profilesCollection)

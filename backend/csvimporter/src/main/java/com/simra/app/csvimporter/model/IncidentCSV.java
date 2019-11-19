@@ -23,7 +23,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
     private String lon;
 
     @CsvBindByName
-    private String ts;
+    private long ts;
 
     @CsvBindByName
     private int bike = 0;
@@ -135,7 +135,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the ts
      */
-    public String getTs() {
+    public long getTs() {
         return ts;
     }
 
@@ -144,7 +144,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param ts the ts
      */
-    public void setTs(String ts) {
+    public void setTs(long ts) {
         this.ts = ts;
     }
 
@@ -488,10 +488,8 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
 
         Point geoPoint = new Point(new Position(places));
-        Document geoPointWithTime = new Document();
-        geoPointWithTime.put("geoPoint", geoPoint);
-        geoPointWithTime.put("timestamp", this.ts);
-        document.put("location", geoPointWithTime);
+        document.put("timestamp", this.ts);
+        document.put("coordinates", geoPoint);
 
         return document;
     }
