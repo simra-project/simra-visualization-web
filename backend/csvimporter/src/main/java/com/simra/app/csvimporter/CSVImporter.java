@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 
 public class CSVImporter {
 
-    private static Float DEFAULT_COORDINATE_MIN_ACCURACY = 12f;
+    private static Float DEFAULT_COORDINATE_MIN_ACCURACY = 20f;
     private static Double DEFAULT_RDP_EPSILON = 0.0000001;
     private static ConfigService config;
 
