@@ -2,12 +2,13 @@ package main.java.com.simra.app.csvimporter.handler;
 
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import main.java.com.simra.app.csvimporter.filter.RamerDouglasPeuckerFilter;
 import main.java.com.simra.app.csvimporter.filter.RideFilter;
-import main.java.com.simra.app.csvimporter.dbservice.DBService;
+import main.java.com.simra.app.csvimporter.mapmatching.MapMatchingService;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
+import main.java.com.simra.app.csvimporter.services.ConfigService;
+import main.java.com.simra.app.csvimporter.services.DBService;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -26,6 +27,7 @@ public class RideFileIOHandler extends FileIOHandler {
     private Ride ride;
 
     private RideFilter rideFilter;
+    private MapMatchingService mapMatchingService = new MapMatchingService();
 
     private static DBService dbService;
 
@@ -70,16 +72,24 @@ public class RideFileIOHandler extends FileIOHandler {
                 this.rideParse(rideContent, this.getPath());
             }
 
-            if(!this.ride.getRideBeans().isEmpty()) {
-                this.ride.getRideBeans().forEach(item -> {
-                    logger.info(item.toString());
-                });
+            if (!this.ride.getRideBeans().isEmpty()) {
+                if (Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
+                    this.ride.getRideBeans().forEach(item -> {
+                        logger.info(item.toString());
+                    });
+                }
+
                 List<RideCSV> optimisedRideBeans = rideFilter.filterRide(this.ride);
-                optimisedRideBeans.forEach(item-> logger.info(item.toString()));
+                if (Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
+                    optimisedRideBeans.forEach(item -> logger.info(item.toString()));
+                }
                 this.ride.setRideBeans(optimisedRideBeans);
             }
 
+            List snappedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
+            //TODO do sth with snappedRideBeans
             dbService.getCollection().insertOne(this.ride.toDocumentObject());
+            dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
 
         } catch (IOException e) {
             logger.error(e);
@@ -152,7 +162,5 @@ public class RideFileIOHandler extends FileIOHandler {
         } catch (Exception e) {
             logger.error(e);
         }
-
     }
-
 }

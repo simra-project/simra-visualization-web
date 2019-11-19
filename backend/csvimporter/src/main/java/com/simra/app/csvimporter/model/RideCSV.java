@@ -1,7 +1,12 @@
 package main.java.com.simra.app.csvimporter.model;
 
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.CsvBindByName;
 import org.bson.Document;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The type Ride csv.
@@ -225,26 +230,34 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
      *
      * @return the document
      */
-    public Document toDocumentObject(){
-        Document document= new Document();
-        document.put("fileId", this.getFileId());
+    public Document toDocumentObject() {
+        Document document = new Document();
+        document.put("rideId", this.getFileId());
         document.put("appVersion", this.getAppVersion());
         document.put("fileVersion", this.getFileVersion());
-        document.put("lat", this.lat);
-        document.put("lon", this.lon);
-        document.put("X", this.X);
-        document.put("Y", this.Y);
-        document.put("Z", this.Z);
-        document.put("timeStamp", this.timeStamp);
+        //document.put("lat", this.lat);
+        //document.put("lon", this.lon);
+        //document.put("X", this.X);
+        //document.put("Y", this.Y);
+        //document.put("Z", this.Z);
+        //document.put("timeStamp", this.timeStamp);
         document.put("acc", this.acc);
-        document.put("a", this.a);
-        document.put("b", this.b);
-        document.put("c", this.c);
+        //document.put("a", this.a);
+        //document.put("b", this.b);
+        //document.put("c", this.c);
+
+        List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
+
+        Point geoPoint = new Point(new Position(places));
+        Document geoPointWithTime = new Document();
+        geoPointWithTime.put("geoPoint", geoPoint);
+        geoPointWithTime.put("timestamp", this.timeStamp);
+        document.put("location", geoPointWithTime);
+
         return document;
     }
 
-
-    public String toString(){
+    public String toString() {
         return String.format("lat: %s lon: %s X:%s Y:%s Z:%s timeStamp:%s acc:%s a:%s b:%s c:%s",
                 this.lat, this.lon, this.X, this.Y, this.Z, this.timeStamp, this.acc, this.a,
                 this.b, this.c);

@@ -1,7 +1,12 @@
 package main.java.com.simra.app.csvimporter.model;
 
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.CsvBindByName;
 import org.bson.Document;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The Incident csv model.
@@ -454,12 +459,14 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the document
      */
-    public Document toDocumentObject(){
-        Document document= new Document();
+    public Document toDocumentObject() {
+        Document document = new Document();
+
+        Document contentCompositeId = new Document();
+        contentCompositeId.put("rideId", this.getFileId());
+        contentCompositeId.put("key", this.key);
+        document.put("_id", contentCompositeId);
         document.put("key", this.key);
-        document.put("lat", this.lat);
-        document.put("lon", this.lon);
-        document.put("ts", this.ts);
         document.put("bike", this.bike);
         document.put("childCheckBox", this.childCheckBox);
         document.put("trailerCheckBox", this.trailerCheckBox);
@@ -477,6 +484,15 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         document.put("i10", this.i10);
         document.put("scary", this.scary);
         document.put("description", this.desc);
+
+        List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
+
+        Point geoPoint = new Point(new Position(places));
+        Document geoPointWithTime = new Document();
+        geoPointWithTime.put("geoPoint", geoPoint);
+        geoPointWithTime.put("timestamp", this.ts);
+        document.put("location", geoPointWithTime);
+
         return document;
     }
 }

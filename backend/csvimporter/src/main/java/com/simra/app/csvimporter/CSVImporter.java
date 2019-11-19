@@ -2,6 +2,7 @@ package main.java.com.simra.app.csvimporter;
 
 import main.java.com.simra.app.csvimporter.handler.ProfileFileIOHandler;
 import main.java.com.simra.app.csvimporter.handler.RideFileIOHandler;
+import main.java.com.simra.app.csvimporter.services.ConfigService;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -13,10 +14,16 @@ import java.nio.file.Paths;
 
 public class CSVImporter {
 
-    private static Float DEFAULT_COORDINATE_MIN_ACCURACY = 12f;
+    private static Float DEFAULT_COORDINATE_MIN_ACCURACY = 20f;
     private static Double DEFAULT_RDP_EPSILON = 0.0000001;
+    private static ConfigService config;
 
     public static void main(String[] args) throws ArgumentParserException {
+
+        config = new ConfigService();
+        config.readProperties();
+
+
         ArgumentParser parser = ArgumentParsers.newFor("CSVImporter").build()
                 .defaultHelp(true)
                 .description("Import CSV file.");

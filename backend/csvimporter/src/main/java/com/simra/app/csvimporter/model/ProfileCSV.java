@@ -7,7 +7,6 @@ import org.bson.Document;
 
 import java.util.Map;
 
-
 /**
  * The Profile csv model.
  */
@@ -323,8 +322,8 @@ public class ProfileCSV extends ApplicationFileVersion implements MongoDocument 
      *
      * @return the document
      */
-    public Document toDocumentObject(){
-        Document document= new Document();
+    public Document toDocumentObject() {
+        Document document = new Document();
         document.put("fileId", this.getFileId());
         document.put("appVersion", this.getAppVersion());
         document.put("fileVersion", this.getFileVersion());
@@ -339,9 +338,9 @@ public class ProfileCSV extends ApplicationFileVersion implements MongoDocument 
         document.put("idle", this.idle);
         document.put("numberOfScary", this.numberOfScary);
         document.put("behaviour", this.behaviour);
-        Document docHours= new Document();
+        Document docHours = new Document();
 
-        for (Map.Entry<String, Float> entry: this.hours.entries()) {
+        for (Map.Entry<String, Float> entry : this.hours.entries()) {
             docHours.put(entry.getKey(), entry.getValue());
         }
         document.put("hours", docHours);

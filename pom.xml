@@ -10,7 +10,7 @@
 
 
     <packaging>pom</packaging>
-    <name>Simra-Visualization</name>
+    <name>SimRa-Visualization</name>
     <description>Simra-Visualization application.</description>
 
 
