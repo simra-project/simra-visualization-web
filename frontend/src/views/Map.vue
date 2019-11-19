@@ -10,7 +10,6 @@
         <v-geosearch :options="geosearchOptions"></v-geosearch>
         <l-control position="topright">
             <div class="overlay">
-                <p class="subtitle is-5" hidden>Filter</p>
                 <div class="field">
                     <b-switch v-model="showRoutes">Show Trips</b-switch>
                 </div>
@@ -57,17 +56,34 @@
                 <div>Bounds: {{ bounds }}</div>
             </div>
         </l-control>
+        <l-control position="bottomleft" v-if="routeHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
+            <div class="overlay" style="display: flex">
+                <div style="flex: 1 0; text-align: center">
+                    Showing route details here... <br> <!-- TODO: Routendetails hier später einfügen -->
+                    Length: <strong>{{ routeHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ routeHighlightContent.duration }}</strong>
+                </div>
+                <div style="flex: 0 0; align-self: center">
+                    <a class="delete" @click="unfocusRouteHighlight"></a>
+                </div>
+            </div>
+        </l-control>
+
         <!--    Stellt eine Route dar    -->
         <l-polyline
             v-if="showRoutes"
             v-for="route in routes"
             :key="route.id"
             :lat-lngs="route.points"
-            :color="highlightedRouteId === route.id ? 'blue' : 'red'"
-            @click="clickedOnRoute($event, route.id)"
+            :color="routeHighlightId === route.id ? 'hsl(171, 100%, 41%)' : 'hsl(217, 71%, 53%)'"
+            :weight="routeHighlightId === route.id ? 5 : 3"
+            :opacity="(routeHighlightId !== null && routeHighlightId !== route.id) ? 0.6 : 1.0"
+            @click="clickedOnRoute($event, route)"
         />
+        <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightStart"/> <!-- Highlighted Route start point -->
+        <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightEnd"/>   <!-- Highlighted Route end point -->
+
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
-        <Vue2LeafletHeatmap v-if="zoom<=heatmapMaxZoom&&showIncidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
+        <Vue2LeafletHeatmap v-if="zoom <= heatmapMaxZoom && showIncidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
         <vue2-leaflet-marker-cluster v-else-if="showIncidents">
             <l-marker v-for="m in markers" :lat-lng="m.latlng">
                 <l-popup :content="m.description"></l-popup>
@@ -77,7 +93,7 @@
 </template>
 
 <script>
-import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
+import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
@@ -158,6 +174,7 @@ export default {
         Vue2LeafletMarkerCluster,
         LMarker,
         LPopup,
+        LCircleMarker,
         Vue2LeafletHeatmap,
         VueSlider,
         VGeosearch,
@@ -171,7 +188,10 @@ export default {
             showRoutes: true,
             showIncidents: true,
             routes: [],
-            highlightedRouteId: null,
+            routeHighlightId: null,
+            routeHighlightContent: null,
+            routeHighlightStart: [0, 0],
+            routeHighlightEnd: [0, 0],
             markers: [],
             incident_heatmap: [],
             heatmapMaxZoom: 15,
@@ -205,25 +225,41 @@ export default {
                 },
             });
         },
-        clickedOnRoute(event, routeId) {
+        clickedOnRoute(event, route) {
             // Highlighting this route
-            this.highlightedRouteId = routeId;
+            this.routeHighlightId = route.id;
+            this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
+
+            // Showing start & end point with circles
+            this.routeHighlightStart = route.points[0];
+            this.routeHighlightEnd = route.points[route.points.length - 1];
 
             // Fitting route into view if it's not already
             let routeBounds = event.target.getBounds().pad(0.1);
             if (!this.bounds.contains(routeBounds)) {
-                this.$refs.map.fitBounds(routeBounds);
+                this.$refs.map.mapObject.flyToBounds(routeBounds);
             }
         },
+        unfocusRouteHighlight() {
+            this.routeHighlightId = null;
+            this.routeHighlightContent = null;
+            this.routeHighlightStart = [0, 0];
+            this.routeHighlightEnd = [0, 0];
+        },
         clickedOnMap(event) {
-            if (event.originalEvent.target.nodeName !== 'path' && this.highlightedRouteId != null) {
-                // unfocus highlighted route
-                this.highlightedRouteId = null;
+            if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
+                this.unfocusRouteHighlight();
             }
         }
     },
     // Laden der Daten aus der API
     mounted() {
+        this.$nextTick(() => {
+            this.zoom = this.$refs.map.mapObject.getZoom();
+            this.center = this.$refs.map.mapObject.getCenter();
+            this.bounds = this.$refs.map.mapObject.getBounds();
+        });
+
         axios
             .get("/api/routes")
             .then(
@@ -249,12 +285,28 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 
     .vue2leaflet-map {
         height: 100%;
         width: 100%;
         flex: 1 0;
+    }
+
+    .leaflet-control-container {
+        .leaflet-bottom.leaflet-left {
+            top: 0;
+            bottom: initial;
+            width: 300px;
+            left: calc(50% - 150px);
+            right: calc(50% - 150px);
+
+            .leaflet-control {
+                background-color: orange;
+                width: 100%;
+                margin: 10px 0 0;
+            }
+        }
     }
 
     .overlay {
