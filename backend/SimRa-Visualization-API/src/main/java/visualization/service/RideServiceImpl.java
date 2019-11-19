@@ -31,7 +31,7 @@ public class RideServiceImpl implements RideService {
         RideResource rideResource = new RideResource();
         Optional<RideEntity> optional = rideRepository.findById(rideId);
         optional.ifPresent(rideEntity -> {
-                    rideResource.setRideId(rideEntity.getRideId());
+                    rideResource.setRideId(rideEntity.getId());
                     rideResource.setCoordinates(rideEntity.getLocation());
                     rideResource.setTs(rideEntity.getTs());
                 }
@@ -46,7 +46,7 @@ public class RideServiceImpl implements RideService {
         List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
         for(RideEntity rideEntity:rideEntities) {
             RideResource rideResource = new RideResource();
-            rideResource.setRideId(rideEntity.getRideId());
+            rideResource.setRideId(rideEntity.getId());
             rideResource.setCoordinates(rideEntity.getLocation());
             rideResource.setTs(rideEntity.getTs());
             rideResources.add(rideResource);

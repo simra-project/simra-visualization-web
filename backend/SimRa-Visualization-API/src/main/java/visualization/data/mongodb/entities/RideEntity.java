@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class RideEntity {
 
     @Id
-    private String rideId;
+    private String id;
 
     private GeoJsonMultiPoint location;
 
