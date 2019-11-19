@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.apache.log4j.Logger;
 import org.bson.Document;
+
 import java.util.Arrays;
 
 public class DBService {
@@ -18,7 +19,6 @@ public class DBService {
     private String host = "localhost";
     private int port = 27017;
     private String database = "SimraDb";
-
 
 
     public void DbRideConnect() {
@@ -78,6 +78,5 @@ public class DBService {
     public void setRides(MongoCollection<Document> collection) {
         this.collection = collection;
     }
-
 
 }

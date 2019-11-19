@@ -27,7 +27,7 @@ public class Ride implements MongoDocument {
      * @param incidents the incidents
      */
     public Ride(List<RideCSV> rideBeans, List<IncidentCSV> incidents) {
-        if (!rideBeans.isEmpty() && !incidents.isEmpty()){
+        if (!rideBeans.isEmpty() && !incidents.isEmpty()) {
             this.rideBeans = rideBeans;
             this.incidents = incidents;
 
@@ -75,20 +75,19 @@ public class Ride implements MongoDocument {
      *
      * @return the document
      */
-    public Document toDocumentObject(){
+    public Document toDocumentObject() {
         ArrayList rides = new ArrayList<Document>();
-        this.rideBeans.forEach(ride-> rides.add(((RideCSV)ride).toDocumentObject()));
+        this.rideBeans.forEach(ride -> rides.add(((RideCSV) ride).toDocumentObject()));
 
-        Document singleRide= new Document();
-        singleRide.put("rideId",((RideCSV)this.getRideBeans().get(0)).getFileId());
-        singleRide.put("rides",rides);
+        Document singleRide = new Document();
+        singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
+        singleRide.put("rides", rides);
         return singleRide;
     }
 
-    public List<Document> incidentsDocuments(){
+    public List<Document> incidentsDocuments() {
         ArrayList incidentsList = new ArrayList<Document>();
-        this.incidents.forEach(incident-> incidentsList.add(((IncidentCSV)incident).toDocumentObject()));
+        this.incidents.forEach(incident -> incidentsList.add(((IncidentCSV) incident).toDocumentObject()));
         return incidentsList;
     }
-
 }

@@ -230,8 +230,8 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
      *
      * @return the document
      */
-    public Document toDocumentObject(){
-        Document document= new Document();
+    public Document toDocumentObject() {
+        Document document = new Document();
         document.put("rideId", this.getFileId());
         document.put("appVersion", this.getAppVersion());
         document.put("fileVersion", this.getFileVersion());
@@ -246,22 +246,18 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
         //document.put("b", this.b);
         //document.put("c", this.c);
 
-        List<Double> places = Arrays.asList(Double.parseDouble(this.lat),Double.parseDouble(this.lon));
+        List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
 
         Point geoPoint = new Point(new Position(places));
-        Document geoPointWithTime= new Document();
-        geoPointWithTime.put("geoPoint",geoPoint);
-        geoPointWithTime.put("timestamp",this.timeStamp);
-        document.put("location",geoPointWithTime);
-
-
-
+        Document geoPointWithTime = new Document();
+        geoPointWithTime.put("geoPoint", geoPoint);
+        geoPointWithTime.put("timestamp", this.timeStamp);
+        document.put("location", geoPointWithTime);
 
         return document;
     }
 
-
-    public String toString(){
+    public String toString() {
         return String.format("lat: %s lon: %s X:%s Y:%s Z:%s timeStamp:%s acc:%s a:%s b:%s c:%s",
                 this.lat, this.lon, this.X, this.Y, this.Z, this.timeStamp, this.acc, this.a,
                 this.b, this.c);

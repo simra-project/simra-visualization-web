@@ -1,9 +1,8 @@
 package main.java.com.simra.app.csvimporter.handler;
 
-
 import com.opencsv.bean.CsvToBeanBuilder;
-import main.java.com.simra.app.csvimporter.services.DBService;
 import main.java.com.simra.app.csvimporter.model.Profile;
+import main.java.com.simra.app.csvimporter.services.DBService;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -19,7 +18,6 @@ public class ProfileFileIOHandler extends FileIOHandler {
     private static final String FILEVERSIONSPLITTER = "#";
 
     private static DBService dbService;
-
 
     public ProfileFileIOHandler(Path path) {
         super(path);
@@ -44,7 +42,6 @@ public class ProfileFileIOHandler extends FileIOHandler {
                     profileCSVwithHeader.append(line);
                     profileCSVwithHeader.append("\r\n");
                 }
-
             }
 
             List profileBeans = new CsvToBeanBuilder<Profile>(new StringReader(profileCSVwithHeader.toString()))
@@ -55,8 +52,6 @@ public class ProfileFileIOHandler extends FileIOHandler {
                 profile.setAppVersion(arrOfStr[0]);
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));
                 dbService.getCollection().insertOne(profile.toDocumentObject());
-
-
             }
 
         } catch (IOException e) {

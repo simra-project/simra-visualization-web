@@ -459,13 +459,13 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the document
      */
-    public Document toDocumentObject(){
-        Document document= new Document();
+    public Document toDocumentObject() {
+        Document document = new Document();
 
-        Document contentCompositeId= new Document();
-        contentCompositeId.put("rideId",this.getFileId());
+        Document contentCompositeId = new Document();
+        contentCompositeId.put("rideId", this.getFileId());
         contentCompositeId.put("key", this.key);
-        document.put("_id",contentCompositeId);
+        document.put("_id", contentCompositeId);
         document.put("key", this.key);
         document.put("bike", this.bike);
         document.put("childCheckBox", this.childCheckBox);
@@ -485,17 +485,13 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         document.put("scary", this.scary);
         document.put("description", this.desc);
 
-
-        List<Double> places = Arrays.asList(Double.parseDouble(this.lat),Double.parseDouble(this.lon));
+        List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
 
         Point geoPoint = new Point(new Position(places));
-        Document geoPointWithTime= new Document();
-        geoPointWithTime.put("geoPoint",geoPoint);
-        geoPointWithTime.put("timestamp",this.ts);
-        document.put("location",geoPointWithTime);
-
-
-
+        Document geoPointWithTime = new Document();
+        geoPointWithTime.put("geoPoint", geoPoint);
+        geoPointWithTime.put("timestamp", this.ts);
+        document.put("location", geoPointWithTime);
 
         return document;
     }
