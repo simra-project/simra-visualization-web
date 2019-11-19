@@ -5,11 +5,14 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import visualization.data.mongodb.entities.RideEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface RideRepository extends MongoRepository<RideEntity, String> {
 
-//DB Interface for Ride data
     List<RideEntity> findByLocationNear(GeoJsonPoint coordinates, int maxDistance);
+
+    Optional<RideEntity> findById(String rideId);
+
 
 }

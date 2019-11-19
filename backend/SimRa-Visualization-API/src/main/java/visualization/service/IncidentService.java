@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IncidentService {
 
-    IncidentResource getIncident(int rideId, int key);
+    IncidentResource getIncident(String rideId, String key);
 
     List<IncidentResource> getIncidentsByRideId(String rideId);
 

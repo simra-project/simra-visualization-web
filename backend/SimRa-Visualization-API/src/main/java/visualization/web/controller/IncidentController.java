@@ -25,10 +25,10 @@ public class IncidentController {
     @Autowired
     private IncidentService incidentService;
 
-    // get exactly one incident by rideId and adding the ?key=XY as request parameter
+    // get exactly one incident by rideId and adding the ?key=[0-N] as request parameter
     @GetMapping(value = "/rides/{rideId}/incidents/{key}")
-    public HttpEntity<IncidentResource> getIncident(@PathVariable int rideId,
-                                                    @PathVariable int key) {
+    public HttpEntity<IncidentResource> getIncident(@PathVariable String rideId,
+                                                    @PathVariable String key) {
         return ResponseEntity.ok(incidentService.getIncident(rideId, key));
     }
 
@@ -38,7 +38,7 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncidentsByRideId(rideId));
     }
 
-    // get all incidents in range minDistance and maxDistance around a Point (lat, long)
+    // get all incidents in range minDistance and maxDistance around a Point (longitude, latitude)
     @GetMapping(value = "/incidents")
     public HttpEntity<List<IncidentResource>> getIncidentsNear(@RequestParam(value = "lon") double longitude,
                                                                @RequestParam(value = "lat") double latitude,

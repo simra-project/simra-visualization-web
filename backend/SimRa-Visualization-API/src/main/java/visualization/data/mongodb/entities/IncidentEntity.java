@@ -1,6 +1,5 @@
 package visualization.data.mongodb.entities;
 
-import com.mongodb.client.model.geojson.Point;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
@@ -16,9 +15,6 @@ import java.io.Serializable;
 @Document(collection="incidents")
 public class IncidentEntity {
 
-    //TODO: Build Entity according to MongoDB Schema or vice versa (extend geojson point with timestamp)
-    //TODO: Rideid als String
-    //https://stackoverflow.com/questions/56624690/composite-primary-key-using-mongodb-and-spring-data-jpa
     @Id
     private CompositeKey id;
 
@@ -68,8 +64,8 @@ public class IncidentEntity {
     @Setter
     @AllArgsConstructor
     public static class CompositeKey implements Serializable {
-        private int rideId;
-        private int key;
+        private String rideId;
+        private String key;
     }
 
 }

@@ -1,9 +1,6 @@
 package visualization.service;
 
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.geo.GeoJsonMultiPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
@@ -20,7 +17,6 @@ import java.util.Optional;
 This is the place where we can do some number crunching and other postprocessing for Incidents
 
  */
-
 @Service
 public class IncidentServiceImpl implements IncidentService {
 
@@ -29,8 +25,7 @@ public class IncidentServiceImpl implements IncidentService {
 
 
     @Override
-    public IncidentResource getIncident(int rideId, int key) {
-        // TODO: create rideIdKey from rideId and key
+    public IncidentResource getIncident(String rideId, String key) {
 
         IncidentResource incidentResource = new IncidentResource();
         IncidentEntity.CompositeKey compositeKey = new IncidentEntity.CompositeKey(rideId, key);
@@ -51,23 +46,18 @@ public class IncidentServiceImpl implements IncidentService {
         List<IncidentResource> incidents = new ArrayList();
         List<IncidentEntity> incidentEntities = incidentRepository.findByRideId(rideId);
         System.out.println(incidentEntities.toString());
-        // TODO: transform Incident Entities to Incident Resources
+
         return incidents;
     }
 
     @Override
     public List<IncidentResource> getIncidentsInRange(double longitude, double latitude, int maxDistance) {
-        //Position coordinates = new Position(longitude, latitude);
+
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
-        System.out.println("wir sind hier 1. " + longitude + " " + latitude);
-        //incidentRepository.findByLocationNear(location, minDistance, maxDistance);
-        List<IncidentResource> incidentResources = new ArrayList<IncidentResource>();
+
+        List<IncidentResource> incidentResources = new ArrayList();
         List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
 
-       //  GeoJsonMultiPoint test = new GeoJsonMultiPoint(point, point    , point );
-
-
-        System.out.println("wir sind hier 2. ");
         for(IncidentEntity incidentEntity:incidentEntities) {
             IncidentResource incidentResource = new IncidentResource();
             incidentResource.setRideId(incidentEntity.getRideId());
