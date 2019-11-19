@@ -5,7 +5,6 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import main.java.com.simra.app.csvimporter.filter.RideFilter;
 import main.java.com.simra.app.csvimporter.services.ConfigService;
 import main.java.com.simra.app.csvimporter.services.DBService;
-import main.java.com.simra.app.csvimporter.dbservice.DBService;
 import main.java.com.simra.app.csvimporter.mapmatching.MapMatchingService;
 import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
