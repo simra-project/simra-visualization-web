@@ -14,7 +14,7 @@ public class DBService {
     private static final Logger logger = Logger.getLogger(DBService.class);
 
     private MongoClient dbClient;
-    private MongoDatabase rideDatabase;
+    private MongoDatabase simraDatabase;
     private MongoCollection<Document> collection;
     private String host = "localhost";
     private int port = 27017;
@@ -23,16 +23,21 @@ public class DBService {
 
     public void DbRideConnect() {
         this.readProperties();
-        this.collection = this.rideDatabase.getCollection(ConfigService.config.getProperty("db.ridesCollection", "rides"));
+        this.collection = this.simraDatabase.getCollection(ConfigService.config.getProperty("db.ridesCollection", "rides"));
     }
 
     public void DbProfileConnect() {
         this.readProperties();
-        this.collection = this.rideDatabase.getCollection(ConfigService.config.getProperty("db.profilesCollection", "profiles"));
+        this.collection = this.simraDatabase.getCollection(ConfigService.config.getProperty("db.profilesCollection", "profiles"));
+    }
+
+    public void DBMapMatchedRideConnect() {
+        this.readProperties();
+        this.collection = this.simraDatabase.getCollection(ConfigService.config.getProperty("db.mapMatchedRidesCollection", "mapMatchedRides"));
     }
 
     public MongoCollection<Document> getIncidentCollection() {
-        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.incidentsCollection", "incidents"));
+        return this.simraDatabase.getCollection(ConfigService.config.getProperty("db.incidentsCollection", "incidents"));
     }
 
     private void readProperties() {
@@ -50,7 +55,7 @@ public class DBService {
             this.dbClient = new MongoClient(new ServerAddress(this.host, this.port), Arrays.asList(credential));
         else
             this.dbClient = new MongoClient(this.host, this.port);
-        this.rideDatabase = this.dbClient.getDatabase(this.database);
+        this.simraDatabase = this.dbClient.getDatabase(this.database);
 
     }
 
@@ -63,12 +68,12 @@ public class DBService {
         this.dbClient = dbClient;
     }
 
-    public MongoDatabase getRideDatabase() {
-        return rideDatabase;
+    public MongoDatabase getSimraDatabase() {
+        return simraDatabase;
     }
 
-    public void setRideDatabase(MongoDatabase rideDatabase) {
-        this.rideDatabase = rideDatabase;
+    public void setSimraDatabase(MongoDatabase simraDatabase) {
+        this.simraDatabase = simraDatabase;
     }
 
     public MongoCollection<Document> getCollection() {

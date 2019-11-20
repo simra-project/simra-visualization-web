@@ -81,9 +81,10 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
                 ride.setRideBeans(optimisedRideBeans);
             }
 
+            List mapMatchedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
+            ride.setMapMatchedRideBeans(mapMatchedRideBeans);
+
             this.rides.add(ride);
-            List snappedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
-            //TODO do sth with snappedRideBeans
 
         } catch (IOException e) {
             logger.error(e);
@@ -164,6 +165,9 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
         if(!incidents.isEmpty()) {
             dbService.getCollection().insertMany(incidents);
         }
+
+        dbService.DBMapMatchedRideConnect();
+        dbService.getCollection().insertMany(this.rides.stream().map(Ride::toDocumentObject).collect(Collectors.toList()));
     }
 
     @Override

@@ -8,12 +8,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 /**
  * The type Ride.
  */
 public class Ride implements MongoDocument {
 
+    private static final String RIDE_BEANS = "rideBeans";
+    private static final String
+
     private List rideBeans;
+    private List mapMatchedRideBeans;
     private List incidents;
 
     /**
@@ -43,7 +48,7 @@ public class Ride implements MongoDocument {
      * @return the ride beans
      */
     public List getRideBeans() {
-        return rideBeans;
+        return this.rideBeans;
     }
 
     /**
@@ -53,6 +58,24 @@ public class Ride implements MongoDocument {
      */
     public void setRideBeans(List rideBeans) {
         this.rideBeans = rideBeans;
+    }
+
+    /**
+     * Gets map matched ride beans.
+     *
+     * @return the map matched ride beans
+     */
+    public List getMapMatchedRideBeans() {
+        return this.mapMatchedRideBeans;
+    }
+
+    /**
+     * Sets map matched ride beans.
+     *
+     * @param mapMatchedRideBeans the map matched ride beans
+     */
+    public void setMapMatchedRideBeans(List mapMatchedRideBeans) {
+        this.mapMatchedRideBeans = mapMatchedRideBeans;
     }
 
     /**
