@@ -18,5 +18,4 @@ public class Profile extends ProfileCSV implements MongoDocument {
         return String.format("[fileID: %s, appVersion:%s, fileVersion=%s, CSV: %s ]",
                 this.getFileId(), this.getAppVersion(), this.getFileVersion(), super.toString());
     }
-
 }

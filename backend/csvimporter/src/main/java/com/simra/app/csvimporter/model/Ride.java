@@ -78,6 +78,7 @@ public class Ride implements MongoDocument {
      *
      * @return the document
      */
+    @Override
     public Document toDocumentObject() {
        Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());

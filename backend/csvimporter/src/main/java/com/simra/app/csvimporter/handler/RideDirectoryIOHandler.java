@@ -9,6 +9,7 @@ import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
 import main.java.com.simra.app.csvimporter.services.ConfigService;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class RideDirectoryIOHandler extends DirectoryIOHandler {
     private static final Logger logger = Logger.getLogger(RideDirectoryIOHandler.class);
@@ -157,9 +159,11 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
 
     @Override
     void writeToDB() {
-        // TODO Update DB batch style (this.rides)
-        //dbService.getCollection().insertOne(this.ride.toDocumentObject());
-        //dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+        dbService.getCollection().insertMany(this.rides.stream().map(Ride::toDocumentObject).collect(Collectors.toList()));
+        List<Document> incidents = this.rides.stream().flatMap(it -> it.incidentsDocuments().stream()).collect(Collectors.toList());
+        if(!incidents.isEmpty()) {
+            dbService.getCollection().insertMany(incidents);
+        }
     }
 
     @Override
