@@ -29,7 +29,7 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
     private String Z;
 
     @CsvBindByName
-    private String timeStamp;
+    private long timeStamp;
 
     @CsvBindByName
     private String acc;
@@ -139,7 +139,7 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
      *
      * @return the time stamp
      */
-    public String getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
@@ -148,7 +148,7 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
      *
      * @param timeStamp the time stamp
      */
-    public void setTimeStamp(String timeStamp) {
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -235,19 +235,9 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
         document.put("rideId", this.getFileId());
         document.put("appVersion", this.getAppVersion());
         document.put("fileVersion", this.getFileVersion());
-        //document.put("lat", this.lat);
-        //document.put("lon", this.lon);
-        //document.put("X", this.X);
-        //document.put("Y", this.Y);
-        //document.put("Z", this.Z);
-        //document.put("timeStamp", this.timeStamp);
         document.put("acc", this.acc);
-        //document.put("a", this.a);
-        //document.put("b", this.b);
-        //document.put("c", this.c);
 
         List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
-
         Point geoPoint = new Point(new Position(places));
         Document geoPointWithTime = new Document();
         geoPointWithTime.put("geoPoint", geoPoint);
