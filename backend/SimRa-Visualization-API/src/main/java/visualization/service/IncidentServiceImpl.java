@@ -7,9 +7,9 @@ import visualization.data.mongodb.IncidentRepository;
 import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /*
@@ -27,29 +27,23 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     public IncidentResource getIncident(String rideId, String key) {
 
-        IncidentResource incidentResource = new IncidentResource();
+        final IncidentResource[] incidentResource = {new IncidentResource()};
         IncidentEntity.CompositeKey compositeKey = new IncidentEntity.CompositeKey(rideId, key);
         Optional<IncidentEntity> optional = incidentRepository.findById(compositeKey);
         optional.ifPresent(incidentEntity -> {
-                    incidentResource.setRideId(incidentEntity.getRideId());
-                    incidentResource.setKey(incidentEntity.getKey());
-                    incidentResource.setCoordinates(incidentEntity.getLocation());
-                    incidentResource.setTs(incidentEntity.getTs());
-                    incidentResource.setChild(incidentEntity.getChild());
-                    incidentResource.setTrailer(incidentEntity.getTrailer());
-                    incidentResource.setPhoneLocation(incidentEntity.getPLoc());
+                   incidentResource[0] = mapEntityToResource(incidentEntity);
+
                 }
         );
-        return incidentResource;
+        return incidentResource[0];
     }
 
     @Override
     public List<IncidentResource> getIncidentsByRideId(String rideId) {
 
-        List<IncidentResource> incidents = new ArrayList();
+        List<IncidentResource> incidents;
         List<IncidentEntity> incidentEntities = incidentRepository.findByRideId(rideId);
-        System.out.println(incidentEntities.toString());
-
+        incidents = incidentEntities.stream().map(this::mapEntityToResource).collect(Collectors.toList());
         return incidents;
     }
 
@@ -58,19 +52,35 @@ public class IncidentServiceImpl implements IncidentService {
 
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
 
-        List<IncidentResource> incidentResources = new ArrayList();
+        List<IncidentResource> incidentResources;
         List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
 
-        for(IncidentEntity incidentEntity:incidentEntities) {
-            IncidentResource incidentResource = new IncidentResource();
-            incidentResource.setRideId(incidentEntity.getRideId());
-            incidentResource.setKey(incidentEntity.getKey());
-            incidentResource.setCoordinates(incidentEntity.getLocation());
-            incidentResource.setTs(incidentEntity.getTs());
-            incidentResources.add(incidentResource);
-        }
+        incidentResources = incidentEntities.stream().map(this::mapEntityToResource).collect(Collectors.toList());
         return incidentResources;
 
 
+    }
+
+    private IncidentResource mapEntityToResource(IncidentEntity incidentEntity) {
+        IncidentResource incidentResource = new IncidentResource();
+        incidentResource.setRideId(incidentEntity.getRideId());
+        incidentResource.setKey(incidentEntity.getKey());
+        incidentResource.setCoordinates(incidentEntity.getLocation());
+        incidentResource.setTs(incidentEntity.getTs());
+        incidentResource.setChild(incidentEntity.getChildCheckBox());
+        incidentResource.setTrailer(incidentEntity.getTrailerCheckBox());
+        incidentResource.setPhoneLocation(incidentEntity.getPLoc());
+        incidentResource.setDescription(incidentEntity.getDescription());
+        incidentResource.setI1Bus(incidentEntity.getI1());
+        incidentResource.setI2Cyclist(incidentEntity.getI2());
+        incidentResource.setI3Pedestrian(incidentEntity.getI3());
+        incidentResource.setI4DeliveryVan(incidentEntity.getI4());
+        incidentResource.setI5Truck(incidentEntity.getI5());
+        incidentResource.setI6Motorcycle(incidentEntity.getI6());
+        incidentResource.setI7Car(incidentEntity.getI7());
+        incidentResource.setI8Taxi(incidentEntity.getI8());
+        incidentResource.setI9Other(incidentEntity.getI9());
+        incidentResource.setI10EScooter(incidentEntity.getI10());
+        return incidentResource;
     }
 }

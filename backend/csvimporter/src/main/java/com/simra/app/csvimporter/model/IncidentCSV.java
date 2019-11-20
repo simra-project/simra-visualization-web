@@ -29,10 +29,10 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
     private int bike = 0;
 
     @CsvBindByName
-    private int childCheckBox = 0;
+    private boolean childCheckBox = false;
 
     @CsvBindByName
-    private int trailerCheckBox = 0;
+    private boolean trailerCheckBox = false;
 
     @CsvBindByName
     private int pLoc = 0;
@@ -171,7 +171,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the child check box
      */
-    public int getChildCheckBox() {
+    public boolean getChildCheckBox() {
         return childCheckBox;
     }
 
@@ -180,7 +180,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param childCheckBox the child check box
      */
-    public void setChildCheckBox(int childCheckBox) {
+    public void setChildCheckBox(boolean childCheckBox) {
         this.childCheckBox = childCheckBox;
     }
 
@@ -189,7 +189,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the trailer check box
      */
-    public int getTrailerCheckBox() {
+    public boolean getTrailerCheckBox() {
         return trailerCheckBox;
     }
 
@@ -198,7 +198,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param trailerCheckBox the trailer check box
      */
-    public void setTrailerCheckBox(int trailerCheckBox) {
+    public void setTrailerCheckBox(boolean trailerCheckBox) {
         this.trailerCheckBox = trailerCheckBox;
     }
 
