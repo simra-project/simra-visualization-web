@@ -20,7 +20,6 @@ public class ProfileDirectoryIOHandler extends DirectoryIOHandler {
     private List<Profile> profiles = new ArrayList<>();
 
     public ProfileDirectoryIOHandler(Path path) {
-        dbService.DbProfileConnect();
         parseDirectory(path);
     }
 

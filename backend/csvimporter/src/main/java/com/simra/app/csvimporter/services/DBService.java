@@ -13,31 +13,37 @@ import java.util.Arrays;
 public class DBService {
     private static final Logger logger = Logger.getLogger(DBService.class);
 
+    private static DBService instance;
+
     private MongoClient dbClient;
-    private MongoDatabase simraDatabase;
+    private MongoDatabase rideDatabase;
     private MongoCollection<Document> collection;
     private String host = "localhost";
     private int port = 27017;
     private String database = "SimraDb";
 
 
-    public void DbRideConnect() {
+    private DBService() {
         this.readProperties();
-        this.collection = this.simraDatabase.getCollection(ConfigService.config.getProperty("db.ridesCollection", "rides"));
     }
 
-    public void DbProfileConnect() {
-        this.readProperties();
-        this.collection = this.simraDatabase.getCollection(ConfigService.config.getProperty("db.profilesCollection", "profiles"));
+    public static DBService getInstance () {
+        if (DBService.instance == null) {
+            DBService.instance = new DBService ();
+        }
+        return DBService.instance;
     }
 
-    public void DBMapMatchedRideConnect() {
-        this.readProperties();
-        this.collection = this.simraDatabase.getCollection(ConfigService.config.getProperty("db.mapMatchedRidesCollection", "mapMatchedRides"));
+    public MongoCollection<Document> getRidesCollection() {
+        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.ridesCollection", "rides"));
     }
 
-    public MongoCollection<Document> getIncidentCollection() {
-        return this.simraDatabase.getCollection(ConfigService.config.getProperty("db.incidentsCollection", "incidents"));
+    public MongoCollection<Document> getProfilesCollection() {
+        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.profilesCollection", "profiles"));
+    }
+
+    public MongoCollection<Document> getIncidentsCollection() {
+        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.incidentsCollection", "incidents"));
     }
 
     private void readProperties() {
@@ -55,7 +61,7 @@ public class DBService {
             this.dbClient = new MongoClient(new ServerAddress(this.host, this.port), Arrays.asList(credential));
         else
             this.dbClient = new MongoClient(this.host, this.port);
-        this.simraDatabase = this.dbClient.getDatabase(this.database);
+        this.rideDatabase = this.dbClient.getDatabase(this.database);
 
     }
 
@@ -68,16 +74,12 @@ public class DBService {
         this.dbClient = dbClient;
     }
 
-    public MongoDatabase getSimraDatabase() {
-        return simraDatabase;
+    public MongoDatabase getRideDatabase() {
+        return rideDatabase;
     }
 
-    public void setSimraDatabase(MongoDatabase simraDatabase) {
-        this.simraDatabase = simraDatabase;
-    }
-
-    public MongoCollection<Document> getCollection() {
-        return collection;
+    public void setRideDatabase(MongoDatabase rideDatabase) {
+        this.rideDatabase = rideDatabase;
     }
 
     public void setRides(MongoCollection<Document> collection) {
