@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface IncidentService {
 
-    IncidentResource getIncident(String rideId, int key);
+    IncidentResource getIncident(String rideId, String key);
 
     List<IncidentResource> getIncidentsByRideId(String rideId);
 
-    List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int minDistance, int maxDistance);
+    List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int maxDistance);
 
 }
