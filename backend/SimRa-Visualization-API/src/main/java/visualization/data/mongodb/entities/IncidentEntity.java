@@ -26,11 +26,11 @@ public class IncidentEntity {
 
     private long ts;
 
-    private Boolean child;
+    private Boolean childCheckBox;
 
-    private Boolean trailer;
+    private Boolean trailerCheckBox;
 
-    private int phoneLocation;
+    private int pLoc;
 
     private int incidentType;
 
