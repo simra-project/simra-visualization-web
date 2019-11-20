@@ -128,3 +128,5 @@ $RECYCLE.BIN/
 /.idea/compiler.xml
 
 target/
+
+backend/csvimporter/map-data/*.osm-gh/
