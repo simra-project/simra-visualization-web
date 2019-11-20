@@ -74,9 +74,7 @@ public class RideFileIOHandler extends FileIOHandler {
 
             if (!this.ride.getRideBeans().isEmpty()) {
                 if (Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
-                    this.ride.getRideBeans().forEach(item -> {
-                        logger.info(item.toString());
-                    });
+                    this.ride.getRideBeans().forEach(item -> logger.info(item.toString()));
                 }
 
                 List<RideCSV> optimisedRideBeans = rideFilter.filterRide(this.ride);
@@ -89,7 +87,9 @@ public class RideFileIOHandler extends FileIOHandler {
             List snappedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
             //TODO do sth with snappedRideBeans
             dbService.getCollection().insertOne(this.ride.toDocumentObject());
-            dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+            if(!this.ride.getIncidents().isEmpty()) {
+                dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+            }
 
         } catch (IOException e) {
             logger.error(e);
