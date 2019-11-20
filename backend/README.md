@@ -1,12 +1,20 @@
 # API
 ## Routes
 
-### /incident/all
-Parameters: (none)  
-Description: lists all incidents
+# Incidents
+/rides/{rideId}/incidents/{key}
 
-### /incident
-Parameters:
-- rideid (integer)
+/rides/{rideId}/incidents/all
 
-Description: lists all incidents for a given ride
+/incidents?lon={longitude}&lat={latitude}&max={max distance}
+
+# Rides
+/rides/{rideId}
+
+/incidents?lon={longitude}&lat={latitude}&max={max distance}
+
+# How to use the API
+
+1. Insert data either with misc/mongosampleinsert or the csv importer
+2. Set the spring.data.mongodb.database name to simra and start the API
+3. Test the API - you can use the Postman collection in the misc folder
