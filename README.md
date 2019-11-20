@@ -46,12 +46,22 @@ host: localhost
 port: 27017   
 
 To import ride and its incidents use following command (change paths)
-$ java -jar backend/csvimporter/target/csvimporter-1.0-SNAPSHOT-jar-with-dependencies.jar -t r /Users/developer/Downloads/SimRa_Sample_10_23_19/Berlin/Rides/VM2_-1430356997
+$ java -jar backend/csvimporter/target/csvimporter-1.0-SNAPSHOT-jar-with-dependencies.jar -a 12 -e 0.00001 -t r /Users/developer/Downloads/SimRa_Sample_10_23_19/Berlin/Rides/VM2_-1430356997
 
 To import profile use following command (change paths)
 $ java -jar backend/csvimporter/target/csvimporter-1.0-SNAPSHOT-jar-with-dependencies.jar -t p /Users/developer/Downloads/SimRa_Sample_10_23_19/Berlin/Profiles/VM2_1138028561 
 
 ```
+Note: Rides and Profiles can not be imported simultaneously.
+
+| Parameter        |Mandatory     | Default Value | Description |
+| ---------------- |:------------:|:------------:|:------------:|
+|                  | Yes | - | Path to CSV Data |
+| ```-t``` / ```--type```| Yes | - | For Rides use ```r```, for Profiles use ```p``` |
+| ```-a``` / ```--accuracy```| No | 20 | When importing Rides: Minimum acc-value of Coordinates that will pass Accuracy Filter |
+| ```-e``` / ```--epsilon``` | No | 0.0000001| When importing Rides: Epsilon value of RDP-Algorithm |
+
+
 
 # Database Structure
 Info: So far only filtered data is pushed into the database.
@@ -165,13 +175,3 @@ Info: So far only filtered data is pushed into the database.
     }
 }
 ```
-# Import CSV Data
-In order to import CSV Data, create a new Folder and insert the to be imported CSV Files. Note: Rides and Profiles can not be imported simultaneously.
-To import the CSV Files, use command line arguments like ```-t r -a 12 -e 0.00001 /home/user/Path/To/CSV_Data```
-
-| Parameter        |Mandatory     | Default Value | Description |
-| ---------------- |:------------:|:------------:|:------------:|
-|                  | Yes | - | Path to CSV Data |
-| ```-t``` / ```--type```| Yes | - | For Rides use ```r```, for Profiles use ```p``` |
-| ```-a``` / ```--accuracy```| No | 20 | Minimum acc-value of Coordinates that will pass Accuracy Filter |
-| ```-e``` / ```--epsilon``` | No | 0.0000001| Epsilon value of RDP-Algorithm |
