@@ -13,7 +13,7 @@ public abstract class DirectoryIOHandler {
     static DBService dbService;
 
     DirectoryIOHandler() {
-        dbService = new DBService();
+        dbService = DBService.getInstance();
     }
 
     boolean canOpenDirectory(Path directory) {
