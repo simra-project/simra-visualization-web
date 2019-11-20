@@ -18,7 +18,7 @@ public class DBService {
     private MongoCollection<Document> collection;
     private String host = "localhost";
     private int port = 27017;
-    private String database = "SimraDb";
+    private String database = "simra";
 
 
     public void DbRideConnect() {
