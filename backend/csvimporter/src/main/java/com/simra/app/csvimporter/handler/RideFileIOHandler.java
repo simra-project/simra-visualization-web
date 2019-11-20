@@ -87,7 +87,9 @@ public class RideFileIOHandler extends FileIOHandler {
             List snappedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
             //TODO do sth with snappedRideBeans
             dbService.getCollection().insertOne(this.ride.toDocumentObject());
-            dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+            if(!this.ride.getIncidents().isEmpty()) {
+                dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+            }
 
         } catch (IOException e) {
             logger.error(e);

@@ -489,7 +489,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
 
         Point geoPoint = new Point(new Position(places));
         document.put("timestamp", this.ts);
-        document.put("coordinates", geoPoint);
+        document.put("location", geoPoint);
 
         return document;
     }

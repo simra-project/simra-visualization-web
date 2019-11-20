@@ -91,7 +91,7 @@ public class Ride implements MongoDocument {
         });
         MultiPoint coordinates_multi= new MultiPoint(coordinates);
 
-        singleRide.put("coordinates", coordinates_multi);
+        singleRide.put("location", coordinates_multi);
         ArrayList ts = new ArrayList<String>();
         this.rideBeans.forEach(ride -> ts.add(((RideCSV) ride).getTimeStamp()));
         singleRide.put("ts", ts);
