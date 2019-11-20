@@ -3,12 +3,11 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import visualization.web.resources.geoJSON.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 
 /*
 Representation of an Incident
  */
-
 @Getter
 @Setter
 @ToString
@@ -24,10 +23,10 @@ public class IncidentResource {
     private int key;
 
     @JsonProperty
-    private Point incident;
+    private GeoJsonPoint coordinates;
 
     @JsonProperty
-    private long timeStamp;
+    private long ts;
 
     @JsonProperty
     private Boolean child;

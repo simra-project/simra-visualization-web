@@ -3,14 +3,13 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import visualization.web.resources.geoJSON.LineString;
+import org.springframework.data.mongodb.core.geo.GeoJsonMultiPoint;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /*
 Representation of a Ride
  */
-
 @Getter
 @Setter
 @ToString
@@ -20,9 +19,12 @@ Representation of a Ride
 public class RideResource {
 
     @JsonProperty
-    private int rideId;
+    private String rideId;
 
     @JsonProperty
-    private LineString ride;
+    private GeoJsonMultiPoint coordinates;
+
+    @JsonProperty
+    private ArrayList ts;
 
 }
