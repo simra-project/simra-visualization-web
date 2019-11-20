@@ -41,40 +41,40 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
     private int incident = 0;
 
     @CsvBindByName
-    private int i1 = 0;
+    private boolean i1 = false;
 
     @CsvBindByName
-    private int i2 = 0;
+    private boolean i2 = false;
 
     @CsvBindByName
-    private int i3 = 0;
+    private boolean i3 = false;
 
     @CsvBindByName
-    private int i4 = 0;
+    private boolean i4 = false;
 
     @CsvBindByName
-    private int i5 = 0;
+    private boolean i5 = false;
 
     @CsvBindByName
-    private int i6 = 0;
+    private boolean i6 = false;
 
     @CsvBindByName
-    private int i7 = 0;
+    private boolean i7 = false;
 
     @CsvBindByName
-    private int i8 = 0;
+    private boolean i8 = false;
 
     @CsvBindByName
-    private int i9 = 0;
+    private boolean i9 = false;
 
     @CsvBindByName
-    private int scary = 0;
+    private boolean scary = false;
 
     @CsvBindByName
     private String desc;
 
     @CsvBindByName
-    private int i10 = 0;
+    private boolean i10 = false;
 
     /**
      * Gets key.
@@ -243,7 +243,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 1
      */
-    public int getI1() {
+    public boolean getI1() {
         return i1;
     }
 
@@ -252,7 +252,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i1 the 1
      */
-    public void setI1(int i1) {
+    public void setI1(boolean i1) {
         this.i1 = i1;
     }
 
@@ -261,7 +261,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 2
      */
-    public int getI2() {
+    public boolean getI2() {
         return i2;
     }
 
@@ -270,7 +270,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i2 the 2
      */
-    public void setI2(int i2) {
+    public void setI2(boolean i2) {
         this.i2 = i2;
     }
 
@@ -279,7 +279,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 3
      */
-    public int getI3() {
+    public boolean getI3() {
         return i3;
     }
 
@@ -288,7 +288,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i3 the 3
      */
-    public void setI3(int i3) {
+    public void setI3(boolean i3) {
         this.i3 = i3;
     }
 
@@ -297,7 +297,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 4
      */
-    public int getI4() {
+    public boolean getI4() {
         return i4;
     }
 
@@ -306,7 +306,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i4 the 4
      */
-    public void setI4(int i4) {
+    public void setI4(boolean i4) {
         this.i4 = i4;
     }
 
@@ -315,7 +315,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 5
      */
-    public int getI5() {
+    public boolean getI5() {
         return i5;
     }
 
@@ -324,7 +324,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i5 the 5
      */
-    public void setI5(int i5) {
+    public void setI5(boolean i5) {
         this.i5 = i5;
     }
 
@@ -333,7 +333,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 6
      */
-    public int getI6() {
+    public boolean getI6() {
         return i6;
     }
 
@@ -342,7 +342,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i6 the 6
      */
-    public void setI6(int i6) {
+    public void setI6(boolean i6) {
         this.i6 = i6;
     }
 
@@ -351,7 +351,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 7
      */
-    public int getI7() {
+    public boolean getI7() {
         return i7;
     }
 
@@ -360,7 +360,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i7 the 7
      */
-    public void setI7(int i7) {
+    public void setI7(boolean i7) {
         this.i7 = i7;
     }
 
@@ -369,7 +369,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 8
      */
-    public int getI8() {
+    public boolean getI8() {
         return i8;
     }
 
@@ -378,7 +378,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i8 the 8
      */
-    public void setI8(int i8) {
+    public void setI8(boolean i8) {
         this.i8 = i8;
     }
 
@@ -387,7 +387,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 9
      */
-    public int getI9() {
+    public boolean getI9() {
         return i9;
     }
 
@@ -396,7 +396,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i9 the 9
      */
-    public void setI9(int i9) {
+    public void setI9(boolean i9) {
         this.i9 = i9;
     }
 
@@ -405,7 +405,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the i 10
      */
-    public int getI10() {
+    public boolean getI10() {
         return i10;
     }
 
@@ -414,7 +414,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param i10 the 10
      */
-    public void setI10(int i10) {
+    public void setI10(boolean i10) {
         this.i10 = i10;
     }
 
@@ -423,7 +423,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @return the scary
      */
-    public int getScary() {
+    public boolean getScary() {
         return scary;
     }
 
@@ -432,7 +432,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
      *
      * @param scary the scary
      */
-    public void setScary(int scary) {
+    public void setScary(boolean scary) {
         this.scary = scary;
     }
 
