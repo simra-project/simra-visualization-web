@@ -464,6 +464,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
 
         Document contentCompositeId = new Document();
         contentCompositeId.put("rideId", this.getFileId());
+        contentCompositeId.put("rideId", this.getFileId());
         contentCompositeId.put("key", this.key);
         document.put("_id", contentCompositeId);
         document.put("key", this.key);
