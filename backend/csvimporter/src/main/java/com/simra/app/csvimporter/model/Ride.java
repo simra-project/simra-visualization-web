@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 /**
  * The type Ride.
  */
 public class Ride implements MongoDocument {
 
     private List rideBeans;
+    private List mapMatchedRideBeans;
     private List incidents;
 
     /**
@@ -24,26 +26,12 @@ public class Ride implements MongoDocument {
     }
 
     /**
-     * Instantiates a new Ride.
-     *
-     * @param rideBeans the ride beans
-     * @param incidents the incidents
-     */
-    public Ride(List<RideCSV> rideBeans, List<IncidentCSV> incidents) {
-        if (!rideBeans.isEmpty() && !incidents.isEmpty()) {
-            this.rideBeans = rideBeans;
-            this.incidents = incidents;
-
-        }
-    }
-
-    /**
      * Gets ride beans.
      *
      * @return the ride beans
      */
     public List getRideBeans() {
-        return rideBeans;
+        return this.rideBeans;
     }
 
     /**
@@ -53,6 +41,24 @@ public class Ride implements MongoDocument {
      */
     public void setRideBeans(List rideBeans) {
         this.rideBeans = rideBeans;
+    }
+
+    /**
+     * Gets map matched ride beans.
+     *
+     * @return the map matched ride beans
+     */
+    public List getMapMatchedRideBeans() {
+        return this.mapMatchedRideBeans;
+    }
+
+    /**
+     * Sets map matched ride beans.
+     *
+     * @param mapMatchedRideBeans the map matched ride beans
+     */
+    public void setMapMatchedRideBeans(List mapMatchedRideBeans) {
+        this.mapMatchedRideBeans = mapMatchedRideBeans;
     }
 
     /**
@@ -78,25 +84,31 @@ public class Ride implements MongoDocument {
      *
      * @return the document
      */
+    @Override
     public Document toDocumentObject() {
-       Document singleRide = new Document();
+        Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
-        ArrayList<Position> coordinates= new ArrayList<>();
 
-        this.rideBeans.forEach(ride -> {
-            RideCSV rideCSV= (RideCSV) ride;
-            List<Double> places = Arrays.asList(Double.parseDouble(rideCSV.getA()), Double.parseDouble(rideCSV.getLon()));
-            Position pos= new Position(places);
-            coordinates.add(pos);
-        });
-        MultiPoint coordinates_multi= new MultiPoint(coordinates);
-
-        singleRide.put("location", coordinates_multi);
-        ArrayList ts = new ArrayList<String>();
-        this.rideBeans.forEach(ride -> ts.add(((RideCSV) ride).getTimeStamp()));
-        singleRide.put("ts", ts);
+        parseRideBeans(singleRide, rideBeans, "");
+        parseRideBeans(singleRide, mapMatchedRideBeans, "MapMatched");
 
         return singleRide;
+    }
+
+    private void parseRideBeans(Document document, List<RideCSV> rideBeans, String suffix) {
+        ArrayList<Position> coordinates = new ArrayList<>();
+
+        rideBeans.forEach(ride -> {
+            List<Double> places = Arrays.asList(Double.parseDouble(ride.getLat()), Double.parseDouble(ride.getLon()));
+            Position pos = new Position(places);
+            coordinates.add(pos);
+        });
+        MultiPoint coordinatesMulti = new MultiPoint(coordinates);
+
+        document.put("location" + suffix, coordinatesMulti);
+        ArrayList ts = new ArrayList<String>();
+        rideBeans.forEach(ride -> ts.add((ride).getTimeStamp()));
+        document.put("ts" + suffix, ts);
     }
 
     public List<Document> incidentsDocuments() {
