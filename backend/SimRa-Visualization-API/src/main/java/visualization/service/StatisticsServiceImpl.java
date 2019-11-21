@@ -45,9 +45,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         RideStatisticsResource rideStatisticsResource = new RideStatisticsResource();
         rideStatisticsResource.setStartTime(ride.getTs().get(0));
         rideStatisticsResource.setDuration((int) (ride.getTs().get(ride.getTs().size() - 1) - ride.getTs().get(0)));
+        rideStatisticsResource.setLength(ride.getLength());
+        rideStatisticsResource.setSavedCO2(ride.getLength() * 0.138F);
         // parse more Stats Metadata for Rides here
-        // saved Co2 ?
-        // driven Kms?
+        //..
         return rideStatisticsResource;
     }
 

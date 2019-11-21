@@ -18,6 +18,8 @@ public class Ride implements MongoDocument {
     private List mapMatchedRideBeans;
     private List incidents;
 
+    private Float length;
+
     /**
      * Instantiates a new Ride.
      */
@@ -80,6 +82,24 @@ public class Ride implements MongoDocument {
     }
 
     /**
+     * Gets length.
+     *
+     * @return length
+     */
+    public Float getLength() {
+        return length;
+    }
+
+    /**
+     * Sets lenght.
+     *
+     * @param length the length
+     */
+    public void setLength(Float length) {
+        this.length = length;
+    }
+
+    /**
      * To document object document.
      *
      * @return the document
@@ -88,6 +108,7 @@ public class Ride implements MongoDocument {
     public Document toDocumentObject() {
         Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
+        singleRide.put("length", this.length);
 
         parseRideBeans(singleRide, rideBeans, "");
         parseRideBeans(singleRide, mapMatchedRideBeans, "MapMatched");

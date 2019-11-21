@@ -21,6 +21,8 @@ import kotlin.math.sqrt
 
 class MapMatchingService {
 
+    var currentRouteLength: Float = 0F;
+
     /**
      * Snaps the GPS Coordinates onto OSM-Streets.
      * TODO Add possibility to snap Routes in other cities than Berlin
@@ -92,6 +94,9 @@ class MapMatchingService {
 
             rideCSV
         }
+
+        currentRouteLength = pathWrapper.distance.toFloat()
+
         println("matching took: " + matchSW.seconds)
 
         return result

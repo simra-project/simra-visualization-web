@@ -22,4 +22,6 @@ public class RideEntity {
 
     private ArrayList<Long> ts;
 
+    private Float length;
+
 }
