@@ -14,5 +14,4 @@ public interface RideRepository extends MongoRepository<RideEntity, String> {
 
     Optional<RideEntity> findById(String id);
 
-
 }

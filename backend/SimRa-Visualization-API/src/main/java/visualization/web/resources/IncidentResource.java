@@ -17,7 +17,7 @@ Representation of an Incident
 public class IncidentResource {
 
     @JsonProperty
-    private int rideId;
+    private String rideId;
 
     @JsonProperty
     private int key;

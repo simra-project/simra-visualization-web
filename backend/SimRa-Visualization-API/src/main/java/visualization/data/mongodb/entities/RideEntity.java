@@ -20,7 +20,6 @@ public class RideEntity {
 
     private GeoJsonMultiPoint location;
 
-    private ArrayList ts;
-
+    private ArrayList<Long> ts;
 
 }
