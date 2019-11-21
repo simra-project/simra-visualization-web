@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * The type Ride csv.
  */
-public class RideCSV extends ApplicationFileVersion implements MongoDocument {
+public class RideCSV extends ApplicationFileVersion {
 
     @CsvBindByName
     private String lat;
@@ -222,29 +222,6 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
      */
     public void setC(String c) {
         this.c = c;
-    }
-
-
-    /**
-     * To document object document.
-     *
-     * @return the document
-     */
-    public Document toDocumentObject() {
-        Document document = new Document();
-        document.put("rideId", this.getFileId());
-        document.put("appVersion", this.getAppVersion());
-        document.put("fileVersion", this.getFileVersion());
-        document.put("acc", this.acc);
-
-        List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
-        Point geoPoint = new Point(new Position(places));
-        Document geoPointWithTime = new Document();
-        geoPointWithTime.put("geoPoint", geoPoint);
-        geoPointWithTime.put("timestamp", this.timeStamp);
-        document.put("location", geoPointWithTime);
-
-        return document;
     }
 
     public String toString() {
