@@ -17,4 +17,7 @@ public class StatisticsResource {
     @JsonProperty
     private ArrayList ridesStatistics = new ArrayList<RideStatisticsResource>();
 
+    @JsonProperty
+    private ArrayList incidentsStatistics = new ArrayList<IncidentStatisticsResource>();
+
 }

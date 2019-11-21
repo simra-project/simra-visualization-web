@@ -66,7 +66,7 @@ public class IncidentServiceImpl implements IncidentService {
         incidentResource.setRideId(incidentEntity.getRideId());
         incidentResource.setKey(incidentEntity.getKey());
         incidentResource.setCoordinates(incidentEntity.getLocation());
-        incidentResource.setTs(incidentEntity.getTs());
+        incidentResource.setTs(incidentEntity.getTimestamp());
         incidentResource.setChild(incidentEntity.getChildCheckBox());
         incidentResource.setTrailer(incidentEntity.getTrailerCheckBox());
         incidentResource.setPhoneLocation(incidentEntity.getPLoc());
