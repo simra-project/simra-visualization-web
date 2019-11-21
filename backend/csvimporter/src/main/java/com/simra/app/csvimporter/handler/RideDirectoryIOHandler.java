@@ -8,7 +8,6 @@ import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
 import main.java.com.simra.app.csvimporter.services.ConfigService;
-import main.java.com.simra.app.csvimporter.services.DBService;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -161,13 +160,10 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
     @Override
     void writeToDB() {
         dbService.getRidesCollection().insertMany(this.rides.stream().map(Ride::toDocumentObject).collect(Collectors.toList()));
-        List<Document> incidents = this.rides.stream().flatMap(it -> it.incidentsDocuments().stream()).collect(Collectors.toList());
+        List<Document> incidents =  this.rides.stream().flatMap(it -> it.incidentsDocuments().stream()).collect(Collectors.toList());
         if (!incidents.isEmpty()) {
             dbService.getIncidentsCollection().insertMany(incidents);
         }
-
-        dbService.DBMapMatchedRideConnect();
-        dbService.getCollection().insertMany(this.rides.stream().map(Ride::toDocumentObject).collect(Collectors.toList()));
     }
 
     @Override
