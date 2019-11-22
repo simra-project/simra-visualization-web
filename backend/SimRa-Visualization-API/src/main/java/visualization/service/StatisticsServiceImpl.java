@@ -11,8 +11,13 @@ import visualization.web.resources.RideStatisticsResource;
 import visualization.web.resources.StatisticsResource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.concurrent.atomic.DoubleAccumulator;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 
 /*
@@ -30,47 +35,72 @@ public class StatisticsServiceImpl implements StatisticsService {
     private IncidentRepository incidentRepository;
 
     @Override
-    public StatisticsResource getStatistics() {
-        StatisticsResource statsResource = new StatisticsResource();
-        List rides = rideRepository.findAll();
-        statsResource.getRidesStatistics().addAll((ArrayList) rides.stream().map(it -> parseRideMetaData((RideEntity) it)).collect(Collectors.toList()));
+    public StatisticsResource getFilteredStatistics(Long fromTs, Long untilTs, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
 
-        List incidents = incidentRepository.findAll();
-        statsResource.getIncidentsStatistics().addAll((ArrayList) incidents.stream().map(it -> parseIncidentMetaData((IncidentEntity) it)).collect(Collectors.toList()));
+        StatisticsResource statisticsResource = new StatisticsResource();
 
-        return statsResource;
+        statisticsResource.setRidesStatistics(getFilteredRidesStatistics(fromTs, untilTs));
+        statisticsResource.setIncidentsStatistics(getFilteredIncidentStatistics(fromTs, untilTs, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants));
+
+        return statisticsResource;
     }
 
-    private RideStatisticsResource parseRideMetaData(RideEntity ride) {
+    private RideStatisticsResource getFilteredRidesStatistics(Long fromTs, Long untilTs) {
+        Optional<List<RideEntity>> optionalRides = rideRepository.findAllByTsBetween(fromTs, untilTs);
+
         RideStatisticsResource rideStatisticsResource = new RideStatisticsResource();
-        rideStatisticsResource.setStartTime(ride.getTs().get(0));
-        rideStatisticsResource.setDuration((int) (ride.getTs().get(ride.getTs().size() - 1) - ride.getTs().get(0)));
-        rideStatisticsResource.setLength(ride.getLength());
-        rideStatisticsResource.setSavedCO2(ride.getLength() * 0.138F);
-        // parse more Stats Metadata for Rides here
-        //..
+
+        DoubleAccumulator accumulatedDistance = new DoubleAccumulator(Double::sum, 0.d);
+        LongAccumulator accumulatedDuration = new LongAccumulator(Long::sum, 0L);
+
+        optionalRides.ifPresent(rideList -> {
+                    rideList.forEach(ride -> {
+                        accumulatedDistance.accumulate(ride.getDistance());
+                        accumulatedDuration.accumulate(ride.getDuration());
+                    });
+                }
+        );
+
+        rideStatisticsResource.setAccumulatedDistance(accumulatedDistance.floatValue());
+        rideStatisticsResource.setAccumulatedDuration(accumulatedDuration.intValue());
+        rideStatisticsResource.setAccumulatedSavedCO2((float) (rideStatisticsResource.getAccumulatedDistance() * 0.183));
+
         return rideStatisticsResource;
     }
 
-    private IncidentStatisticsResource parseIncidentMetaData(IncidentEntity incident) {
+    private IncidentStatisticsResource getFilteredIncidentStatistics(Long fromTs, Long untilTs, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
+        List<IncidentEntity> optionalIncidents = incidentRepository.findFilteredIncidents(fromTs, untilTs, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants);
+
         IncidentStatisticsResource incidentStatisticsResource = new IncidentStatisticsResource();
-        incidentStatisticsResource.setBikeType(incident.getBike());
-        incidentStatisticsResource.setTs(incident.getTimestamp());
-        incidentStatisticsResource.setChildInvolved(incident.getChildCheckBox());
-        incidentStatisticsResource.setTrailerInvolved(incident.getTrailerCheckBox());
-        incidentStatisticsResource.setIncidentType(incident.getIncident());
-        incidentStatisticsResource.setScary(incident.getScary());
-        incidentStatisticsResource.setI1Bus(incident.getI1());
-        incidentStatisticsResource.setI2Cyclist(incident.getI2());
-        incidentStatisticsResource.setI3Pedestrian(incident.getI3());
-        incidentStatisticsResource.setI4DeliveryVan(incident.getI4());
-        incidentStatisticsResource.setI5Truck(incident.getI5());
-        incidentStatisticsResource.setI6Motorcycle(incident.getI6());
-        incidentStatisticsResource.setI7Car(incident.getI7());
-        incidentStatisticsResource.setI8Taxi(incident.getI8());
-        incidentStatisticsResource.setI9Other(incident.getI9());
-        incidentStatisticsResource.setI10EScooter(incident.getI10());
+
+        Integer[] countEachBikeType = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //todo was wenn neuer Bike type dazu kommt?
+        Integer[] countEachIncidentType = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //todo was wenn incident Type type dazu kommt?
+
+
+        if (!optionalIncidents.isEmpty()) {
+            optionalIncidents.forEach(incident -> {
+                countEachBikeType[incident.getBike()] += 1;
+                countEachIncidentType[incident.getIncident()] += 1;
+            });
+
+            Supplier<Stream<IncidentEntity>> incidentStream
+                    = optionalIncidents::stream;
+            incidentStatisticsResource.setCountEachBikeType(new ArrayList<>(Arrays.asList(countEachBikeType)));
+            incidentStatisticsResource.setCountEachIncidentType(new ArrayList<>(Arrays.asList(countEachIncidentType)));
+            incidentStatisticsResource.setCountChildrenInvolved((int) incidentStream.get().filter(IncidentEntity::getChildCheckBox).count());
+            incidentStatisticsResource.setCountTrailersInvolved((int) incidentStream.get().filter(IncidentEntity::getTrailerCheckBox).count());
+            incidentStatisticsResource.setCountOfScary((int) incidentStream.get().filter(IncidentEntity::getScary).count());
+            incidentStatisticsResource.setCountI1Bus((int) incidentStream.get().filter(IncidentEntity::getI1).count());
+            incidentStatisticsResource.setCountI2Cyclist((int) incidentStream.get().filter(IncidentEntity::getI2).count());
+            incidentStatisticsResource.setCountI3Pedestrian((int) incidentStream.get().filter(IncidentEntity::getI3).count());
+            incidentStatisticsResource.setCountI4DeliveryVan((int) incidentStream.get().filter(IncidentEntity::getI4).count());
+            incidentStatisticsResource.setCountI5Truck((int) incidentStream.get().filter(IncidentEntity::getI5).count());
+            incidentStatisticsResource.setCountI6Motorcycle((int) incidentStream.get().filter(IncidentEntity::getI6).count());
+            incidentStatisticsResource.setCountI7Car((int) incidentStream.get().filter(IncidentEntity::getI7).count());
+            incidentStatisticsResource.setCountI8Taxi((int) incidentStream.get().filter(IncidentEntity::getI8).count());
+            incidentStatisticsResource.setCountI9Other((int) incidentStream.get().filter(IncidentEntity::getI9).count());
+            incidentStatisticsResource.setCountI10EScooter((int) incidentStream.get().filter(IncidentEntity::getI10).count());
+        }
         return incidentStatisticsResource;
     }
-
 }

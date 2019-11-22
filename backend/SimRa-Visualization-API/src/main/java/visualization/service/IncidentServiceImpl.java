@@ -31,7 +31,7 @@ public class IncidentServiceImpl implements IncidentService {
         IncidentEntity.CompositeKey compositeKey = new IncidentEntity.CompositeKey(rideId, key);
         Optional<IncidentEntity> optional = incidentRepository.findById(compositeKey);
         optional.ifPresent(incidentEntity -> {
-                   incidentResource[0] = mapEntityToResource(incidentEntity);
+            incidentResource[0] = mapEntityToResource(incidentEntity);
 
                 }
         );
@@ -66,7 +66,7 @@ public class IncidentServiceImpl implements IncidentService {
         incidentResource.setRideId(incidentEntity.getRideId());
         incidentResource.setKey(incidentEntity.getKey());
         incidentResource.setCoordinates(incidentEntity.getLocation());
-        incidentResource.setTs(incidentEntity.getTimestamp());
+        incidentResource.setTs(incidentEntity.getTs());
         incidentResource.setChild(incidentEntity.getChildCheckBox());
         incidentResource.setTrailer(incidentEntity.getTrailerCheckBox());
         incidentResource.setPhoneLocation(incidentEntity.getPLoc());

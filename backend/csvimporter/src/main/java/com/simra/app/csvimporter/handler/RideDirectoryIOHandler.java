@@ -83,7 +83,7 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
             List mapMatchedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
             ride.setMapMatchedRideBeans(mapMatchedRideBeans);
 
-            ride.setLength(mapMatchingService.getCurrentRouteLength());
+            ride.setDistance(mapMatchingService.getCurrentRouteDistance());
 
             this.rides.add(ride);
 

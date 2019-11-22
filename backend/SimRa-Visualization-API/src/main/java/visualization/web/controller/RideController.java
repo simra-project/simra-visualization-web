@@ -32,8 +32,8 @@ public class RideController {
     // get all rides in range minDistance and maxDistance around a Point (longitude, latitude)
     @GetMapping(value = "/rides")
     public HttpEntity<List<RideResource>> getRidesNear(@RequestParam(value = "lon") double longitude,
-                                                               @RequestParam(value = "lat") double latitude,
-                                                               @RequestParam(value = "max") int maxDistance) {
+                                                       @RequestParam(value = "lat") double latitude,
+                                                       @RequestParam(value = "max") int maxDistance) {
         return ResponseEntity.ok(rideService.getRidesInRange(longitude, latitude, maxDistance));
     }
 

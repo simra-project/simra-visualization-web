@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import javax.management.DescriptorKey;
-
 @Getter
 @Setter
 @ToString
@@ -15,15 +13,13 @@ import javax.management.DescriptorKey;
 public class RideStatisticsResource {
 
     @JsonProperty
-    Long startTime;
+    int accumulatedDuration;
 
     @JsonProperty
-    int duration;
+    Float accumulatedDistance;
 
     @JsonProperty
-    Float length;
+    Float accumulatedSavedCO2;
 
-    @JsonProperty
-    Float savedCO2;
     // add more Stats Metadata for Rides here
 }

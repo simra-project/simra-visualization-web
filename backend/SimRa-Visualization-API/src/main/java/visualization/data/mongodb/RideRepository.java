@@ -1,7 +1,6 @@
 package visualization.data.mongodb;
 
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import visualization.data.mongodb.entities.RideEntity;
 
@@ -14,4 +13,5 @@ public interface RideRepository extends MongoRepository<RideEntity, String> {
 
     Optional<RideEntity> findById(String id);
 
+    Optional<List<RideEntity>> findAllByTsBetween(Long fromTs, Long untilTs);
 }

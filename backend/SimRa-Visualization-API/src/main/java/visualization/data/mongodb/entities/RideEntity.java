@@ -22,6 +22,9 @@ public class RideEntity {
 
     private ArrayList<Long> ts;
 
-    private Float length;
+    private Float distance;
 
+    public Long getDuration() {
+        return ts.get(ts.size() - 1) - ts.get(0);
+    }
 }

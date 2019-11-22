@@ -20,7 +20,6 @@ This is the place where we can do some number crunching and other postprocessing
 @Service
 public class RideServiceImpl implements RideService {
 
-
     @Autowired
     private RideRepository rideRepository;
 

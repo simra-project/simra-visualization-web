@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.ArrayList;
+
 @Getter
 @Setter
 @ToString
@@ -13,52 +15,49 @@ import lombok.*;
 public class IncidentStatisticsResource {
 
     @JsonProperty
-    int bikeType;
+    ArrayList<Integer> countEachBikeType;
 
     @JsonProperty
-    Long ts;
+    Integer countChildrenInvolved;
 
     @JsonProperty
-    boolean childInvolved;
+    Integer countTrailersInvolved;
 
     @JsonProperty
-    boolean trailerInvolved;
+    ArrayList<Integer> countEachIncidentType;
 
     @JsonProperty
-    int incidentType;
+    Integer countOfScary;
 
     @JsonProperty
-    boolean scary;
+    Integer countI1Bus;
 
     @JsonProperty
-    Boolean i1Bus;
+    Integer countI2Cyclist;
 
     @JsonProperty
-    Boolean i2Cyclist;
+    Integer countI3Pedestrian;
 
     @JsonProperty
-    Boolean i3Pedestrian;
+    Integer countI4DeliveryVan;
 
     @JsonProperty
-    Boolean i4DeliveryVan;
+    Integer countI5Truck;
 
     @JsonProperty
-    Boolean i5Truck;
+    Integer countI6Motorcycle;
 
     @JsonProperty
-    Boolean i6Motorcycle;
+    Integer countI7Car;
 
     @JsonProperty
-    Boolean i7Car;
+    Integer countI8Taxi;
 
     @JsonProperty
-    Boolean i8Taxi;
+    Integer countI9Other;
 
     @JsonProperty
-    Boolean i9Other;
-
-    @JsonProperty
-    Boolean i10EScooter;
+    Integer countI10EScooter;
 
     // add more Stats Metadata for Incidents here
 }

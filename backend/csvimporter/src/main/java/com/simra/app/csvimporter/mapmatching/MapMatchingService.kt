@@ -21,7 +21,7 @@ import kotlin.math.sqrt
 
 class MapMatchingService {
 
-    var currentRouteLength: Float = 0F;
+    var currentRouteDistance: Float = 0F;
 
     /**
      * Snaps the GPS Coordinates onto OSM-Streets.
@@ -95,7 +95,7 @@ class MapMatchingService {
             rideCSV
         }
 
-        currentRouteLength = pathWrapper.distance.toFloat()
+        currentRouteDistance = pathWrapper.distance.toFloat()
 
         println("matching took: " + matchSW.seconds)
 

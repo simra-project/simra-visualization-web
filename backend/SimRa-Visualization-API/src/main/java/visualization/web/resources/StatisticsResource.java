@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import java.util.ArrayList;
-
 @Getter
 @Setter
 @ToString
@@ -15,9 +13,9 @@ import java.util.ArrayList;
 public class StatisticsResource {
 
     @JsonProperty
-    private ArrayList ridesStatistics = new ArrayList<RideStatisticsResource>();
+    private RideStatisticsResource ridesStatistics = new RideStatisticsResource();
 
     @JsonProperty
-    private ArrayList incidentsStatistics = new ArrayList<IncidentStatisticsResource>();
+    private IncidentStatisticsResource incidentsStatistics = new IncidentStatisticsResource();
 
 }

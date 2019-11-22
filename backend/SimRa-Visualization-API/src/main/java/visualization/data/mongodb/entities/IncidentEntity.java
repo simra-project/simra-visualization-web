@@ -26,7 +26,7 @@ public class IncidentEntity {
 
     private GeoJsonPoint location;
 
-    private long timestamp;
+    private long ts;
 
     private Boolean childCheckBox;
 
