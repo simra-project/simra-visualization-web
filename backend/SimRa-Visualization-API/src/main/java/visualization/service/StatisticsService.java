@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface StatisticsService {
 
-    StatisticsResource getFilteredStatistics(Long fromTs, Long untilTs, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants);
+    StatisticsResource getFilteredStatistics(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekday, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants);
 
 }

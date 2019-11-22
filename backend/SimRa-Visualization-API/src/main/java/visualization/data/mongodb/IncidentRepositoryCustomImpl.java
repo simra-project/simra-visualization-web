@@ -15,11 +15,17 @@ public class IncidentRepositoryCustomImpl implements IncidentRepositoryCustom {
 
 
     @Override
-    public List<IncidentEntity> findFilteredIncidents(Long fromTs, Long untilTs, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
+    public List<IncidentEntity> findFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
 
         Query query = new Query();
         if (fromTs != null && untilTs != null) {
             query.addCriteria(Criteria.where("ts").gte(fromTs).lte(untilTs));
+        }
+        if (fromMinutesOfDay != null && untilMinutesOfDay != null) {
+            query.addCriteria(Criteria.where("mintuesOfDay").gte(fromMinutesOfDay).lte(untilTs));
+        }
+        if (weekdays.size() > 0) {
+            query.addCriteria(Criteria.where("weekday").in(weekdays));
         }
         if (bikeTypes.size() > 0) {
             query.addCriteria(Criteria.where("bike").in(bikeTypes));

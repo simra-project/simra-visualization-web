@@ -2,6 +2,7 @@ package main.java.com.simra.app.csvimporter.model;
 
 import com.mongodb.client.model.geojson.MultiPoint;
 import com.mongodb.client.model.geojson.Position;
+import main.java.com.simra.app.csvimporter.Utils;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ import java.util.List;
  */
 public class Ride implements MongoDocument {
 
-    private List rideBeans;
-    private List mapMatchedRideBeans;
-    private List incidents;
+    private List<RideCSV> rideBeans;
+    private List<RideCSV> mapMatchedRideBeans;
+    private List<IncidentCSV> incidents;
 
     private Float distance;
 
@@ -113,6 +114,10 @@ public class Ride implements MongoDocument {
         parseRideBeans(singleRide, rideBeans, "");
         parseRideBeans(singleRide, mapMatchedRideBeans, "MapMatched");
 
+
+        singleRide.put("weekday", Utils.getWeekday(rideBeans.get(0).getTimeStamp()));
+        singleRide.put("minuteOfDay", Utils.getMinuteOfDay(rideBeans.get(0).getTimeStamp()));
+
         return singleRide;
     }
 
@@ -127,7 +132,7 @@ public class Ride implements MongoDocument {
         MultiPoint coordinatesMulti = new MultiPoint(coordinates);
 
         document.put("location" + suffix, coordinatesMulti);
-        ArrayList ts = new ArrayList<String>();
+        ArrayList<Long> ts = new ArrayList<>();
         rideBeans.forEach(ride -> ts.add((ride).getTimeStamp()));
         document.put("ts" + suffix, ts);
     }

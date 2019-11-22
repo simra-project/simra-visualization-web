@@ -35,12 +35,12 @@ public class StatisticsServiceImpl implements StatisticsService {
     private IncidentRepository incidentRepository;
 
     @Override
-    public StatisticsResource getFilteredStatistics(Long fromTs, Long untilTs, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
+    public StatisticsResource getFilteredStatistics(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
 
         StatisticsResource statisticsResource = new StatisticsResource();
 
         statisticsResource.setRidesStatistics(getFilteredRidesStatistics(fromTs, untilTs));
-        statisticsResource.setIncidentsStatistics(getFilteredIncidentStatistics(fromTs, untilTs, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants));
+        statisticsResource.setIncidentsStatistics(getFilteredIncidentStatistics(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants));
 
         return statisticsResource;
     }
@@ -68,8 +68,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         return rideStatisticsResource;
     }
 
-    private IncidentStatisticsResource getFilteredIncidentStatistics(Long fromTs, Long untilTs, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
-        List<IncidentEntity> optionalIncidents = incidentRepository.findFilteredIncidents(fromTs, untilTs, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants);
+    private IncidentStatisticsResource getFilteredIncidentStatistics(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
+        List<IncidentEntity> optionalIncidents = incidentRepository.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants);
 
         IncidentStatisticsResource incidentStatisticsResource = new IncidentStatisticsResource();
 

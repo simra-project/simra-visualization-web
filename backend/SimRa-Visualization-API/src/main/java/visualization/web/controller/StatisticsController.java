@@ -27,8 +27,11 @@ public class StatisticsController {
 
     // gets filtered Statistics
     @GetMapping(value = "/statistics")
-    public HttpEntity<StatisticsResource> getFilteredStatistics(@RequestParam(value = "from") Long fromTs,
-                                                                @RequestParam(value = "until") Long untilTs,
+    public HttpEntity<StatisticsResource> getFilteredStatistics(@RequestParam(value = "fromTs") Long fromTs,
+                                                                @RequestParam(value = "untilTs") Long untilTs,
+                                                                @RequestParam(value = "fromMinutesOfDay") Integer fromMinutesOfDay,
+                                                                @RequestParam(value = "untilMinutesOfDay") Integer untilMinutesOfDay,
+                                                                @RequestParam(value = "weekday") List<String> weekdays,
                                                                 @RequestParam(value = "bikeTypes") List<Integer> bikeTypes,
                                                                 @RequestParam(value = "incidentTypes") List<Integer> incidentTypes,
                                                                 @RequestParam(value = "childInvolved") Boolean childInvolved,
@@ -36,7 +39,7 @@ public class StatisticsController {
                                                                 @RequestParam(value = "scary") Boolean scary,
                                                                 @RequestParam(value = "participants") List<Integer> participants) {
 
-        return ResponseEntity.ok(statisticsService.getFilteredStatistics(fromTs, untilTs, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, parseParticipantsList(participants)));
+        return ResponseEntity.ok(statisticsService.getFilteredStatistics(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, parseParticipantsList(participants)));
     }
 
     private List<Boolean> parseParticipantsList(List<Integer> participants) {
