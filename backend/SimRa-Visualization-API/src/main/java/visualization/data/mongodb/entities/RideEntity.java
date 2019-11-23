@@ -3,7 +3,6 @@ package visualization.data.mongodb.entities;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
-import org.springframework.data.mongodb.core.geo.GeoJsonMultiPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;

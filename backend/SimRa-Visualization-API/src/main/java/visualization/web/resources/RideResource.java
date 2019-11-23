@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
-import org.springframework.data.mongodb.core.geo.GeoJsonMultiPoint;
 
 import java.util.ArrayList;
 

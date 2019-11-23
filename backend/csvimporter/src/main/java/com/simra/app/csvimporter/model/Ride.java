@@ -1,7 +1,6 @@
 package main.java.com.simra.app.csvimporter.model;
 
 import com.mongodb.client.model.geojson.LineString;
-import com.mongodb.client.model.geojson.MultiPoint;
 import com.mongodb.client.model.geojson.Position;
 import main.java.com.simra.app.csvimporter.Utils;
 import org.bson.Document;
