@@ -1,6 +1,6 @@
 package main.java.com.simra.app.csvimporter.model;
 
-import com.mongodb.client.model.geojson.MultiPoint;
+import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import org.bson.Document;
 
@@ -103,7 +103,7 @@ public class Ride implements MongoDocument {
             Position pos = new Position(places);
             coordinates.add(pos);
         });
-        MultiPoint coordinatesMulti = new MultiPoint(coordinates);
+        LineString coordinatesMulti = new LineString(coordinates);
 
         document.put("location" + suffix, coordinatesMulti);
         ArrayList ts = new ArrayList<String>();
