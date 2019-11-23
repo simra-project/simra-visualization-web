@@ -41,7 +41,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public List<RideResource> getRidesInRange(double latitude, double longitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
-        List<RideResource> rideResources = new ArrayList();
+        List<RideResource> rideResources = new ArrayList<>();
         List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
         for(RideEntity rideEntity:rideEntities) {
             RideResource rideResource = new RideResource();
