@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Supplier;
@@ -35,32 +36,42 @@ public class StatisticsServiceImpl implements StatisticsService {
     private IncidentRepository incidentRepository;
 
     @Override
-    public StatisticsResource getFilteredStatistics(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
+//    public StatisticsResource getFilteredStatistics(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
+    public StatisticsResource getStatistics(String region) {
+        // TODO: use region argument once database has a region column/field
 
         StatisticsResource statisticsResource = new StatisticsResource();
 
-        statisticsResource.setRidesStatistics(getFilteredRidesStatistics(fromTs, untilTs));
-        statisticsResource.setIncidentsStatistics(getFilteredIncidentStatistics(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants));
+        statisticsResource.setRidesStatistics(getFilteredRidesStatistics(/*fromTs, untilTs*/));
+        statisticsResource.setIncidentsStatistics(getFilteredIncidentStatistics(/*fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants*/));
 
         return statisticsResource;
     }
 
-    private RideStatisticsResource getFilteredRidesStatistics(Long fromTs, Long untilTs) {
-        Optional<List<RideEntity>> optionalRides = rideRepository.findAllByTsBetween(fromTs, untilTs);
+    // TODO: use filters for map filters
+    private RideStatisticsResource getFilteredRidesStatistics(/*Long fromTs, Long untilTs*/) {
+//        Optional<List<RideEntity>> optionalRides = rideRepository.findAllByTsBetween(fromTs, untilTs);
+        List<RideEntity> rideList = rideRepository.findAll();
 
         RideStatisticsResource rideStatisticsResource = new RideStatisticsResource();
 
+        AtomicInteger rideCount = new AtomicInteger();
         DoubleAccumulator accumulatedDistance = new DoubleAccumulator(Double::sum, 0.d);
         LongAccumulator accumulatedDuration = new LongAccumulator(Long::sum, 0L);
 
-        optionalRides.ifPresent(rideList -> {
+//        optionalRides.ifPresent(rideList -> {
+                    rideCount.set(rideList.size());
                     rideList.forEach(ride -> {
-                        accumulatedDistance.accumulate(ride.getDistance());
-                        accumulatedDuration.accumulate(ride.getDuration());
+                        // Even if only one of them is null, it shouldn't be counted as it will distort the statistics
+                        if (ride.getDistance() != null && ride.getDuration() != null) {
+                            accumulatedDistance.accumulate(ride.getDistance());
+                            accumulatedDuration.accumulate(ride.getDuration());
+                        }
                     });
-                }
-        );
+//                }
+//        );
 
+        rideStatisticsResource.setRideCount(rideCount.get());
         rideStatisticsResource.setAccumulatedDistance(accumulatedDistance.floatValue());
         rideStatisticsResource.setAccumulatedDuration(accumulatedDuration.intValue());
         rideStatisticsResource.setAccumulatedSavedCO2((float) (rideStatisticsResource.getAccumulatedDistance() * 0.183));
@@ -68,8 +79,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         return rideStatisticsResource;
     }
 
-    private IncidentStatisticsResource getFilteredIncidentStatistics(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
-        List<IncidentEntity> optionalIncidents = incidentRepository.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants);
+    // TODO: use filters for map filters
+    private IncidentStatisticsResource getFilteredIncidentStatistics(/*Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants*/) {
+//        List<IncidentEntity> optionalIncidents = incidentRepository.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, participants);
+        List<IncidentEntity> optionalIncidents = incidentRepository.findAll();
 
         IncidentStatisticsResource incidentStatisticsResource = new IncidentStatisticsResource();
 

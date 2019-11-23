@@ -13,6 +13,9 @@ import lombok.*;
 public class RideStatisticsResource {
 
     @JsonProperty
+    int rideCount;
+
+    @JsonProperty
     int accumulatedDuration;
 
     @JsonProperty
