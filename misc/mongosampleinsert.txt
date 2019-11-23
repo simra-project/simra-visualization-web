@@ -10,7 +10,7 @@ db.incidents.insert(
 )
 
 db.rides.insert(
-{_id: "1", location: {type:"MultiPoint", coordinates: [ 
+{_id: "1", location: {type:"LineString", coordinates: [
 [ 52.43087,13.26155] , [ 52.43030,13.26008] , [ 52.43103,13.25930] , [ 52.24333,13.25893]
 ] },ts:[1567575044325, 1567575081125, 1567575172884, 1567575271036]
 }
