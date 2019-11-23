@@ -1,6 +1,5 @@
 package visualization.data.mongodb;
 
-import org.springframework.data.geo.Box;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.data.mongodb.repository.MongoRepository;
