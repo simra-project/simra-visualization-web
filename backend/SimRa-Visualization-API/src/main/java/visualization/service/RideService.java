@@ -9,4 +9,6 @@ public interface RideService {
     List<RideResource> getRidesInRange(double latitude, double longitude, int maxDistance);
 
     RideResource getRideById(String rideId);
+
+    List<RideResource> getRidesWithin(double[] bottomLeft, double[] upperRight);
 }

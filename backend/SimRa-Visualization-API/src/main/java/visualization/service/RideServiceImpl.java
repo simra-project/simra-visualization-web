@@ -1,6 +1,7 @@
 package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Box;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.RideRepository;
@@ -39,10 +40,22 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    public List<RideResource> getRidesWithin(double[] bottomLeft, double[] upperRight) {
+        Box box = new Box(bottomLeft, upperRight);
+        List<RideEntity> rideEntities = rideRepository.findByLocationWithin(box);
+        List<RideResource> rideResources = new ArrayList<>();
+        return mapRideEntityToResource(rideEntities, rideResources);
+    }
+
+    @Override
     public List<RideResource> getRidesInRange(double latitude, double longitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         List<RideResource> rideResources = new ArrayList<>();
         List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
+        return mapRideEntityToResource(rideEntities, rideResources);
+    }
+
+    private List<RideResource> mapRideEntityToResource(List<RideEntity> rideEntities, List<RideResource> rideResources) {
         for(RideEntity rideEntity:rideEntities) {
             RideResource rideResource = new RideResource();
             rideResource.setRideId(rideEntity.getId());

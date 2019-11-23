@@ -44,4 +44,11 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncidentsInRange(longitude, latitude, maxDistance));
     }
 
+    // get all incidents in Box geometry localhost/incidents?bottomleft=lon,lat&upperright=lon,lat
+    @GetMapping(value = "/incidents")
+    public HttpEntity<List<IncidentResource>> getIncidentsWithin(@RequestParam(value = "bottomleft") double[] bottomLeft,
+                                                               @RequestParam(value = "upperright")  double[] upperRight) {
+        return ResponseEntity.ok(incidentService.getIncidentsInWithin(bottomLeft, upperRight));
+    }
+
 }

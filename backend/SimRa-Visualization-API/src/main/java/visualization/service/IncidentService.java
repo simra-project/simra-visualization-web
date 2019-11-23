@@ -12,4 +12,6 @@ public interface IncidentService {
 
     List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int maxDistance);
 
+    List<IncidentResource> getIncidentsInWithin(double[] bottomLeft, double[] upperRight);
+
 }

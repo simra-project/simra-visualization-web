@@ -1,6 +1,7 @@
 package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Box;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
@@ -54,11 +55,21 @@ public class IncidentServiceImpl implements IncidentService {
 
         List<IncidentResource> incidentResources;
         List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
-
         incidentResources = incidentEntities.stream().map(this::mapEntityToResource).collect(Collectors.toList());
+
         return incidentResources;
+    }
 
+    @Override
+    public List<IncidentResource> getIncidentsInWithin(double[] bottomLeft, double[] upperRight) {
 
+        Box box = new Box(bottomLeft, upperRight);
+        
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationWithin(box);
+        List<IncidentResource> incidentResources;
+        incidentResources = incidentEntities.stream().map(this::mapEntityToResource).collect(Collectors.toList());
+
+        return incidentResources;
     }
 
     private IncidentResource mapEntityToResource(IncidentEntity incidentEntity) {
