@@ -1,5 +1,6 @@
 package visualization.data.mongodb;
 
+import org.springframework.data.geo.Box;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -16,5 +17,7 @@ public interface IncidentRepository extends MongoRepository<IncidentEntity, Inci
 
     List<IncidentEntity> findByLocationNear(GeoJsonPoint coordinates, int maxDistance);
     //https://docs.mongodb.com/manual/reference/operator/query/box/
+
     List<IncidentEntity> findByLocationWithin(GeoJsonPolygon polygon);
+
 }

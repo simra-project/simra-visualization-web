@@ -12,4 +12,5 @@ public interface RideService {
     RideResource getRideById(String rideId);
 
     List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third,GeoJsonPoint fourth);
+
 }
