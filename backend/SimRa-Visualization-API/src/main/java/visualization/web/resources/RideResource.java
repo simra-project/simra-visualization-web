@@ -3,6 +3,7 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import org.springframework.data.mongodb.core.geo.GeoJsonMultiPoint;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class RideResource {
     private String rideId;
 
     @JsonProperty
-    private GeoJsonMultiPoint coordinates;
+    private GeoJsonLineString coordinates;
 
     @JsonProperty
     private ArrayList ts;
