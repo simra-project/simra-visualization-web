@@ -172,7 +172,7 @@
                         lng: this.center.lng,
                         zoom: this.zoom,
                     },
-                });
+                }).catch(err => {});
             },
             clickedOnRoute(event, route) {
                 // Highlighting this route
@@ -204,7 +204,6 @@
                 this.routes = response.data;
             },
             parseIncidents(response) {
-                console.log("Parse Incidents Called");
                 this.markers = response.data;
                 for (var i = 0; i < this.markers.length; i++) {
                     this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
