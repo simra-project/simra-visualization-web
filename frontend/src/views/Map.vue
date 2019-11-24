@@ -74,9 +74,7 @@
             v-for="route in routes"
             :key="route.rideId"
             :geojson="route.coordinates"
-            :color="routeHighlightId === route.id ? 'hsl(171, 100%, 41%)' : 'hsl(217, 71%, 53%)'"
-            :weight="routeHighlightId === route.id ? 5 : 3"
-            :opacity="(routeHighlightId !== null && routeHighlightId !== route.id) ? 0.6 : 1.0"
+            :options="geoJsonOptions"
             @click="clickedOnRoute($event, route)"
         />
         <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightStart"/> <!-- Highlighted Route start point -->
@@ -151,6 +149,23 @@
                 geosearchOptions: {
                     provider: new OpenStreetMapProvider(),
                 },
+                geoJsonOptions: {
+                    style: {
+                        color: 'hsl(217, 71%, 53%)',
+                        weight: 3,
+                        opacity: 0.6
+                    }
+                },
+                geoJsonStyleHighlight: {
+                    color: 'hsl(0,100%,50%)',
+                    weight: 4,
+                    opacity: 0.8
+                },
+                geoJsonStyleNormal: {
+                    color: 'hsl(217, 71%, 53%)',
+                    weight: 3,
+                    opacity: 0.6
+                }
             };
         },
         methods: {
@@ -176,24 +191,28 @@
             },
             clickedOnRoute(event, route) {
                 // Highlighting this route
-                this.routeHighlightId = route.id;
+                this.routeHighlightId = route.rideId;
                 this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
 
                 // Showing start & end point with circles
-                this.routeHighlightStart = route.points[0];
-                this.routeHighlightEnd = route.points[route.points.length - 1];
+                this.routeHighlightStart = route.coordinates.coordinates[0];
+                this.routeHighlightEnd = route.coordinates.coordinates[route.coordinates.coordinates.length - 1];
 
                 // Fitting route into view if it's not already
                 let routeBounds = event.target.getBounds().pad(0.1);
                 if (!this.bounds.contains(routeBounds)) {
                     this.$refs.map.mapObject.flyToBounds(routeBounds);
                 }
+
+                event.sourceTarget.setStyle(this.geoJsonStyleHighlight);
+                this.routeHighlighted = event.sourceTarget;
             },
             unfocusRouteHighlight() {
                 this.routeHighlightId = null;
                 this.routeHighlightContent = null;
                 this.routeHighlightStart = [0, 0];
                 this.routeHighlightEnd = [0, 0];
+                this.routeHighlighted.setStyle(this.geoJsonStyleNormal);
             },
             clickedOnMap(event) {
                 if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
@@ -208,7 +227,7 @@
                 for (var i = 0; i < this.markers.length; i++) {
                     this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
                 }
-            }
+            },
         },
         // Laden der Daten aus der API
         mounted() {
