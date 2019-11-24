@@ -69,11 +69,11 @@
         </l-control>
 
         <!--    Stellt eine Route dar    -->
-        <l-polyline
+        <l-geo-json
             v-if="showRoutes"
             v-for="route in routes"
-            :key="route.id"
-            :lat-lngs="route.points"
+            :key="route.rideId"
+            :geojson="route.coordinates"
             :color="routeHighlightId === route.id ? 'hsl(171, 100%, 41%)' : 'hsl(217, 71%, 53%)'"
             :weight="routeHighlightId === route.id ? 5 : 3"
             :opacity="(routeHighlightId !== null && routeHighlightId !== route.id) ? 0.6 : 1.0"
@@ -83,206 +83,149 @@
         <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightEnd"/>   <!-- Highlighted Route end point -->
 
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
-        <Vue2LeafletHeatmap v-if="zoom <= heatmapMaxZoom && showIncidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
-        <vue2-leaflet-marker-cluster v-else-if="showIncidents">
-            <l-marker v-for="m in markers" :lat-lng="m.latlng">
-                <l-popup :content="m.description"></l-popup>
-            </l-marker>
-        </vue2-leaflet-marker-cluster>
+        <Vue2LeafletHeatmap
+            v-if="zoom <= heatmapMaxZoom && showIncidents"
+            :lat-lng="incident_heatmap"
+            :radius="heatmapRadius"
+            :min-opacity="heatmapMinOpacity"
+            :max-zoom="10" :blur="heatmapBlur"
+            :max="heatmapMaxPointIntensity">
+
+        </Vue2LeafletHeatmap>
+        <l-geo-json v-for="(marker, index) in markers"
+                    v-else-if="showIncidents"
+                    :key="index"
+                    :geojson="marker.coordinates" >
+            <l-popup :content="marker.description"></l-popup>
+        </l-geo-json>
     </l-map>
 </template>
 
 <script>
-import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker } from "vue2-leaflet";
-import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
-import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
-import { OpenStreetMapProvider } from "leaflet-geosearch";
-import VGeosearch from "vue2-leaflet-geosearch";
-import VueSlider from "vue-slider-component";
-import "vue-slider-component/theme/default.css";
-// import { ApiService } from "@/services/ApiService";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
+    import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker, LGeoJson } from "vue2-leaflet";
+    import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
+    import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
+    import { OpenStreetMapProvider } from "leaflet-geosearch";
+    import VGeosearch from "vue2-leaflet-geosearch";
+    import VueSlider from "vue-slider-component";
+    import "vue-slider-component/theme/default.css";
+    import { ApiService } from "@/services/ApiService";
+    import axios from "axios";
 
-// Mock REST API
-let mock = new MockAdapter(axios);
-mock.onGet("/api/routes").reply(200, {
-    routes: [
-        {
-            id: "route1",
-            points: [
-                { lat: 52.512641, lng: 13.323587 },
-                { lat: 52.512984, lng: 13.328403 },
-                { lat: 52.513053, lng: 13.330226 },
-                { lat: 52.512568, lng: 13.330560 },
-            ],
-        },
-        {
-            id: "route2",
-            points: [
-                { lat: 52.509599, lng: 13.325507 },
-                { lat: 52.510089, lng: 13.324842 },
-                { lat: 52.511460, lng: 13.322932 },
-                { lat: 52.511930, lng: 13.322465 },
-                { lat: 52.512168, lng: 13.322610 },
-                { lat: 52.512412, lng: 13.322880 },
-                { lat: 52.512882, lng: 13.322869 },
-                { lat: 52.513140, lng: 13.322612 },
-                { lat: 52.513682, lng: 13.322644 },
-                { lat: 52.514505, lng: 13.322574 },
-                { lat: 52.484750, lng: 13.322563 },
-            ],
-        },
-    ],
-});
 
-mock.onGet("/api/markers").reply(200, {
-    markers: [
-        {
-            id: "Incident 1",
-            latlng: {
-                lat: 52.512830,
-                lng: 13.322887,
-            },
-            description: "Auto hat mich beim Einfaedeln fast mitgenommen!",
+    export default {
+        components: {
+            LMap,
+            LTileLayer,
+            LControl,
+            LPolyline,
+            Vue2LeafletMarkerCluster,
+            LMarker,
+            LPopup,
+            LCircleMarker,
+            Vue2LeafletHeatmap,
+            VueSlider,
+            VGeosearch,
+            LGeoJson,
         },
-        {
-            id: "Incident 2",
-            latlng: {
-                lat: 52.512719,
-                lng: 13.324711,
-            },
-            description: "Wurde von ein paar Vertretern auf ein Jobangebot angesprochen...",
-        },
-        {
-            id: "Incident 3",
-            latlng: {
-                lat: 52.509777,
-                lng: 13.325281,
-            },
-            description: "Viel zu lange Schlangen in der Mensa.",
-        },
-    ],
-});
-
-export default {
-    components: {
-        LMap,
-        LTileLayer,
-        LControl,
-        LPolyline,
-        Vue2LeafletMarkerCluster,
-        LMarker,
-        LPopup,
-        LCircleMarker,
-        Vue2LeafletHeatmap,
-        VueSlider,
-        VGeosearch,
-    },
-    data() {
-        return {
-            url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
-            zoom: parseInt(this.$route.query.z) || 15,
-            center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
-            bounds: null,
-            showRoutes: true,
-            showIncidents: true,
-            routes: [],
-            routeHighlightId: null,
-            routeHighlightContent: null,
-            routeHighlightStart: [0, 0],
-            routeHighlightEnd: [0, 0],
-            markers: [],
-            incident_heatmap: [],
-            heatmapMaxZoom: 15,
-            heatmapMinOpacity: 0.75,
-            heatmapMaxPointIntensity: 1.0,
-            heatmapRadius: 25,
-            heatmapBlur: 15,
-            geosearchOptions: {
-                provider: new OpenStreetMapProvider(),
-            },
-        };
-    },
-    methods: {
-        zoomUpdated(zoom) {
-            this.zoom = zoom;
-        },
-        centerUpdated(center) {
-            this.center = center;
-            this.updateUrlQuery();
-        },
-        boundsUpdated(bounds) {
-            this.bounds = bounds;
-        },
-        updateUrlQuery() {
-            this.$router.replace({
-                name: "mapQuery",
-                params: {
-                    lat: this.center.lat,
-                    lng: this.center.lng,
-                    zoom: this.zoom,
+        data() {
+            return {
+                url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+                zoom: parseInt(this.$route.query.z) || 15,
+                center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
+                bounds: null,
+                showRoutes: true,
+                showIncidents: true,
+                routes: [],
+                routeHighlightId: null,
+                routeHighlightContent: null,
+                routeHighlightStart: [0, 0],
+                routeHighlightEnd: [0, 0],
+                markers: [],
+                incident_heatmap: [],
+                heatmapMaxZoom: 15,
+                heatmapMinOpacity: 0.75,
+                heatmapMaxPointIntensity: 1.0,
+                heatmapRadius: 25,
+                heatmapBlur: 15,
+                geosearchOptions: {
+                    provider: new OpenStreetMapProvider(),
                 },
+            };
+        },
+        methods: {
+            zoomUpdated(zoom) {
+                this.zoom = zoom;
+            },
+            centerUpdated(center) {
+                this.center = center;
+                this.updateUrlQuery();
+            },
+            boundsUpdated(bounds) {
+                this.bounds = bounds;
+            },
+            updateUrlQuery() {
+                this.$router.replace({
+                    name: "mapQuery",
+                    params: {
+                        lat: this.center.lat,
+                        lng: this.center.lng,
+                        zoom: this.zoom,
+                    },
+                });
+            },
+            clickedOnRoute(event, route) {
+                // Highlighting this route
+                this.routeHighlightId = route.id;
+                this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
+
+                // Showing start & end point with circles
+                this.routeHighlightStart = route.points[0];
+                this.routeHighlightEnd = route.points[route.points.length - 1];
+
+                // Fitting route into view if it's not already
+                let routeBounds = event.target.getBounds().pad(0.1);
+                if (!this.bounds.contains(routeBounds)) {
+                    this.$refs.map.mapObject.flyToBounds(routeBounds);
+                }
+            },
+            unfocusRouteHighlight() {
+                this.routeHighlightId = null;
+                this.routeHighlightContent = null;
+                this.routeHighlightStart = [0, 0];
+                this.routeHighlightEnd = [0, 0];
+            },
+            clickedOnMap(event) {
+                if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
+                    this.unfocusRouteHighlight();
+                }
+            },
+            parseRoutes(response) {
+                this.routes = response.data;
+            },
+            parseIncidents(response) {
+                console.log("Parse Incidents Called");
+                this.markers = response.data;
+                for (var i = 0; i < this.markers.length; i++) {
+                    this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
+                }
+            }
+        },
+        // Laden der Daten aus der API
+        mounted() {
+            this.$nextTick(() => {
+                this.zoom = this.$refs.map.mapObject.getZoom();
+                this.center = this.$refs.map.mapObject.getCenter();
+                this.bounds = this.$refs.map.mapObject.getBounds();
             });
-        },
-        clickedOnRoute(event, route) {
-            // Highlighting this route
-            this.routeHighlightId = route.id;
-            this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
 
-            // Showing start & end point with circles
-            this.routeHighlightStart = route.points[0];
-            this.routeHighlightEnd = route.points[route.points.length - 1];
+            let lat = this.center[0];
+            let lon = this.center[1];
 
-            // Fitting route into view if it's not already
-            let routeBounds = event.target.getBounds().pad(0.1);
-            if (!this.bounds.contains(routeBounds)) {
-                this.$refs.map.mapObject.flyToBounds(routeBounds);
-            }
+            ApiService.loadRoutes(lat, lon).then(response => (this.parseRoutes(response)));
+            ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
         },
-        unfocusRouteHighlight() {
-            this.routeHighlightId = null;
-            this.routeHighlightContent = null;
-            this.routeHighlightStart = [0, 0];
-            this.routeHighlightEnd = [0, 0];
-        },
-        clickedOnMap(event) {
-            if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
-                this.unfocusRouteHighlight();
-            }
-        }
-    },
-    // Laden der Daten aus der API
-    mounted() {
-        this.$nextTick(() => {
-            this.zoom = this.$refs.map.mapObject.getZoom();
-            this.center = this.$refs.map.mapObject.getCenter();
-            this.bounds = this.$refs.map.mapObject.getBounds();
-        });
-
-        axios
-            .get("/api/routes")
-            .then(
-                response => {
-                    this.routes = response.data.routes;
-                },
-            );
-        axios
-            .get("/api/markers")
-            .then(
-                response => {
-                    this.markers = response.data.markers;
-                    // Workaround to bug in heatmap. Overwriting the array, e.g., arr=[], causes the heatmap to be empty
-                    while (this.incident_heatmap.length > 0) {
-                        this.incident_heatmap.length.pop();
-                    }
-                    for (var i = 0; i < this.markers.length; i++) {
-                        this.incident_heatmap.push([this.markers[i].latlng.lat, this.markers[i].latlng.lng, 1]);
-                    }
-                },
-            );
-    },
-};
+    };
 </script>
 
 <style lang="scss">
