@@ -106,7 +106,6 @@
     import VueSlider from "vue-slider-component";
     import "vue-slider-component/theme/default.css";
     import { ApiService } from "@/services/ApiService";
-    import axios from "axios";
 
 
     export default {
@@ -185,7 +184,7 @@
                         lng: this.center.lng,
                         zoom: this.zoom,
                     },
-                }).catch(err => {});
+                }).catch(() => {});
             },
             clickedOnRoute(event, route) {
                 // Highlighting this route
