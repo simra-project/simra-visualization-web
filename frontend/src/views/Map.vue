@@ -192,8 +192,8 @@
                 this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
 
                 // Showing start & end point with circles
-                this.routeHighlightStart = route.coordinates.coordinates[0];
-                this.routeHighlightEnd = route.coordinates.coordinates[route.coordinates.coordinates.length - 1];
+                this.routeHighlightStart = [route.coordinates.coordinates[0][1], route.coordinates.coordinates[0][0]];
+                this.routeHighlightEnd = [route.coordinates.coordinates[route.coordinates.coordinates.length - 1][1], route.coordinates.coordinates[route.coordinates.coordinates.length - 1][0]];
 
                 // Fitting route into view if it's not already
                 let routeBounds = event.target.getBounds().pad(0.1);
