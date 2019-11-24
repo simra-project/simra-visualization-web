@@ -2,6 +2,7 @@
     <l-map ref="map"
            :zoom="zoom"
            :center="center"
+           :min-zoom="9"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
