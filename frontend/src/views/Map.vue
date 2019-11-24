@@ -72,7 +72,6 @@
         <l-geo-json
             v-if="showRoutes"
             v-for="route in routes"
-            :key="route.rideId"
             :geojson="route.coordinates"
             :options="geoJsonOptions"
             @click="clickedOnRoute($event, route)"
@@ -90,9 +89,8 @@
             :max="heatmapMaxPointIntensity">
 
         </Vue2LeafletHeatmap>
-        <l-geo-json v-for="(marker, index) in markers"
+        <l-geo-json v-for="marker in markers"
                     v-else-if="showIncidents"
-                    :key="index"
                     :geojson="marker.coordinates" >
             <l-popup :content="marker.description"></l-popup>
         </l-geo-json>
