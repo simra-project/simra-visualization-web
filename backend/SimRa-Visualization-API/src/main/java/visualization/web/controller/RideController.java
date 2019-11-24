@@ -39,7 +39,7 @@ public class RideController {
 
     // get all incidents in Box geometry localhost/rides?bottomleft=lon,lat&upperright=lon,lat
     //TODO: Create Postman sample calls
-    @GetMapping(value = "/rides")
+    @GetMapping(value = "/rides/area")
     public HttpEntity<List<RideResource>> getRidesWithin(@RequestParam(value = "bottomleft") double[] bottomLeft,
                                                                  @RequestParam(value = "upperright")  double[] upperRight) {
         return ResponseEntity.ok(rideService.getRidesWithin(bottomLeft, upperRight));
