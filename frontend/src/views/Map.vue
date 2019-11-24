@@ -92,7 +92,8 @@
         </Vue2LeafletHeatmap>
         <l-geo-json v-for="marker in markers"
                     v-else-if="showIncidents"
-                    :geojson="marker.coordinates" >
+                    :geojson="marker.coordinates"
+                    :options="geoJsonPopupOptions(marker)">
             <l-popup :content="marker.description"></l-popup>
         </l-geo-json>
     </l-map>
@@ -152,7 +153,7 @@
                         color: 'hsl(217, 71%, 53%)',
                         weight: 3,
                         opacity: 0.6
-                    }
+                    },
                 },
                 geoJsonStyleHighlight: {
                     color: 'hsl(0,100%,50%)',
@@ -163,7 +164,7 @@
                     color: 'hsl(217, 71%, 53%)',
                     weight: 3,
                     opacity: 0.6
-                }
+                },
             };
         },
         methods: {
@@ -226,6 +227,13 @@
                     this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
                 }
             },
+            geoJsonPopupOptions(marker) {
+                return {
+                    onEachFeature: function onEachFeature(feature, layer) {
+                        layer.bindPopup(`<table><tr><td>RideId:</td><td>${marker.rideId}</td></tr><tr><td>Scary:</td><td>${marker.scary}</td></tr></table><p>${marker.description}</p>`);
+                    }
+                }
+            }
         },
         // Laden der Daten aus der API
         mounted() {
