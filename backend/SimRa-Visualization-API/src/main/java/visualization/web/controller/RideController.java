@@ -37,7 +37,7 @@ public class RideController {
                                                        @RequestParam(value = "max") int maxDistance) {
         return ResponseEntity.ok(rideService.getRidesInRange(longitude, latitude, maxDistance));
     }
-    
+
     // example:  http://localhost:8080/rides/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459
     @GetMapping(value = "/rides/area")
     public HttpEntity<List<RideResource>> getRidesWithin(@RequestParam(value = "first") double[] first,

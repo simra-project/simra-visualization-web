@@ -44,7 +44,7 @@ public class IncidentController {
                                                                @RequestParam(value = "max") int maxDistance) {
         return ResponseEntity.ok(incidentService.getIncidentsInRange(longitude, latitude, maxDistance));
     }
-
+    
     //example: http://localhost:8080/incidents/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459
     @GetMapping(value = "/incidents/area")
     public HttpEntity<List<IncidentResource>> getIncidentsWithin(@RequestParam(value = "first") double[] first,
@@ -55,6 +55,7 @@ public class IncidentController {
                 new GeoJsonPoint(second[0], second[1]),
                 new GeoJsonPoint(third[0], third[1]),
                 new GeoJsonPoint(fourth[0], fourth[1])));
+
     }
 
 }
