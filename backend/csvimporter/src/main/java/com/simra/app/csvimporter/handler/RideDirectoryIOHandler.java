@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -85,7 +84,7 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
 
             this.rides.add(ride);
 
-        } catch (IOException e) {
+        } catch (Exception e) { // todo implement reasonable error handlingF
             logger.error(e);
         }
     }
