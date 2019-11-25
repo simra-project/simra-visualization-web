@@ -15,49 +15,64 @@ import java.util.ArrayList;
 public class IncidentStatisticsResource {
 
     @JsonProperty
-    ArrayList<Integer> countEachBikeType;
+    int incidentCount;
 
     @JsonProperty
-    Integer countChildrenInvolved;
+    ArrayList<String> bikeTypeLabels;
 
     @JsonProperty
-    Integer countTrailersInvolved;
+    ArrayList<Integer> bikeTypeData;
 
     @JsonProperty
-    ArrayList<Integer> countEachIncidentType;
+    ArrayList<String> incidentTypeLabels;
+
+    @JsonProperty
+    ArrayList<Integer> incidentTypeData;
+
+    @JsonProperty
+    ArrayList<String> participantTypeLabels;
+
+    @JsonProperty
+    ArrayList<Integer> participantTypeData;
+
+//    @JsonProperty
+//    Integer countChildrenInvolved;
+
+//    @JsonProperty
+//    Integer countTrailersInvolved;
 
     @JsonProperty
     Integer countOfScary;
 
-    @JsonProperty
-    Integer countI1Bus;
+//    @JsonProperty
+//    Integer countI1Bus;
 
-    @JsonProperty
-    Integer countI2Cyclist;
+//    @JsonProperty
+//    Integer countI2Cyclist;
 
-    @JsonProperty
-    Integer countI3Pedestrian;
+//    @JsonProperty
+//    Integer countI3Pedestrian;
 
-    @JsonProperty
-    Integer countI4DeliveryVan;
+//    @JsonProperty
+//    Integer countI4DeliveryVan;
 
-    @JsonProperty
-    Integer countI5Truck;
+//    @JsonProperty
+//    Integer countI5Truck;
 
-    @JsonProperty
-    Integer countI6Motorcycle;
+//    @JsonProperty
+//    Integer countI6Motorcycle;
 
-    @JsonProperty
-    Integer countI7Car;
+//    @JsonProperty
+//    Integer countI7Car;
 
-    @JsonProperty
-    Integer countI8Taxi;
+//    @JsonProperty
+//    Integer countI8Taxi;
 
-    @JsonProperty
-    Integer countI9Other;
+//    @JsonProperty
+//    Integer countI9Other;
 
-    @JsonProperty
-    Integer countI10EScooter;
+//    @JsonProperty
+//    Integer countI10EScooter;
 
     // add more Stats Metadata for Incidents here
 }

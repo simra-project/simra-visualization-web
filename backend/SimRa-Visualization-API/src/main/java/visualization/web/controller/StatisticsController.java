@@ -3,6 +3,7 @@ package visualization.web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ This is the place where we communicate with the frontend
 
  */
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class StatisticsController {
 
@@ -43,6 +45,11 @@ public class StatisticsController {
 //    }
     public HttpEntity<StatisticsResource> getStatistics(@RequestParam(value = "region") String region) {
         return ResponseEntity.ok(statisticsService.getStatistics(region));
+    }
+
+    @GetMapping(value = "/statisticsDebug")
+    public HttpEntity<StatisticsResource> getStatisticsDebug(@RequestParam(value = "region") String region) {
+        return ResponseEntity.ok(statisticsService.getStatisticsDebug(region));
     }
 
     private List<Boolean> parseParticipantsList(List<Integer> participants) {
