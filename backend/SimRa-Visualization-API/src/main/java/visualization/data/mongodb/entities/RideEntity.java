@@ -20,7 +20,11 @@ public class RideEntity {
 
     private GeoJsonLineString location;
 
-    private ArrayList ts;
+    private ArrayList<Long> ts;
 
+    private Float distance;
 
+    public Long getDuration() {
+        return ts.get(ts.size() - 1) - ts.get(0);
+    }
 }

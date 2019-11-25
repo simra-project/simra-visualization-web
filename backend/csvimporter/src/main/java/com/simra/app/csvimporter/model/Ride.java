@@ -2,6 +2,7 @@ package main.java.com.simra.app.csvimporter.model;
 
 import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
+import main.java.com.simra.app.csvimporter.Utils;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -14,9 +15,11 @@ import java.util.List;
  */
 public class Ride implements MongoDocument {
 
-    private List rideBeans;
-    private List mapMatchedRideBeans;
-    private List incidents;
+    private List<RideCSV> rideBeans;
+    private List<RideCSV> mapMatchedRideBeans;
+    private List<IncidentCSV> incidents;
+
+    private Float distance;
 
     /**
      * Instantiates a new Ride.
@@ -80,6 +83,24 @@ public class Ride implements MongoDocument {
     }
 
     /**
+     * Gets distance.
+     *
+     * @return distance
+     */
+    public Float getDistance() {
+        return distance;
+    }
+
+    /**
+     * Sets distance.
+     *
+     * @param distance the distance
+     */
+    public void setDistance(Float distance) {
+        this.distance = distance;
+    }
+
+    /**
      * To document object document.
      *
      * @return the document
@@ -88,9 +109,14 @@ public class Ride implements MongoDocument {
     public Document toDocumentObject() {
         Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
+        singleRide.put("distance", this.distance);
 
         parseRideBeans(singleRide, rideBeans, "");
         parseRideBeans(singleRide, mapMatchedRideBeans, "MapMatched");
+
+
+        singleRide.put("weekday", Utils.getWeekday(rideBeans.get(0).getTimeStamp()));
+        singleRide.put("minuteOfDay", Utils.getMinuteOfDay(rideBeans.get(0).getTimeStamp()));
 
         return singleRide;
     }
@@ -106,7 +132,7 @@ public class Ride implements MongoDocument {
         LineString coordinatesMulti = new LineString(coordinates);
 
         document.put("location" + suffix, coordinatesMulti);
-        ArrayList ts = new ArrayList<String>();
+        ArrayList<Long> ts = new ArrayList<>();
         rideBeans.forEach(ride -> ts.add((ride).getTimeStamp()));
         document.put("ts" + suffix, ts);
     }

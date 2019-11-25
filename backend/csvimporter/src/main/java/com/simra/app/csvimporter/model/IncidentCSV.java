@@ -3,6 +3,7 @@ package main.java.com.simra.app.csvimporter.model;
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.CsvBindByName;
+import main.java.com.simra.app.csvimporter.Utils;
 import org.bson.Document;
 
 import java.util.Arrays;
@@ -486,10 +487,13 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         document.put("scary", this.scary);
         document.put("description", this.desc);
 
+        document.put("ts", this.ts);
+        document.put("weekday", Utils.getWeekday(this.ts));
+        document.put("minuteOfDay", Utils.getMinuteOfDay(this.ts));
+
         List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
 
         Point geoPoint = new Point(new Position(places));
-        document.put("timestamp", this.ts);
         document.put("location", geoPoint);
 
         return document;

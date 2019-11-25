@@ -10,12 +10,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude
-public class StatisticsResource {
+public class RideStatisticsResource {
 
     @JsonProperty
-    private RideStatisticsResource ridesStatistics = new RideStatisticsResource();
+    int rideCount;
 
     @JsonProperty
-    private IncidentStatisticsResource incidentsStatistics = new IncidentStatisticsResource();
+    int accumulatedDuration;
 
+    @JsonProperty
+    Float accumulatedDistance;
+
+    @JsonProperty
+    Float accumulatedSavedCO2;
+
+    // add more Stats Metadata for Rides here
 }

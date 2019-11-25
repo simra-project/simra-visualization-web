@@ -29,4 +29,6 @@ public class RideResource {
     @JsonProperty
     private ArrayList ts;
 
+    @JsonProperty
+    private Float length;
 }

@@ -21,7 +21,7 @@ public class CSVImporter {
     public static void main(String[] args) throws ArgumentParserException {
 
         config = new ConfigService();
-        config.readProperties();
+        ConfigService.readProperties();
 
 
         ArgumentParser parser = ArgumentParsers.newFor("CSVImporter").build()

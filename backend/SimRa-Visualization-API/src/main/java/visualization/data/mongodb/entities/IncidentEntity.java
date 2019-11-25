@@ -22,6 +22,8 @@ public class IncidentEntity {
 
     private int key;
 
+    private int bike;
+
     private GeoJsonPoint location;
 
     private long ts;
@@ -32,7 +34,7 @@ public class IncidentEntity {
 
     private int pLoc;
 
-    private int incidentType;
+    private int incident;
 
     private Boolean scary;
 

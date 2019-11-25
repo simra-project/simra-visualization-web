@@ -1,7 +1,8 @@
 package visualization.data.mongodb;
 
+import org.springframework.data.geo.Box;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import visualization.data.mongodb.entities.RideEntity;
 
@@ -12,7 +13,9 @@ public interface RideRepository extends MongoRepository<RideEntity, String> {
 
     List<RideEntity> findByLocationNear(GeoJsonPoint coordinates, int maxDistance);
 
+    List<RideEntity> findByLocationWithin(GeoJsonPolygon polygon);
+
     Optional<RideEntity> findById(String id);
 
-
+    Optional<List<RideEntity>> findAllByTsBetween(Long fromTs, Long untilTs);
 }
