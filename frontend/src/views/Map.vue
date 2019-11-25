@@ -100,156 +100,155 @@
 </template>
 
 <script>
-    import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker, LGeoJson } from "vue2-leaflet";
-    import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
-    import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
-    import { OpenStreetMapProvider } from "leaflet-geosearch";
-    import VGeosearch from "vue2-leaflet-geosearch";
-    import VueSlider from "vue-slider-component";
-    import "vue-slider-component/theme/default.css";
-    import { ApiService } from "@/services/ApiService";
+import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker, LGeoJson } from "vue2-leaflet";
+import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
+import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
+import { OpenStreetMapProvider } from "leaflet-geosearch";
+import VGeosearch from "vue2-leaflet-geosearch";
+import VueSlider from "vue-slider-component";
+import "vue-slider-component/theme/default.css";
+import { ApiService } from "@/services/ApiService";
 
-
-    export default {
-        components: {
-            LMap,
-            LTileLayer,
-            LControl,
-            LPolyline,
-            Vue2LeafletMarkerCluster,
-            LMarker,
-            LPopup,
-            LCircleMarker,
-            Vue2LeafletHeatmap,
-            VueSlider,
-            VGeosearch,
-            LGeoJson,
-        },
-        data() {
-            return {
-                url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
-                zoom: parseInt(this.$route.query.z) || 15,
-                center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
-                bounds: null,
-                showRoutes: true,
-                showIncidents: true,
-                routes: [],
-                routeHighlightId: null,
-                routeHighlightContent: null,
-                routeHighlightStart: [0, 0],
-                routeHighlightEnd: [0, 0],
-                markers: [],
-                incident_heatmap: [],
-                heatmapMaxZoom: 15,
-                heatmapMinOpacity: 0.75,
-                heatmapMaxPointIntensity: 1.0,
-                heatmapRadius: 25,
-                heatmapBlur: 15,
-                geosearchOptions: {
-                    provider: new OpenStreetMapProvider(),
-                },
-                geoJsonOptions: {
-                    style: {
-                        color: 'hsl(217, 71%, 53%)',
-                        weight: 3,
-                        opacity: 0.6
-                    },
-                },
-                geoJsonStyleHighlight: {
-                    color: 'hsl(0,100%,50%)',
-                    weight: 4,
-                    opacity: 0.8
-                },
-                geoJsonStyleNormal: {
+export default {
+    components: {
+        LMap,
+        LTileLayer,
+        LControl,
+        LPolyline,
+        Vue2LeafletMarkerCluster,
+        LMarker,
+        LPopup,
+        LCircleMarker,
+        Vue2LeafletHeatmap,
+        VueSlider,
+        VGeosearch,
+        LGeoJson,
+    },
+    data() {
+        return {
+            url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            zoom: parseInt(this.$route.query.z) || 15,
+            center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
+            bounds: null,
+            showRoutes: true,
+            showIncidents: true,
+            routes: [],
+            routeHighlightId: null,
+            routeHighlightContent: null,
+            routeHighlightStart: [0, 0],
+            routeHighlightEnd: [0, 0],
+            markers: [],
+            incident_heatmap: [],
+            heatmapMaxZoom: 15,
+            heatmapMinOpacity: 0.75,
+            heatmapMaxPointIntensity: 1.0,
+            heatmapRadius: 25,
+            heatmapBlur: 15,
+            geosearchOptions: {
+                provider: new OpenStreetMapProvider(),
+            },
+            geoJsonOptions: {
+                style: {
                     color: 'hsl(217, 71%, 53%)',
                     weight: 3,
                     opacity: 0.6
                 },
-            };
+            },
+            geoJsonStyleHighlight: {
+                color: 'hsl(0,100%,50%)',
+                weight: 4,
+                opacity: 0.8
+            },
+            geoJsonStyleNormal: {
+                color: 'hsl(217, 71%, 53%)',
+                weight: 3,
+                opacity: 0.6
+            },
+        };
+    },
+    methods: {
+        zoomUpdated(zoom) {
+            this.zoom = zoom;
         },
-        methods: {
-            zoomUpdated(zoom) {
-                this.zoom = zoom;
-            },
-            centerUpdated(center) {
-                this.center = center;
-                this.updateUrlQuery();
-            },
-            boundsUpdated(bounds) {
-                this.bounds = bounds;
-            },
-            updateUrlQuery() {
-                this.$router.replace({
-                    name: "mapQuery",
-                    params: {
-                        lat: this.center.lat,
-                        lng: this.center.lng,
-                        zoom: this.zoom,
-                    },
-                }).catch(() => {});
-            },
-            clickedOnRoute(event, route) {
-                // Highlighting this route
-                this.routeHighlightId = route.rideId;
-                this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
+        centerUpdated(center) {
+            this.center = center;
+            this.updateUrlQuery();
+        },
+        boundsUpdated(bounds) {
+            this.bounds = bounds;
+        },
+        updateUrlQuery() {
+            this.$router.replace({
+                name: "mapQuery",
+                params: {
+                    lat: this.center.lat,
+                    lng: this.center.lng,
+                    zoom: this.zoom,
+                },
+            }).catch(() => {});
+        },
+        clickedOnRoute(event, route) {
+            // Highlighting this route
+            this.routeHighlightId = route.rideId;
+            this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
 
-                // Showing start & end point with circles
-                this.routeHighlightStart = [route.coordinates.coordinates[0][1], route.coordinates.coordinates[0][0]];
-                this.routeHighlightEnd = [route.coordinates.coordinates[route.coordinates.coordinates.length - 1][1], route.coordinates.coordinates[route.coordinates.coordinates.length - 1][0]];
+            // Showing start & end point with circles
+            this.routeHighlightStart = [route.coordinates.coordinates[0][1], route.coordinates.coordinates[0][0]];
+            this.routeHighlightEnd = [route.coordinates.coordinates[route.coordinates.coordinates.length - 1][1], route.coordinates.coordinates[route.coordinates.coordinates.length - 1][0]];
 
-                // Fitting route into view if it's not already
-                let routeBounds = event.target.getBounds().pad(0.1);
-                if (!this.bounds.contains(routeBounds)) {
-                    this.$refs.map.mapObject.flyToBounds(routeBounds);
-                }
+            // Fitting route into view if it's not already
+            let routeBounds = event.target.getBounds().pad(0.1);
+            if (!this.bounds.contains(routeBounds)) {
+                this.$refs.map.mapObject.flyToBounds(routeBounds);
+            }
 
-                event.sourceTarget.setStyle(this.geoJsonStyleHighlight);
-                this.routeHighlighted = event.sourceTarget;
-            },
-            unfocusRouteHighlight() {
-                this.routeHighlightId = null;
-                this.routeHighlightContent = null;
-                this.routeHighlightStart = [0, 0];
-                this.routeHighlightEnd = [0, 0];
-                this.routeHighlighted.setStyle(this.geoJsonStyleNormal);
-            },
-            clickedOnMap(event) {
-                if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
-                    this.unfocusRouteHighlight();
-                }
-            },
-            parseRoutes(response) {
-                this.routes = response.data;
-            },
-            parseIncidents(response) {
-                this.markers = response.data;
-                for (var i = 0; i < this.markers.length; i++) {
-                    this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
-                }
-            },
-            geoJsonPopupOptions(marker) {
-                return {
-                    onEachFeature: function onEachFeature(feature, layer) {
-                        layer.bindPopup(`<table><tr><td>RideId:</td><td>${marker.rideId}</td></tr><tr><td>Scary:</td><td>${marker.scary}</td></tr></table><p>${marker.description}</p>`);
-                    }
-                }
+            event.sourceTarget.setStyle(this.geoJsonStyleHighlight);
+            this.routeHighlighted = event.sourceTarget;
+        },
+        unfocusRouteHighlight() {
+            this.routeHighlightId = null;
+            this.routeHighlightContent = null;
+            this.routeHighlightStart = [0, 0];
+            this.routeHighlightEnd = [0, 0];
+            this.routeHighlighted.setStyle(this.geoJsonStyleNormal);
+        },
+        clickedOnMap(event) {
+            if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
+                this.unfocusRouteHighlight();
             }
         },
-        // Laden der Daten aus der API
-        mounted() {
-            this.$nextTick(() => {
-                this.zoom = this.$refs.map.mapObject.getZoom();
-                this.center = this.$refs.map.mapObject.getCenter();
-                this.bounds = this.$refs.map.mapObject.getBounds();
-            });
-
-            let lat = this.center[0];
-            let lon = this.center[1];
-
-            ApiService.loadRoutes(lat, lon).then(response => (this.parseRoutes(response)));
-            ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
+        parseRoutes(response) {
+            this.routes = response.data;
         },
-    };
+        parseIncidents(response) {
+            this.markers = response.data;
+            for (var i = 0; i < this.markers.length; i++) {
+                this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
+            }
+        },
+        geoJsonPopupOptions(marker) {
+            return {
+                onEachFeature: function onEachFeature(feature, layer) {
+                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${marker.rideId}</td></tr><tr><td>Scary:</td><td>${marker.scary}</td></tr></table><p>${marker.description}</p>`);
+                }
+            }
+        }
+    },
+    // Laden der Daten aus der API
+    mounted() {
+        this.$nextTick(() => {
+            this.zoom = this.$refs.map.mapObject.getZoom();
+            this.center = this.$refs.map.mapObject.getCenter();
+            this.bounds = this.$refs.map.mapObject.getBounds();
+        });
+
+        let lat = this.center[0];
+        let lon = this.center[1];
+
+        ApiService.loadRoutes(lat, lon).then(response => (this.parseRoutes(response)));
+        ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
+    },
+};
 </script>
 
 <style lang="scss">
