@@ -221,6 +221,82 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "getRidesWithin",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rides/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rides",
+						"area"
+					],
+					"query": [
+						{
+							"key": "first",
+							"value": "13.297089,52.481744"
+						},
+						{
+							"key": "second",
+							"value": "13.448689,52.509574"
+						},
+						{
+							"key": "third",
+							"value": "13.456360,52.547463"
+						},
+						{
+							"key": "fourth",
+							"value": "13.305468, 52.546459"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getIncidentsWithin",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/incidents/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"incidents",
+						"area"
+					],
+					"query": [
+						{
+							"key": "first",
+							"value": "13.297089,52.481744"
+						},
+						{
+							"key": "second",
+							"value": "13.448689,52.509574"
+						},
+						{
+							"key": "third",
+							"value": "13.456360,52.547463"
+						},
+						{
+							"key": "fourth",
+							"value": "13.305468, 52.546459"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
