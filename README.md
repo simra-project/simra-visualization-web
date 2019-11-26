@@ -59,7 +59,6 @@ Note: Rides and Profiles can not be imported simultaneously.
 |                  | Yes | - | Path to CSV Data or Directory |
 | ```-t``` / ```--type```| Yes | - | For Rides use ```r```, for Profiles use ```p``` |
 | ```-p``` / ```--path```| Yes | - | For Single file use ```f```, for Directory use ```d``` |
-
 | ```-a``` / ```--accuracy```| No | 20 | When importing Rides: Minimum acc-value of Coordinates that will pass Accuracy Filter |
 | ```-e``` / ```--epsilon``` | No | 0.0000001| When importing Rides: Epsilon value of RDP-Algorithm |
 
