@@ -5,6 +5,7 @@ import com.opencsv.bean.CsvBindByName;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.bson.Document;
 
+import java.util.Date;
 import java.util.Map;
 
 
@@ -345,6 +346,8 @@ public class ProfileCSV extends ApplicationFileVersion implements MongoDocument 
             docHours.put(entry.getKey(), entry.getValue());
         }
         document.put("hours", docHours);
+        document.put("importedAt", new Date());
+
         return document;
     }
 }

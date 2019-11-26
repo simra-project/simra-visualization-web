@@ -85,7 +85,9 @@ public class RideFileIOHandler extends FileIOHandler {
             }
 
             dbService.getCollection().insertOne(this.ride.toDocumentObject());
-            dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+            if(!this.ride.incidentsDocuments().isEmpty()) {
+                dbService.getIncidentCollection().insertMany(this.ride.incidentsDocuments());
+            }
 
         } catch (IOException e) {
             logger.error(e);

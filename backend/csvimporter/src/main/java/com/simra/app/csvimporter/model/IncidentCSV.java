@@ -485,17 +485,11 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         document.put("scary", this.scary);
         document.put("description", this.desc);
 
-
-        List<Double> places = Arrays.asList(Double.parseDouble(this.lat),Double.parseDouble(this.lon));
+        List<Double> places = Arrays.asList(Double.parseDouble(this.lon),Double.parseDouble(this.lat));
 
         Point geoPoint = new Point(new Position(places));
-        Document geoPointWithTime= new Document();
-        geoPointWithTime.put("geoPoint",geoPoint);
-        geoPointWithTime.put("timestamp",this.ts);
-        document.put("location",geoPointWithTime);
-
-
-
+        document.put("timestamp", this.ts);
+        document.put("location", geoPoint);
 
         return document;
     }

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * The type Ride csv.
  */
-public class RideCSV extends ApplicationFileVersion implements MongoDocument {
+public class RideCSV extends ApplicationFileVersion {
 
     @CsvBindByName
     private String lat;
@@ -29,7 +29,7 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
     private String Z;
 
     @CsvBindByName
-    private String timeStamp;
+    private long timeStamp;
 
     @CsvBindByName
     private String acc;
@@ -139,7 +139,7 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
      *
      * @return the time stamp
      */
-    public String getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
@@ -148,7 +148,7 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
      *
      * @param timeStamp the time stamp
      */
-    public void setTimeStamp(String timeStamp) {
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -224,44 +224,7 @@ public class RideCSV extends ApplicationFileVersion implements MongoDocument {
         this.c = c;
     }
 
-
-    /**
-     * To document object document.
-     *
-     * @return the document
-     */
-    public Document toDocumentObject(){
-        Document document= new Document();
-        document.put("rideId", this.getFileId());
-        document.put("appVersion", this.getAppVersion());
-        document.put("fileVersion", this.getFileVersion());
-        //document.put("lat", this.lat);
-        //document.put("lon", this.lon);
-        //document.put("X", this.X);
-        //document.put("Y", this.Y);
-        //document.put("Z", this.Z);
-        //document.put("timeStamp", this.timeStamp);
-        document.put("acc", this.acc);
-        //document.put("a", this.a);
-        //document.put("b", this.b);
-        //document.put("c", this.c);
-
-        List<Double> places = Arrays.asList(Double.parseDouble(this.lat),Double.parseDouble(this.lon));
-
-        Point geoPoint = new Point(new Position(places));
-        Document geoPointWithTime= new Document();
-        geoPointWithTime.put("geoPoint",geoPoint);
-        geoPointWithTime.put("timestamp",this.timeStamp);
-        document.put("location",geoPointWithTime);
-
-
-
-
-        return document;
-    }
-
-
-    public String toString(){
+    public String toString() {
         return String.format("lat: %s lon: %s X:%s Y:%s Z:%s timeStamp:%s acc:%s a:%s b:%s c:%s",
                 this.lat, this.lon, this.X, this.Y, this.Z, this.timeStamp, this.acc, this.a,
                 this.b, this.c);
