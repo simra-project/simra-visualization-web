@@ -7,16 +7,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type Profile import task.
+ */
 public class ProfileImportTask implements Runnable {
 
     private static final Logger logger = Logger.getLogger(ProfileImportTask.class);
     private String filePath;
 
 
+    /**
+     * Instantiates a new Profile import task.
+     *
+     * @param filePath the file path
+     */
     public ProfileImportTask(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Gets file path.
+     *
+     * @return the file path
+     */
     public String getFilePath() {
         return filePath;
     }

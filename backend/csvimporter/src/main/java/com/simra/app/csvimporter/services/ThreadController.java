@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+/**
+ * The type Thread controller.
+ */
 public class ThreadController {
 
     private static final Logger logger = Logger.getLogger(ThreadController.class);
@@ -18,6 +21,14 @@ public class ThreadController {
     private Double rdpEpsilon;
 
 
+    /**
+     * Instantiates a new Thread controller.
+     *
+     * @param results     the results
+     * @param type        the type
+     * @param minAccuracy the min accuracy
+     * @param rdpEpsilon  the rdp epsilon
+     */
     public ThreadController(ArrayList<String> results, String type, Float minAccuracy, Double rdpEpsilon) {
         this.files= results;
         this.executor= (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
@@ -26,6 +37,9 @@ public class ThreadController {
         this.rdpEpsilon=rdpEpsilon;
     }
 
+    /**
+     * Execute file read.
+     */
     public void executeFileRead(){
 
         this.files.stream().forEach(filePath->{

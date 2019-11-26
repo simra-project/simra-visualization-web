@@ -7,23 +7,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type Ride import task.
+ */
 public class RideImportTask implements Runnable {
 
-    private static final Logger logger = Logger.getLogger(RideImportTask.class);
     private String filePath;
     private Float minAccuracy;
     private Double rdpEpsilon;
 
-    public RideImportTask(String filePath) {
-        this.filePath = filePath;
-    }
-
+    /**
+     * Instantiates a new Ride import task.
+     *
+     * @param filePath    the file path
+     * @param minAccuracy the min accuracy
+     * @param rdpEpsilon  the rdp epsilon
+     */
     public RideImportTask(String filePath, Float minAccuracy, Double rdpEpsilon) {
         this.filePath = filePath;
         this.minAccuracy=minAccuracy;
         this.rdpEpsilon=rdpEpsilon;
     }
 
+    /**
+     * Gets file path.
+     *
+     * @return the file path
+     */
     public String getFilePath() {
         return filePath;
     }

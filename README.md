@@ -56,7 +56,7 @@ Note: Rides and Profiles can not be imported simultaneously.
 
 | Parameter        |Mandatory     | Default Value | Description |
 | ---------------- |:------------:|:------------:|:------------:|
-|                  | Yes | - | Path to CSV Data |
+|                  | Yes | - | Path to CSV Data or Directory |
 | ```-t``` / ```--type```| Yes | - | For Rides use ```r```, for Profiles use ```p``` |
 | ```-p``` / ```--path```| Yes | - | For Single file use ```f```, for Directory use ```d``` |
 

@@ -121,6 +121,11 @@ public class Ride implements MongoDocument {
         }
     }
 
+    /**
+     * Incidents documents list.
+     *
+     * @return the list
+     */
     public List<Document> incidentsDocuments() {
         ArrayList incidentsList = new ArrayList<Document>();
         this.incidents.forEach(incident -> incidentsList.add(((IncidentCSV) incident).toDocumentObject()));
