@@ -108,7 +108,7 @@ Info: So far only filtered data is pushed into the database.
     "_id" : "5dd42373b7f089bc429e1fd9",
     "rideId" : "VM2_-1438740659",
     "coordinates" : {
-        "type" : "MultiPoint",
+        "type" : "LineString",
         "coordinates" : [ 
             [ 
                 1.8196564, 
