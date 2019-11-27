@@ -60,12 +60,12 @@ public class CSVImporter {
                 String folder = ns.getString("file");
 
                 try (Stream<Path> walk = Files.walk(Paths.get(folder))) {
-                    ArrayList<String> results = (ArrayList<String>) walk.filter(Files::isRegularFile).map(Path::toString).collect(Collectors.toList());
+                    ArrayList<Path> pathsToImport = (ArrayList<Path>) walk.filter(Files::isRegularFile).map(Path::toAbsolutePath).collect(Collectors.toList());
 
                     Float minAccuracy = ns.getFloat("accuracy");
                     Double rdpEpsilon = ns.getDouble("epsilon");
 
-                    ThreadController threadController= new ThreadController(results, type, minAccuracy, rdpEpsilon);
+                    ThreadController threadController = new ThreadController(pathsToImport, type, minAccuracy, rdpEpsilon);
                     threadController.executeFileRead();
                 } catch (IOException e) {
                     e.printStackTrace();

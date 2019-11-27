@@ -4,7 +4,6 @@ import main.java.com.simra.app.csvimporter.handler.ProfileDirectoryIOHandler;
 import org.apache.log4j.Logger;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class ProfileImportTask implements Runnable {
 
     private static final Logger logger = Logger.getLogger(ProfileImportTask.class);
-    private String filePath;
+    private Path filePath;
 
 
     /**
@@ -21,7 +20,7 @@ public class ProfileImportTask implements Runnable {
      *
      * @param filePath the file path
      */
-    public ProfileImportTask(String filePath) {
+    public ProfileImportTask(Path filePath) {
         this.filePath = filePath;
     }
 
@@ -30,13 +29,12 @@ public class ProfileImportTask implements Runnable {
      *
      * @return the file path
      */
-    public String getFilePath() {
+    public Path getFilePath() {
         return filePath;
     }
 
     public void run() {
-        Path path = Paths.get(this.filePath);
-        new ProfileDirectoryIOHandler(path);
+        new ProfileDirectoryIOHandler(filePath);
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
