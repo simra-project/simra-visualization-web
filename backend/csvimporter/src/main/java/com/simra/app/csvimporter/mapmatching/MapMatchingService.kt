@@ -41,7 +41,7 @@ class MapMatchingService {
 
         val graphHopperConfiguration = CmdArgs()
         graphHopperConfiguration.put("graph.flag_encoders", "bike")
-        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/berlin.osm.pbf")
+        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf")
         val graphHopper = GraphHopperOSM().init(graphHopperConfiguration)
         graphHopper.importOrLoad()
 

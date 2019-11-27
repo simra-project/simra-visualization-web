@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <div class="container content admin-container" v-if="signedIn">
+        <div class="container content fcp-container" v-if="signedIn">
             <h2>Admin Tools (secret area)</h2>
 
             <div class="wrapper">
@@ -94,21 +94,5 @@ export default {
         background-color: white;
         border: 1px solid #ddd;
         text-align: center;
-    }
-
-    .admin-container {
-        h2 {
-            margin-top: 30px;
-        }
-
-        & > .wrapper {
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 16px 20px;
-
-            hr + h3 {
-                margin-top: 0;
-            }
-        }
     }
 </style>
