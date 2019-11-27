@@ -13,12 +13,11 @@ import visualization.web.resources.StatisticsResource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
@@ -46,62 +45,14 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         StatisticsResource statisticsResource = new StatisticsResource();
 
-        statisticsResource.setRidesStatistics(getRidesStatistics());
-        statisticsResource.setIncidentsStatistics(getIncidentStatistics());
+        statisticsResource.setRidesStatistics(getRidesStatistics(region));
+        statisticsResource.setIncidentsStatistics(getIncidentStatistics(region));
 
         return statisticsResource;
     }
 
-
-    @Override
-    public StatisticsResource getStatisticsDebug(String region) {
-        StatisticsResource statisticsResource = new StatisticsResource();
-
-        int rides = 20394;
-        float distance = rides * 3200.0f;
-        RideStatisticsResource rideResource = new RideStatisticsResource();
-        rideResource.setRideCount(rides);
-        rideResource.setAccumulatedDistance(distance); // avg distance = 3,2km
-        rideResource.setAccumulatedDuration(rides * 21); // avg duration = 21min
-        rideResource.setAccumulatedSavedCO2(distance * 0.183f);
-        statisticsResource.setRidesStatistics(rideResource);
-
-        int incidents = 5364;
-        IncidentStatisticsResource incidentResource = new IncidentStatisticsResource();
-        incidentResource.setIncidentCount(incidents);
-        incidentResource.setCountOfScary(ThreadLocalRandom.current().nextInt(100, incidents - 100));
-
-        incidentResource.setBikeTypeLabels(new ArrayList<>(Arrays.asList("Type 1", "Type 2", "Type 3", "Type 4", "Type 5", "Type 6", "Type 7")));
-        incidentResource.setBikeTypeData(divider(incidents, 7));
-
-        incidentResource.setIncidentTypeLabels(new ArrayList<>(Arrays.asList("Type 1", "Type 2", "Type 3", "Type 4", "Type 5", "Type 6", "Type 7", "Type 8", "Type 9")));
-        incidentResource.setIncidentTypeData(divider(incidents, 9));
-
-        incidentResource.setParticipantTypeLabels(new ArrayList<>(Arrays.asList("Bus", "Cyclist", "Pedestrian", "Delivery Van", "Truck", "Motorcycle", "Car", "Taxi", "Other", "E-Scooter")));
-        incidentResource.setParticipantTypeData(divider(incidents, 10));
-
-        statisticsResource.setIncidentsStatistics(incidentResource);
-
-        return statisticsResource;
-    }
-
-    // copied form Stackoverflow, seems to work for debugging
-    private ArrayList<Integer> divider(int number, int divisions) {
-        Random rand = new Random();
-        int[] container = new int[divisions];
-
-        while (number > 0) {
-            container[rand.nextInt(divisions)]++;
-            number--;
-        }
-
-        return Arrays.stream(container).boxed().collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private RideStatisticsResource getRidesStatistics() {
-
+    private RideStatisticsResource getRidesStatistics(String region) {
         List<RideEntity> rideList = rideRepository.findAll();
-
         RideStatisticsResource rideStatisticsResource = new RideStatisticsResource();
 
         DoubleAccumulator accumulatedDistance = new DoubleAccumulator(Double::sum, 0.d);
@@ -123,38 +74,31 @@ public class StatisticsServiceImpl implements StatisticsService {
         return rideStatisticsResource;
     }
 
-    private IncidentStatisticsResource getIncidentStatistics() {
+    private IncidentStatisticsResource getIncidentStatistics(String region) {
         List<IncidentEntity> incidents = incidentRepository.findAll();
+        List<IncidentEntity> actualIncidents = incidents.stream().filter(x -> x.getIncident() != 0).collect(Collectors.toList());
 
         IncidentStatisticsResource incidentStatisticsResource = new IncidentStatisticsResource();
+        incidentStatisticsResource.setIncidentCount(actualIncidents.size());
 
-        incidentStatisticsResource.setIncidentCount(incidents.size());
-
-
-        Integer[] countEachBikeType = new Integer[BIKE_TYPES.size()];
-        Arrays.fill(countEachBikeType, 0);
-        Integer[] countEachIncidentType = new Integer[INCIDENT_TYPES.size()];
-        Arrays.fill(countEachIncidentType, 0);
-
-        incidents.forEach(incident -> {
-            countEachBikeType[incident.getBike()] += 1;
-            countEachIncidentType[incident.getIncident()] += 1;
-        });
-
-
-        Supplier<Stream<IncidentEntity>> incidentStream = incidents::stream;
+        Supplier<Stream<IncidentEntity>> incidentStream = actualIncidents::stream;
         incidentStatisticsResource.setCountOfScary((int) incidentStream.get().filter(IncidentEntity::getScary).count());
         incidentStatisticsResource.setCountChildrenInvolved((int) incidentStream.get().filter(IncidentEntity::getChildCheckBox).count());
         incidentStatisticsResource.setCountTrailersInvolved((int) incidentStream.get().filter(IncidentEntity::getTrailerCheckBox).count());
 
         incidentStatisticsResource.setBikeTypeLabels(new ArrayList<>(BIKE_TYPES));
-        incidentStatisticsResource.setBikeTypeData(new ArrayList<>(Arrays.asList(countEachBikeType)));
+        List<Integer> countEachBikeType = IntStream.range(0, INCIDENT_TYPES.size())
+                .mapToObj(i -> (int) incidents.stream().filter(x -> x.getBike() == i).count())
+                .collect(Collectors.toList());
+        incidentStatisticsResource.setBikeTypeData(new ArrayList<>(countEachBikeType));
 
         incidentStatisticsResource.setIncidentTypeLabels(new ArrayList<>(INCIDENT_TYPES));
-        incidentStatisticsResource.setIncidentTypeData(new ArrayList<>(Arrays.asList(countEachIncidentType)));
+        List<Integer> countEachIncidentType = IntStream.range(0, INCIDENT_TYPES.size())
+                .mapToObj(i -> (int) actualIncidents.stream().filter(x -> x.getIncident() == i).count())
+                .collect(Collectors.toList());
+        incidentStatisticsResource.setIncidentTypeData(new ArrayList<>(countEachIncidentType));
 
         incidentStatisticsResource.setParticipantTypeLabels(new ArrayList<>(PARTICIPANT_TYPES));
-
         Integer[] participantTypesCount = {
                 (int) incidentStream.get().filter(IncidentEntity::getI1).count(),
                 (int) incidentStream.get().filter(IncidentEntity::getI2).count(),

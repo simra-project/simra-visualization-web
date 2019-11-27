@@ -39,7 +39,7 @@
 
                 <div class="column">
                     <h4>Participants
-                        <b-tooltip label="TODO: Erklärung Participants" style="vertical-align: bottom;">
+                        <b-tooltip label="The other participant in the incident." type="is-light" style="vertical-align: bottom;">
                             <b-tag rounded>?</b-tag>
                         </b-tooltip>
                     </h4>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="column">
                     <h4>Scary Incidents
-                        <b-tooltip label="TODO: Erklärung scary" style="vertical-align: bottom;">
+                        <b-tooltip label="A scary incident is one where the cyclist fears for their safety." type="is-light" style="vertical-align: bottom;">
                             <b-tag rounded>?</b-tag>
                         </b-tooltip>
                     </h4>
@@ -82,8 +82,8 @@
                 </a>
             </div>
         </div>
-        <div class="wrapper" v-else style="height: 250px">
-            <div><b-loading :is-full-page="false" :active="true" :can-cancel="false"></b-loading></div> <!-- TODO -->
+        <div class="wrapper" v-else style="height: 300px">
+            <b-loading :is-full-page="false" :active="true" :can-cancel="false"></b-loading>
         </div>
     </div>
 </template>
@@ -120,9 +120,7 @@ export default {
             this.dataLoaded = false;
 
             setTimeout(() => {
-                let url = this.selectedLocation === "Berlin" ? "statistics" : "statisticsDebug";
-
-                fetch("http://localhost:8080/" + url + "?region=" + this.selectedLocation)
+                fetch("http://localhost:8080/statistics?region=" + this.selectedLocation)
                     .then(r => r.json())
                     .then(r => {
                         this.dataLoaded = true;
@@ -133,6 +131,7 @@ export default {
                         this.incidentTypes = this.processData(4, r.incidentsStatistics.incidentTypeLabels, r.incidentsStatistics.incidentTypeData);
                         this.participantTypes = this.processData(4, r.incidentsStatistics.participantTypeLabels, r.incidentsStatistics.participantTypeData);
                         this.bikeTypes = this.processData(4, r.incidentsStatistics.bikeTypeLabels, r.incidentsStatistics.bikeTypeData);
+                        this.bikeTypes.options.tooltip.enabled = false;
                     });
             }, 500);
         },
@@ -149,7 +148,7 @@ export default {
                     position: "bottom",
                 },
                 tooltip: {
-                    // enabled: false,
+                    enabled: true,
                 },
             };
         },
@@ -234,6 +233,15 @@ export default {
                 margin-top: 22px;
                 border: 1px solid #ddd;
             }
+        }
+    }
+
+    .loading-overlay {
+        height: 100%;
+        position: static;
+
+        .loading-background {
+            background: transparent;
         }
     }
 </style>

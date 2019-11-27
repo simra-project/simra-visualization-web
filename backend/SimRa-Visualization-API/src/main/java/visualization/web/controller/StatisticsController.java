@@ -46,11 +46,6 @@ public class StatisticsController {
         return ResponseEntity.ok(statisticsService.getStatistics(region));
     }
 
-    @GetMapping(value = "/statisticsDebug")
-    public HttpEntity<StatisticsResource> getStatisticsDebug(@RequestParam(value = "region") String region) {
-        return ResponseEntity.ok(statisticsService.getStatisticsDebug(region));
-    }
-
     private List<Boolean> parseParticipantsList(List<Integer> participants) {
         List<Boolean> boolParticipants = new ArrayList<>();
         if (participants.size() > 0) {
