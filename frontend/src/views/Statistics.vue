@@ -5,6 +5,7 @@
                 <option v-for="location in locations" :value="location.name">
                     {{ location.name }}
                 </option>
+                <option value="X">All cities (TODO)</option>
             </b-select>
         </h2>
 
@@ -74,7 +75,7 @@
             <hr>
 
             <div class="bottom-info-text">
-                The rides we store have no references left to the original user that sent it to us.<br>
+                The rides we store have no references left to the original user who sent it to us.<br>
                 If you are a bicyclist too, download our app and start tracking!<br>
                 <a class="button is-large is-light" href="https://www.mcc.tu-berlin.de/menue/forschung/projekte/simra/">
                     <strong>Download App</strong>

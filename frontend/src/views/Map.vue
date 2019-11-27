@@ -155,7 +155,8 @@ export default {
                 },
             },
             geoJsonStyleHighlight: {
-                color: 'hsl(0,100%,50%)',
+                // color: 'hsl(0,100%,50%)',
+                color: 'hsl(171, 100%, 41%)',
                 weight: 4,
                 opacity: 0.8
             },
@@ -218,10 +219,10 @@ export default {
             }
         },
         parseRoutes(response) {
-            this.routes = response.data;
+            this.routes = response;
         },
         parseIncidents(response) {
-            this.markers = response.data;
+            this.markers = response;
             for (var i = 0; i < this.markers.length; i++) {
                 this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
             }
