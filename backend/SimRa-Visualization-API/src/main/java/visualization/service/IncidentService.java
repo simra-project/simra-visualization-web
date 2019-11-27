@@ -13,6 +13,6 @@ public interface IncidentService {
 
     List<IncidentResource> getIncidentsInRange(double latitude, double longitude, int maxDistance);
 
-    List<IncidentResource> getIncidentsInWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third,GeoJsonPoint fourth);
+    List<IncidentResource> getIncidentsInWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth);
 
 }

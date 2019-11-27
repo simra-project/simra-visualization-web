@@ -24,7 +24,7 @@ public abstract class DirectoryIOHandler {
         /*
          * parses ride dir, as its has different structure.
          */
-        if(!canOpenDirectory(directory)) throw new IllegalArgumentException("Directoy is innvalid");
+        if (!canOpenDirectory(directory)) throw new IllegalArgumentException("Directoy is innvalid");
         long begin = System.currentTimeMillis();
         try (Stream<Path> filePaths = Files.walk(directory)) {
             filePaths
@@ -37,10 +37,12 @@ public abstract class DirectoryIOHandler {
         }
         long end = System.currentTimeMillis();
         long dt = end - begin;
-        System.out.println("Import of CSV took " + dt/1000 + " seconds.");
+        System.out.println("Import of CSV took " + dt / 1000 + " seconds.");
     }
 
     abstract void parseFile(Path file);
+
     abstract void writeToDB();
+
     abstract Logger provideLogger();
 }

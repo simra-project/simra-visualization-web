@@ -3,8 +3,8 @@ package visualization.web.resources.serializers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class GeoJsonLineStringSerializer extends StdSerializer<GeoJsonLineString
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("type", to_serialize.getType());
         jsonGenerator.writeArrayFieldStart("coordinates");
-        for (Point point:to_serialize.getCoordinates()) {
+        for (Point point : to_serialize.getCoordinates()) {
             jsonGenerator.writeArray(new double[]{point.getX(), point.getY()}, 0, 2);
         }
         jsonGenerator.writeEndArray();

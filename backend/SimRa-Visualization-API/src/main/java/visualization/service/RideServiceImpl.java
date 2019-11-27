@@ -1,7 +1,6 @@
 package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Box;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.stereotype.Service;
@@ -57,7 +56,7 @@ public class RideServiceImpl implements RideService {
     }
 
     private List<RideResource> mapRideEntityToResource(List<RideEntity> rideEntities, List<RideResource> rideResources) {
-        for(RideEntity rideEntity:rideEntities) {
+        for (RideEntity rideEntity : rideEntities) {
             RideResource rideResource = new RideResource();
             rideResource.setRideId(rideEntity.getId());
             rideResource.setCoordinates(rideEntity.getLocation());

@@ -27,9 +27,9 @@ public class DBService {
         this.readProperties();
     }
 
-    public static DBService getInstance () {
+    public static DBService getInstance() {
         if (DBService.instance == null) {
-            DBService.instance = new DBService ();
+            DBService.instance = new DBService();
         }
         return DBService.instance;
     }

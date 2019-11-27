@@ -1,1 +1,18 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"admin.system.version"}],"uuid":"44cb65d83f3f4dfdbb8725a066771532"}
+{
+  "options": {},
+  "indexes": [
+    {
+      "v": {
+        "$numberInt": "2"
+      },
+      "key": {
+        "_id": {
+          "$numberInt": "1"
+        }
+      },
+      "name": "_id_",
+      "ns": "admin.system.version"
+    }
+  ],
+  "uuid": "44cb65d83f3f4dfdbb8725a066771532"
+}

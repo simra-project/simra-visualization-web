@@ -1,1 +1,31 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"simra.rides"},{"v":{"$numberInt":"2"},"key":{"location":"2dsphere"},"name":"location_2dsphere","ns":"simra.rides","2dsphereIndexVersion":{"$numberInt":"3"}}],"uuid":"b56343cb1285450eb9111fa1ce0a1800"}
+{
+  "options": {},
+  "indexes": [
+    {
+      "v": {
+        "$numberInt": "2"
+      },
+      "key": {
+        "_id": {
+          "$numberInt": "1"
+        }
+      },
+      "name": "_id_",
+      "ns": "simra.rides"
+    },
+    {
+      "v": {
+        "$numberInt": "2"
+      },
+      "key": {
+        "location": "2dsphere"
+      },
+      "name": "location_2dsphere",
+      "ns": "simra.rides",
+      "2dsphereIndexVersion": {
+        "$numberInt": "3"
+      }
+    }
+  ],
+  "uuid": "b56343cb1285450eb9111fa1ce0a1800"
+}

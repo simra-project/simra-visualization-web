@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection="rides")
+@Document(collection = "rides")
 public class RideEntity {
 
     @Id

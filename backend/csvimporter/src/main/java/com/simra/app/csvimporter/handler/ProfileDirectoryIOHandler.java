@@ -62,7 +62,7 @@ public class ProfileDirectoryIOHandler extends DirectoryIOHandler {
     }
 
     @Override
-    public Logger provideLogger(){
+    public Logger provideLogger() {
         return logger;
     }
 }

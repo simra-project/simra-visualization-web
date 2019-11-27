@@ -3,10 +3,12 @@ package main.java.com.simra.app.csvimporter.model;
 import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import main.java.com.simra.app.csvimporter.Utils;
+import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -14,6 +16,8 @@ import java.util.List;
  * The type Ride.
  */
 public class Ride implements MongoDocument {
+    private static final Logger logger = Logger.getLogger(Ride.class);
+
 
     private List<RideCSV> rideBeans;
     private List<RideCSV> mapMatchedRideBeans;
@@ -117,6 +121,7 @@ public class Ride implements MongoDocument {
 
         singleRide.put("weekday", Utils.getWeekday(rideBeans.get(0).getTimeStamp()));
         singleRide.put("minuteOfDay", Utils.getMinuteOfDay(rideBeans.get(0).getTimeStamp()));
+        singleRide.put("importedAt", new Date());
 
         return singleRide;
     }

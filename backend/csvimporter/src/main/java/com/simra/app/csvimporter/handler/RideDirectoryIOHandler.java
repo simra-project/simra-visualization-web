@@ -161,7 +161,7 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
     @Override
     void writeToDB() {
         dbService.getRidesCollection().insertMany(this.rides.stream().map(Ride::toDocumentObject).collect(Collectors.toList()));
-        List<Document> incidents =  this.rides.stream().flatMap(it -> it.incidentsDocuments().stream()).collect(Collectors.toList());
+        List<Document> incidents = this.rides.stream().flatMap(it -> it.incidentsDocuments().stream()).collect(Collectors.toList());
         if (!incidents.isEmpty()) {
             dbService.getIncidentsCollection().insertMany(incidents);
         }
