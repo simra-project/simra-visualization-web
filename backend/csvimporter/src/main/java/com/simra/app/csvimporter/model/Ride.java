@@ -2,6 +2,7 @@ package main.java.com.simra.app.csvimporter.model;
 
 import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
+import main.java.com.simra.app.csvimporter.Utils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -18,9 +19,11 @@ public class Ride implements MongoDocument {
     private static final Logger logger = Logger.getLogger(Ride.class);
 
 
-    private List rideBeans;
-    private List mapMatchedRideBeans;
-    private List incidents;
+    private List<RideCSV> rideBeans;
+    private List<RideCSV> mapMatchedRideBeans;
+    private List<IncidentCSV> incidents;
+
+    private Float distance;
 
     /**
      * Instantiates a new Ride.
@@ -84,6 +87,24 @@ public class Ride implements MongoDocument {
     }
 
     /**
+     * Gets distance.
+     *
+     * @return distance
+     */
+    public Float getDistance() {
+        return distance;
+    }
+
+    /**
+     * Sets distance.
+     *
+     * @param distance the distance
+     */
+    public void setDistance(Float distance) {
+        this.distance = distance;
+    }
+
+    /**
      * To document object document.
      *
      * @return the document
@@ -92,40 +113,35 @@ public class Ride implements MongoDocument {
     public Document toDocumentObject() {
         Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
+        singleRide.put("distance", this.distance);
 
         parseRideBeans(singleRide, rideBeans, "");
         parseRideBeans(singleRide, mapMatchedRideBeans, "MapMatched");
+
+
+        singleRide.put("weekday", Utils.getWeekday(rideBeans.get(0).getTimeStamp()));
+        singleRide.put("minuteOfDay", Utils.getMinuteOfDay(rideBeans.get(0).getTimeStamp()));
         singleRide.put("importedAt", new Date());
+
         return singleRide;
     }
 
     private void parseRideBeans(Document document, List<RideCSV> rideBeans, String suffix) {
         ArrayList<Position> coordinates = new ArrayList<>();
 
-        try {
+        rideBeans.forEach(ride -> {
+            List<Double> places = Arrays.asList(Double.parseDouble(ride.getLat()), Double.parseDouble(ride.getLon()));
+            Position pos = new Position(places);
+            coordinates.add(pos);
+        });
+        LineString coordinatesMulti = new LineString(coordinates);
 
-
-            rideBeans.forEach(ride -> {
-                List<Double> places = Arrays.asList(Double.parseDouble(ride.getLon()), Double.parseDouble(ride.getLat()));
-                Position pos = new Position(places);
-                coordinates.add(pos);
-            });
-            LineString coordinatesMulti = new LineString(coordinates);
-
-            document.put("location" + suffix, coordinatesMulti);
-            ArrayList ts = new ArrayList<String>();
-            rideBeans.forEach(ride -> ts.add((ride).getTimeStamp()));
-            document.put("ts" + suffix, ts);
-        }catch (NullPointerException e){
-            logger.error(e);
-        }
+        document.put("location" + suffix, coordinatesMulti);
+        ArrayList<Long> ts = new ArrayList<>();
+        rideBeans.forEach(ride -> ts.add((ride).getTimeStamp()));
+        document.put("ts" + suffix, ts);
     }
 
-    /**
-     * Incidents documents list.
-     *
-     * @return the list
-     */
     public List<Document> incidentsDocuments() {
         ArrayList incidentsList = new ArrayList<Document>();
         this.incidents.forEach(incident -> incidentsList.add(((IncidentCSV) incident).toDocumentObject()));

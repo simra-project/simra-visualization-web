@@ -2,8 +2,8 @@ package visualization.data.mongodb.entities;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
-import visualization.web.resources.geoJSON.Point;
 
 import java.io.Serializable;
 
@@ -15,58 +15,59 @@ import java.io.Serializable;
 @Document(collection="incidents")
 public class IncidentEntity {
 
-    //TODO: Build Entity according to MongoDB Schema or vice versa
-    //https://stackoverflow.com/questions/56624690/composite-primary-key-using-mongodb-and-spring-data-jpa
     @Id
-    private CompositeKey rideIdKey;
+    private CompositeKey id;
 
-    private int rideId;
+    private String rideId;
 
     private int key;
 
-    private Point incident;
+    private int bike;
 
-    private long timeStamp;
+    private GeoJsonPoint location;
 
-    private Boolean child;
+    private long ts;
 
-    private Boolean trailer;
+    private Boolean childCheckBox;
 
-    private int phoneLocation;
+    private Boolean trailerCheckBox;
 
-    private int incidentType;
+    private int pLoc;
+
+    private int incident;
 
     private Boolean scary;
 
     private String description;
 
-    private Boolean i1Bus;
+    private Boolean i1;
 
-    private Boolean i2Cyclist;
+    private Boolean i2;
 
-    private Boolean i3Pedestrian;
+    private Boolean i3;
 
-    private Boolean i4DeliveryVan;
+    private Boolean i4;
 
-    private Boolean i5Truck;
+    private Boolean i5;
 
-    private Boolean i6Motorcycle;
+    private Boolean i6;
 
-    private Boolean i7Car;
+    private Boolean i7;
 
-    private Boolean i8Taxi;
+    private Boolean i8;
 
-    private Boolean i9Other;
+    private Boolean i9;
 
-    private Boolean i10EScooter;
+    private Boolean i10;
 
 
     // Incident Key made of rideId and key
     @Getter
     @Setter
-    static class CompositeKey implements Serializable {
-        private int rideId;
-        private int key;
+    @AllArgsConstructor
+    public static class CompositeKey implements Serializable {
+        private String rideId;
+        private String key;
     }
 
 }

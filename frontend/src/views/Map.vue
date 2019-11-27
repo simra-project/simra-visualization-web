@@ -1,16 +1,18 @@
 <template>
-    <l-map :zoom="zoom"
+    <l-map ref="map"
+           :zoom="zoom"
            :center="center"
+           :min-zoom="9"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
-           @update:bounds="boundsUpdated">
+           @update:bounds="boundsUpdated"
+           @click="clickedOnMap($event)">
         <l-tile-layer :url="url"></l-tile-layer>
         <v-geosearch :options="geosearchOptions"></v-geosearch>
         <l-control position="topright">
             <div class="overlay">
-                <p class="subtitle is-5" hidden>Filter</p>
                 <div class="field">
-                    <b-switch v-model="showTrips">Show Trips</b-switch>
+                    <b-switch v-model="showRoutes">Show Trips</b-switch>
                 </div>
                 <div class="field">
                     <b-switch v-model="showIncidents">Show Incidents</b-switch>
@@ -55,98 +57,57 @@
                 <div>Bounds: {{ bounds }}</div>
             </div>
         </l-control>
+        <l-control position="bottomleft" v-if="routeHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
+            <div class="overlay" style="display: flex">
+                <div style="flex: 1 0; text-align: center">
+                    Showing route details here... <br> <!-- TODO: Routendetails hier später einfügen -->
+                    Length: <strong>{{ routeHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ routeHighlightContent.duration }}</strong>
+                </div>
+                <div style="flex: 0 0; align-self: center">
+                    <a class="delete" @click="unfocusRouteHighlight"></a>
+                </div>
+            </div>
+        </l-control>
+
         <!--    Stellt eine Route dar    -->
-        <l-polyline
-            v-if="showTrips"
-            v-for="line in polylines"
-            :key="line.id"
-            :lat-lngs="line.points"
-            color="red"
+        <l-geo-json
+            v-if="showRoutes"
+            v-for="route in routes"
+            :geojson="route.coordinates"
+            :options="geoJsonOptions"
+            @click="clickedOnRoute($event, route)"
         />
+        <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightStart"/> <!-- Highlighted Route start point -->
+        <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightEnd"/>   <!-- Highlighted Route end point -->
+
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
-        <Vue2LeafletHeatmap v-if="zoom<=heatmapMaxZoom&&showIncidents" :lat-lng="incident_heatmap" :radius="heatmapRadius" :min-opacity="heatmapMinOpacity" :max-zoom="10" :blur="heatmapBlur" :max="heatmapMaxPointIntensity"></Vue2LeafletHeatmap>
-        <vue2-leaflet-marker-cluster v-else-if="showIncidents">
-            <l-marker v-for="m in markers" :lat-lng="m.latlng">
-                <l-popup :content="m.description"></l-popup>
-            </l-marker>
-        </vue2-leaflet-marker-cluster>
+        <Vue2LeafletHeatmap
+            v-if="zoom <= heatmapMaxZoom && showIncidents"
+            :lat-lng="incident_heatmap"
+            :radius="heatmapRadius"
+            :min-opacity="heatmapMinOpacity"
+            :max-zoom="10" :blur="heatmapBlur"
+            :max="heatmapMaxPointIntensity">
+
+        </Vue2LeafletHeatmap>
+        <l-geo-json v-for="marker in markers"
+                    v-else-if="showIncidents"
+                    :geojson="marker.coordinates"
+                    :options="geoJsonPopupOptions(marker)">
+            <l-popup :content="marker.description"></l-popup>
+        </l-geo-json>
     </l-map>
 </template>
 
 <script>
-import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
+import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker, LGeoJson } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
-import { OpenStreetMapProvider } from 'leaflet-geosearch';
-import VGeosearch from 'vue2-leaflet-geosearch';
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/default.css'
-// import { ApiService } from "@/services/ApiService";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
-
-import 'vue-slider-component/theme/default.css';
-
-// Mock REST API
-let mock = new MockAdapter(axios);
-mock.onGet("/api/routes").reply(200, {
-    routes: [
-        {
-            id: "route1",
-            points: [
-                { lat: 52.512641, lng: 13.323587 },
-                { lat: 52.512984, lng: 13.328403 },
-                { lat: 52.513053, lng: 13.330226 },
-                { lat: 52.512568, lng: 13.330560 },
-            ],
-        },
-        {
-            id: "route2",
-            points: [
-                { lat: 52.509599, lng: 13.325507 },
-                { lat: 52.510089, lng: 13.324842 },
-                { lat: 52.511460, lng: 13.322932 },
-                { lat: 52.511930, lng: 13.322465 },
-                { lat: 52.512168, lng: 13.322610 },
-                { lat: 52.512412, lng: 13.322880 },
-                { lat: 52.512882, lng: 13.322869 },
-                { lat: 52.513140, lng: 13.322612 },
-                { lat: 52.513682, lng: 13.322644 },
-                { lat: 52.514505, lng: 13.322574 },
-                { lat: 52.514750, lng: 13.322563 },
-            ],
-        },
-    ],
-});
-
-mock.onGet("/api/markers").reply(200, {
-    markers: [
-        {
-            id: "Incident 1",
-            latlng: {
-                lat: 52.512830,
-                lng: 13.322887,
-            },
-            description: "Auto hat mich beim Einfaedeln fast mitgenommen!",
-        },
-        {
-            id: "Incident 2",
-            latlng: {
-                lat: 52.512719,
-                lng: 13.324711,
-            },
-            description: "Wurde von ein paar Vertretern auf ein Jobangebot angesprochen...",
-        },
-        {
-            id: "Incident 3",
-            latlng: {
-                lat: 52.509777,
-                lng: 13.325281,
-            },
-            description: "Viel zu lange Schlangen in der Mensa.",
-        },
-    ],
-});
+import { OpenStreetMapProvider } from "leaflet-geosearch";
+import VGeosearch from "vue2-leaflet-geosearch";
+import VueSlider from "vue-slider-component";
+import "vue-slider-component/theme/default.css";
+import { ApiService } from "@/services/ApiService";
 
 export default {
     components: {
@@ -157,9 +118,11 @@ export default {
         Vue2LeafletMarkerCluster,
         LMarker,
         LPopup,
+        LCircleMarker,
         Vue2LeafletHeatmap,
         VueSlider,
-        VGeosearch
+        VGeosearch,
+        LGeoJson,
     },
     data() {
         return {
@@ -167,9 +130,13 @@ export default {
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            showTrips: true,
+            showRoutes: true,
             showIncidents: true,
-            polylines: [],
+            routes: [],
+            routeHighlightId: null,
+            routeHighlightContent: null,
+            routeHighlightStart: [0, 0],
+            routeHighlightEnd: [0, 0],
             markers: [],
             incident_heatmap: [],
             heatmapMaxZoom: 15,
@@ -178,8 +145,25 @@ export default {
             heatmapRadius: 25,
             heatmapBlur: 15,
             geosearchOptions: {
-                provider: new OpenStreetMapProvider()
-            }
+                provider: new OpenStreetMapProvider(),
+            },
+            geoJsonOptions: {
+                style: {
+                    color: 'hsl(217, 71%, 53%)',
+                    weight: 3,
+                    opacity: 0.6
+                },
+            },
+            geoJsonStyleHighlight: {
+                color: 'hsl(0,100%,50%)',
+                weight: 4,
+                opacity: 0.8
+            },
+            geoJsonStyleNormal: {
+                color: 'hsl(217, 71%, 53%)',
+                weight: 3,
+                opacity: 0.6
+            },
         };
     },
     methods: {
@@ -201,40 +185,94 @@ export default {
                     lng: this.center.lng,
                     zoom: this.zoom,
                 },
-            });
+            }).catch(() => {});
         },
+        clickedOnRoute(event, route) {
+            // Highlighting this route
+            this.routeHighlightId = route.rideId;
+            this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
+
+            // Showing start & end point with circles
+            this.routeHighlightStart = [route.coordinates.coordinates[0][1], route.coordinates.coordinates[0][0]];
+            this.routeHighlightEnd = [route.coordinates.coordinates[route.coordinates.coordinates.length - 1][1], route.coordinates.coordinates[route.coordinates.coordinates.length - 1][0]];
+
+            // Fitting route into view if it's not already
+            let routeBounds = event.target.getBounds().pad(0.1);
+            if (!this.bounds.contains(routeBounds)) {
+                this.$refs.map.mapObject.flyToBounds(routeBounds);
+            }
+
+            event.sourceTarget.setStyle(this.geoJsonStyleHighlight);
+            this.routeHighlighted = event.sourceTarget;
+        },
+        unfocusRouteHighlight() {
+            this.routeHighlightId = null;
+            this.routeHighlightContent = null;
+            this.routeHighlightStart = [0, 0];
+            this.routeHighlightEnd = [0, 0];
+            this.routeHighlighted.setStyle(this.geoJsonStyleNormal);
+        },
+        clickedOnMap(event) {
+            if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
+                this.unfocusRouteHighlight();
+            }
+        },
+        parseRoutes(response) {
+            this.routes = response.data;
+        },
+        parseIncidents(response) {
+            this.markers = response.data;
+            for (var i = 0; i < this.markers.length; i++) {
+                this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
+            }
+        },
+        geoJsonPopupOptions(marker) {
+            return {
+                onEachFeature: function onEachFeature(feature, layer) {
+                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${marker.rideId}</td></tr><tr><td>Scary:</td><td>${marker.scary}</td></tr></table><p>${marker.description}</p>`);
+                }
+            }
+        }
     },
     // Laden der Daten aus der API
     mounted() {
-        axios
-            .get("/api/routes")
-            .then(
-                response => {
-                    this.polylines = response.data.routes;
-                },
-            );
-        axios
-            .get("/api/markers")
-            .then(
-                response => {
-                    this.markers = response.data.markers;
-                    // Workaround to bug in heatmap. Overwriting the array, e.g., arr=[], causes the heatmap to be empty
-                    while(this.incident_heatmap.length > 0) {this.incident_heatmap.length.pop();}
-                    for (var i = 0; i < this.markers.length; i++) {
-                        this.incident_heatmap.push([this.markers[i].latlng.lat, this.markers[i].latlng.lng, 1])
-                    }
-                }
-            );
+        this.$nextTick(() => {
+            this.zoom = this.$refs.map.mapObject.getZoom();
+            this.center = this.$refs.map.mapObject.getCenter();
+            this.bounds = this.$refs.map.mapObject.getBounds();
+        });
+
+        let lat = this.center[0];
+        let lon = this.center[1];
+
+        ApiService.loadRoutes(lat, lon).then(response => (this.parseRoutes(response)));
+        ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
     },
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 
     .vue2leaflet-map {
         height: 100%;
         width: 100%;
         flex: 1 0;
+    }
+
+    .leaflet-control-container {
+        .leaflet-bottom.leaflet-left {
+            top: 0;
+            bottom: initial;
+            width: 300px;
+            left: calc(50% - 150px);
+            right: calc(50% - 150px);
+
+            .leaflet-control {
+                background-color: orange;
+                width: 100%;
+                margin: 10px 0 0;
+            }
+        }
     }
 
     .overlay {
@@ -260,14 +298,6 @@ export default {
             }
         }
     }
-
-    /* Workaround to class selector not working for the geosearch form. */
-    div {
-        div {
-            color: black;
-        }
-    }
-
 
     @import "~leaflet.markercluster/dist/MarkerCluster.css";
     @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";

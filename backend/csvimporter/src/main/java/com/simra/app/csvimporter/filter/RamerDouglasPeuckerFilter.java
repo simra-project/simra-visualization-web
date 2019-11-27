@@ -15,7 +15,8 @@ import java.util.List;
  */
 public class RamerDouglasPeuckerFilter {
 
-    private RamerDouglasPeuckerFilter() { }
+    private RamerDouglasPeuckerFilter() {
+    }
 
     private static final double sqr(double x) {
         return Math.pow(x, 2);
@@ -47,14 +48,14 @@ public class RamerDouglasPeuckerFilter {
         int index = 0;
 
         final int start = s;
-        final int end = e-1;
-        for (int i=start+1; i<end; i++) {
+        final int end = e - 1;
+        for (int i = start + 1; i < end; i++) {
             // Point
             final double px = Double.parseDouble(list.get(i).getLat());
             final double py = Double.parseDouble(list.get(i).getLon());
             // Start
             final double vx = Double.parseDouble(list.get(start).getLat());
-            final double vy = Double.parseDouble(list.get(start).getLon());;
+            final double vy = Double.parseDouble(list.get(start).getLon());
             // End
             final double wx = Double.parseDouble(list.get(end).getLat());
             final double wy = Double.parseDouble(list.get(end).getLon());
@@ -70,7 +71,7 @@ public class RamerDouglasPeuckerFilter {
             douglasPeucker(list, s, index, epsilon, resultList);
             douglasPeucker(list, index, e, epsilon, resultList);
         } else {
-            if ((end-start)>0) {
+            if ((end - start) > 0) {
                 resultList.add(list.get(start));
                 resultList.add(list.get(end));
             } else {
@@ -82,7 +83,7 @@ public class RamerDouglasPeuckerFilter {
     /**
      * Given a curve composed of line segments find a similar curve with fewer points.
      *
-     * @param list List of Double[] points (x,y)
+     * @param list    List of Double[] points (x,y)
      * @param epsilon Distance dimension
      * @return Similar curve with fewer points
      */

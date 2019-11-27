@@ -18,7 +18,7 @@ public class ConfigService {
     /**
      * Config properties service.
      */
-    public ConfigService(){
+    public ConfigService() {
         readProperties();
     }
 
@@ -26,7 +26,7 @@ public class ConfigService {
         try (InputStream input = ConfigService.class.getClassLoader().getResourceAsStream("config.properties")) {
             Properties prop = new Properties();
             prop.load(input);
-            config= prop;
+            config = prop;
         } catch (IOException ex) {
             logger.error(ex);
         }

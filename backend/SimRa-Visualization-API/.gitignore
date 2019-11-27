@@ -2,7 +2,9 @@
 ### Java template
 # Compiled class file
 *.class
-
+.idea
+.idea/*
+.DS_Store
 # Log file
 *.log
 

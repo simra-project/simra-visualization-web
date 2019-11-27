@@ -1,9 +1,9 @@
 package main.java.com.simra.app.csvimporter;
 
-import main.java.com.simra.app.csvimporter.handler.ProfileFileIOHandler;
-import main.java.com.simra.app.csvimporter.handler.RideFileIOHandler;
-import main.java.com.simra.app.csvimporter.services.ThreadController;
+import main.java.com.simra.app.csvimporter.handler.ProfileDirectoryIOHandler;
+import main.java.com.simra.app.csvimporter.handler.RideDirectoryIOHandler;
 import main.java.com.simra.app.csvimporter.services.ConfigService;
+import main.java.com.simra.app.csvimporter.services.ThreadController;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -25,13 +25,11 @@ public class CSVImporter {
     private static Float DEFAULT_COORDINATE_MIN_ACCURACY = 20f;
     private static Double DEFAULT_RDP_EPSILON = 0.0000001;
 
-    private static ConfigService config;
     private static  ArgumentParser parser;
 
     public static void main(String[] args) {
 
-        config = new ConfigService();
-        config.readProperties();
+        ConfigService.readProperties();
 
         try {
             Namespace ns = null;
@@ -47,9 +45,9 @@ public class CSVImporter {
             parser.addArgument("file").nargs("?")
                     .help("File to read");
             parser.addArgument("-a", "--accuracy")
-                    .help("Minimum accuracy of to be processed coordinates").setDefault(DEFAULT_COORDINATE_MIN_ACCURACY).type(Float.class);
+                    .help("Minimum accuracy of to be processed coordinates").setDefault(Float.parseFloat(ConfigService.config.getProperty("min_accuracy")));
             parser.addArgument("-e", "--epsilon")
-                    .help("Epsilon Parameter of RDP-Algorithm").setDefault(DEFAULT_RDP_EPSILON).type(Double.class);
+                    .help("Epsilon Parameter of RDP-Algorithm").setDefault(Double.parseDouble(ConfigService.config.getProperty("rdp_epsilon")));
 
             ns = parser.parseArgs(args);
             String type = ns.getString("type");
@@ -62,7 +60,7 @@ public class CSVImporter {
                 String folder = ns.getString("file");
 
                 try (Stream<Path> walk = Files.walk(Paths.get(folder))) {
-                    ArrayList<String> results = (ArrayList<String>)walk.filter(Files::isRegularFile).map(x -> x.toString()).collect(Collectors.toList());
+                    ArrayList<String> results = (ArrayList<String>) walk.filter(Files::isRegularFile).map(Path::toString).collect(Collectors.toList());
 
                     Float minAccuracy = ns.getFloat("accuracy");
                     Double rdpEpsilon = ns.getDouble("epsilon");
@@ -76,18 +74,13 @@ public class CSVImporter {
                 String name = ns.getString("file");
                 Path path = Paths.get(name);
                 if (type.contains("p")) {
-                    new ProfileFileIOHandler(path);
+                    new ProfileDirectoryIOHandler(path);
                 } else if (type.contains("r")) {
                     Float minAccuracy = ns.getFloat("accuracy");
                     Double rdpEpsilon = ns.getDouble("epsilon");
-                    new RideFileIOHandler(path, minAccuracy, rdpEpsilon);
+                    new RideDirectoryIOHandler(path, minAccuracy, rdpEpsilon);
                 }
-
-
             }
-
-
-
         } catch ( ArgumentParserException e) {
             parser.handleError(e);
             logger.error(e);

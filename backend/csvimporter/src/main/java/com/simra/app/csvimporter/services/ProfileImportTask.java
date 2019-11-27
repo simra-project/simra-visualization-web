@@ -1,6 +1,6 @@
 package main.java.com.simra.app.csvimporter.services;
 
-import main.java.com.simra.app.csvimporter.handler.ProfileFileIOHandler;
+import main.java.com.simra.app.csvimporter.handler.ProfileDirectoryIOHandler;
 import org.apache.log4j.Logger;
 
 import java.nio.file.Path;
@@ -36,7 +36,7 @@ public class ProfileImportTask implements Runnable {
 
     public void run() {
         Path path = Paths.get(this.filePath);
-        new ProfileFileIOHandler(path);
+        new ProfileDirectoryIOHandler(path);
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {

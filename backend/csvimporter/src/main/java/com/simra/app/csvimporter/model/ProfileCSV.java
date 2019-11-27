@@ -3,16 +3,11 @@ package main.java.com.simra.app.csvimporter.model;
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.bson.Document;
-
-import java.util.Date;
-import java.util.Map;
-
 
 /**
  * The Profile csv model.
  */
-public class ProfileCSV extends ApplicationFileVersion implements MongoDocument {
+public class ProfileCSV extends ApplicationFileVersion {
 
     @CsvBindByName(column = "birth")
     private int birth;
@@ -317,38 +312,6 @@ public class ProfileCSV extends ApplicationFileVersion implements MongoDocument 
                         "idle: %s, numberOfScary: %s, behaviour: %s, hours: %s] ",
                 this.birth, this.gender, this.region, this.numberOfRides,
                 this.duration, this.numberOfIncidents, this.distance, this.co2, this.idle, this.numberOfScary, this.behaviour, this.hours.toString());
-    }
-
-    /**
-     * To document object document.
-     *
-     * @return the document
-     */
-    public Document toDocumentObject(){
-        Document document= new Document();
-        document.put("fileId", this.getFileId());
-        document.put("appVersion", this.getAppVersion());
-        document.put("fileVersion", this.getFileVersion());
-        document.put("birth", this.birth);
-        document.put("gender", this.gender);
-        document.put("region", this.region);
-        document.put("numberOfRides", this.numberOfRides);
-        document.put("duration", this.duration);
-        document.put("numberOfIncidents", this.numberOfIncidents);
-        document.put("distance", this.distance);
-        document.put("co2", this.co2);
-        document.put("idle", this.idle);
-        document.put("numberOfScary", this.numberOfScary);
-        document.put("behaviour", this.behaviour);
-        Document docHours= new Document();
-
-        for (Map.Entry<String, Float> entry: this.hours.entries()) {
-            docHours.put(entry.getKey(), entry.getValue());
-        }
-        document.put("hours", docHours);
-        document.put("importedAt", new Date());
-
-        return document;
     }
 }
 

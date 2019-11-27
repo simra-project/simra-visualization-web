@@ -1,6 +1,7 @@
 package visualization.web.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
@@ -10,6 +11,11 @@ import lombok.*;
 @AllArgsConstructor
 @JsonInclude
 public class StatisticsResource {
-    // This need to be defined
-    private int abc;
+
+    @JsonProperty
+    private RideStatisticsResource ridesStatistics = new RideStatisticsResource();
+
+    @JsonProperty
+    private IncidentStatisticsResource incidentsStatistics = new IncidentStatisticsResource();
+
 }

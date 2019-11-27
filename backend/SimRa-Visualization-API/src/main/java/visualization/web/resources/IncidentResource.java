@@ -2,13 +2,14 @@ package visualization.web.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
-import visualization.web.resources.geoJSON.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import visualization.web.resources.serializers.GeoJsonPointSerializer;
 
 /*
 Representation of an Incident
  */
-
 @Getter
 @Setter
 @ToString
@@ -18,16 +19,16 @@ Representation of an Incident
 public class IncidentResource {
 
     @JsonProperty
-    private int rideId;
+    private String rideId;
 
     @JsonProperty
     private int key;
 
-    @JsonProperty
-    private Point incident;
+    @JsonSerialize(using = GeoJsonPointSerializer.class)
+    private GeoJsonPoint coordinates;
 
     @JsonProperty
-    private long timeStamp;
+    private long ts;
 
     @JsonProperty
     private Boolean child;

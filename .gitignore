@@ -126,4 +126,7 @@ $RECYCLE.BIN/
 /.idea/codeStyles/codeStyleConfig.xml
 /.idea/
 /.idea/compiler.xml
-/backend/csvimporter/target/
+
+target/
+
+backend/csvimporter/map-data/*.osm-gh/

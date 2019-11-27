@@ -7,31 +7,42 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.apache.log4j.Logger;
 import org.bson.Document;
+
 import java.util.Arrays;
 
 public class DBService {
     private static final Logger logger = Logger.getLogger(DBService.class);
+
+    private static DBService instance;
 
     private MongoClient dbClient;
     private MongoDatabase rideDatabase;
     private MongoCollection<Document> collection;
     private String host = "localhost";
     private int port = 27017;
-    private String database = "SimraDb";
+    private String database = "simra";
 
 
-
-    public void DbRideConnect() {
+    private DBService() {
         this.readProperties();
-        this.collection = this.rideDatabase.getCollection(ConfigService.config.getProperty("db.ridesCollection", "rides"));
     }
 
-    public void DbProfileConnect() {
-        this.readProperties();
-        this.collection = this.rideDatabase.getCollection(ConfigService.config.getProperty("db.profilesCollection", "profiles"));
+    public static DBService getInstance() {
+        if (DBService.instance == null) {
+            DBService.instance = new DBService();
+        }
+        return DBService.instance;
     }
 
-    public MongoCollection<Document> getIncidentCollection() {
+    public MongoCollection<Document> getRidesCollection() {
+        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.ridesCollection", "rides"));
+    }
+
+    public MongoCollection<Document> getProfilesCollection() {
+        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.profilesCollection", "profiles"));
+    }
+
+    public MongoCollection<Document> getIncidentsCollection() {
         return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.incidentsCollection", "incidents"));
     }
 
@@ -71,13 +82,8 @@ public class DBService {
         this.rideDatabase = rideDatabase;
     }
 
-    public MongoCollection<Document> getCollection() {
-        return collection;
-    }
-
     public void setRides(MongoCollection<Document> collection) {
         this.collection = collection;
     }
-
 
 }

@@ -42,7 +42,7 @@ public class ThreadController {
      */
     public void executeFileRead(){
 
-        this.files.stream().forEach(filePath->{
+        this.files.forEach(filePath -> {
             if(this.type.contains("r")){
                 RideImportTask rideImportTask = new RideImportTask(filePath, this.minAccuracy, this.rdpEpsilon);
                 logger.info("Ride Task Created : " + rideImportTask.getFilePath());

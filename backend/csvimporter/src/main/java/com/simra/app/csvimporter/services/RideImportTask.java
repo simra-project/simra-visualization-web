@@ -1,7 +1,6 @@
 package main.java.com.simra.app.csvimporter.services;
 
-import main.java.com.simra.app.csvimporter.handler.RideFileIOHandler;
-import org.apache.log4j.Logger;
+import main.java.com.simra.app.csvimporter.handler.RideDirectoryIOHandler;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,7 +39,7 @@ public class RideImportTask implements Runnable {
 
     public void run() {
         Path path = Paths.get(this.filePath);
-        new RideFileIOHandler(path, minAccuracy, rdpEpsilon);
+        new RideDirectoryIOHandler(path, minAccuracy, rdpEpsilon);
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
