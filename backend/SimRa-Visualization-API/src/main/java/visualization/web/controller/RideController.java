@@ -1,6 +1,7 @@
 package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.geo.GeoJsonGeometryCollection;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,13 @@ public class RideController {
                 new GeoJsonPoint(second[0], second[1]),
                 new GeoJsonPoint(third[0], third[1]),
                 new GeoJsonPoint(fourth[0], fourth[1])));
+    }
+
+    @GetMapping(value = "/rides/mapMatched")
+    public ResponseEntity<GeoJsonGeometryCollection> getRidesMapMatchedNear(@RequestParam(value = "lon") double longitude,
+                                                                            @RequestParam(value = "lat") double latitude,
+                                                                            @RequestParam(value = "max") int maxDistance) {
+        return ResponseEntity.ok(rideService.getRidesMapMatchedInRange(longitude, latitude, maxDistance));
     }
 
 }

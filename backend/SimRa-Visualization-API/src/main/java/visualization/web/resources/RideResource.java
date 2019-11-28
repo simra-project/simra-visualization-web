@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import visualization.web.resources.serializers.GeoJsonLineStringSerializer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*
 Representation of a Ride
@@ -31,4 +33,9 @@ public class RideResource {
 
     @JsonProperty
     private Float length;
+
+    // please do not remove. There are problems with Lombock and Kt. Looking for a nicer fix.
+    public List<Point> getCoordinatesForKotlin() {
+        return coordinates.getCoordinates();
+    }
 }
