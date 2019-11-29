@@ -2,8 +2,6 @@ package visualization.service
 
 import org.springframework.data.geo.Point
 import org.springframework.data.mongodb.core.geo.GeoJsonGeometryCollection
-import org.springframework.data.mongodb.core.geo.GeoJsonLineString
-import org.springframework.data.mongodb.core.geo.GeoJsonMultiLineString
 import visualization.web.resources.RideResource
 
 class RoutePartitioner {
@@ -28,13 +26,12 @@ class RoutePartitioner {
 
         val distinctSharedLags = findDistinctLags(sharedCoordinatesPreprocessed)!!
 
+        val flatSharedLegs = distinctSharedLags.keys.flatten()
 
-        val flatSharedLegs = distinctSharedLags.flatten()
 
-
-        val result: MutableMap<List<List<Point>>, Int> = mutableMapOf()
+        val result: MutableMap<Int, List<List<Point>>> = mutableMapOf()
+        val rideLegs = mutableListOf<List<Point>>()
         rides.forEach { ride ->
-            val rideLegs = mutableListOf<List<Point>>()
             var rideLeg = mutableListOf<Point>()
             for (i in ride.coordinatesForKotlin.indices) {
                 try {
@@ -60,17 +57,24 @@ class RoutePartitioner {
 
             }
             if (rideLeg.isNotEmpty()) rideLegs.add(rideLeg)
-            result[rideLegs] = 1
         }
+        result[1] = rideLegs
+
+        result.also { result ->
+            distinctSharedLags.values.forEach { count ->
+                result[count] = distinctSharedLags.filter { it.value == count }.keys.flatMap { listOf(it) }
+            }
+        }.toMap()
 
 
+        val a = distinctSharedLags.entries
 
         return null
     }
 
-    private fun findDistinctLags(sharedCoordinates: Map<Int, List<Pair<Point, Point>>>): Set<List<Point>>? {
+    private fun findDistinctLags(sharedCoordinates: Map<Int, List<Pair<Point, Point>>>): Map<List<Point>, Int> {
 
-        val result = hashSetOf<List<Point>>()
+        val result = mutableMapOf<List<Point>, Int>()
 
         sharedCoordinates.forEach {
             var leg = mutableListOf<Point>()
@@ -78,25 +82,12 @@ class RoutePartitioner {
                 leg.add(it.value[i].first)
                 leg.add(it.value[i].second)
                 if (i + 1 < it.value.size && it.value[i].second != it.value[i + 1].first || i + 1 == it.value.size) {
-                    result.add(leg.distinct().toList())
+                    result[leg.distinct().toList()] = it.key
                     leg = mutableListOf()
                 }
             }
         }
 
         return result
-    }
-
-    private fun parseRideToGeoJson(legs: MutableList<List<Point>>): GeoJsonMultiLineString {
-
-        val geoJsonLineStrings = legs.map { GeoJsonLineString(it) }
-        val res = GeoJsonMultiLineString(geoJsonLineStrings)
-
-        return res
-    }
-
-
-    class GeoJsonFeature {
-
     }
 }
