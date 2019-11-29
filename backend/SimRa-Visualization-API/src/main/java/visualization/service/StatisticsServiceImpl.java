@@ -36,7 +36,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private IncidentRepository incidentRepository;
 
     private static final List<String> BIKE_TYPES = Arrays.asList("Not Chosen", "City-/Trekking Bike", "Road Racing Bike", "E-Bike", "Recumbent Bicycle", "Freight Bicycle", "Tandem Bicycle", "Mountainbike", "Other");
-    private static final List<String> INCIDENT_TYPES = Arrays.asList("Nothing", "Close Pass", "s.o. pulling in or out", "Near left or right hook", "s.o. approaching head on", "Tailgating", "Near-Dooring", "Dodging an Obstacle", "Other");
+    private static final List<String> INCIDENT_TYPES = Arrays.asList("Nothing", "Close Pass", "Someone pulling in or out", "Near left or right hook", "Someone approaching head on", "Tailgating", "Near-Dooring", "Dodging an Obstacle", "Other");
     private static final List<String> PARTICIPANT_TYPES = Arrays.asList("Bus", "Cyclist", "Pedestrian", "Delivery Van", "Truck", "Motorcycle", "Car", "Taxi", "Other", "E-Scooter");
 
     @Override

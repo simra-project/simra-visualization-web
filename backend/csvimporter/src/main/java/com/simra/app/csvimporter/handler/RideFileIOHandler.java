@@ -27,7 +27,7 @@ public class RideFileIOHandler {
     private Path filePath;
     private RideFilter rideFilter;
     private MapMatchingService mapMatchingService = new MapMatchingService();
-    private static DBService dbService;
+    private static DBService dbService; // TODO: why is this static?
 
 
     public RideFileIOHandler(Path filePath, Float minAccuracy, Double rdpEpsilon) {
