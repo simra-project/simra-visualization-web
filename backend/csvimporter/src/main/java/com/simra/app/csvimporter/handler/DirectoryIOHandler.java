@@ -33,7 +33,6 @@ public abstract class DirectoryIOHandler {
 
             writeToDB();
         } catch (IOException e) {
-            provideLogger().error(e);
         }
         long end = System.currentTimeMillis();
         long dt = end - begin;
@@ -44,5 +43,4 @@ public abstract class DirectoryIOHandler {
 
     abstract void writeToDB();
 
-    abstract Logger provideLogger();
 }

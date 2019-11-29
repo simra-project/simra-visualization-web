@@ -1,9 +1,7 @@
 package main.java.com.simra.app.csvimporter.services;
 
-import main.java.com.simra.app.csvimporter.handler.RideDirectoryIOHandler;
-
+import main.java.com.simra.app.csvimporter.handler.RideFileIOHandler;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The type Ride import task.
@@ -37,13 +35,7 @@ public class RideImportTask implements Runnable {
     }
 
     public void run() {
-        new RideDirectoryIOHandler(filePath, minAccuracy, rdpEpsilon);
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
+        RideFileIOHandler rideFileIOHandler=new RideFileIOHandler(filePath, minAccuracy, rdpEpsilon);
+        rideFileIOHandler.parseFile();
     }
 }

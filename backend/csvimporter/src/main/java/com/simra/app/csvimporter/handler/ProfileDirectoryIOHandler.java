@@ -12,18 +12,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileDirectoryIOHandler extends DirectoryIOHandler {
-    private static final Logger logger = Logger.getLogger(ProfileDirectoryIOHandler.class);
+public class ProfileDirectoryIOHandler {
+    //private static final Logger logger = Logger.getLogger(ProfileDirectoryIOHandler.class);
 
     private static final String FILEVERSIONSPLITTER = "#";
 
     private List<Profile> profiles = new ArrayList<>();
 
     public ProfileDirectoryIOHandler(Path path) {
-        parseDirectory(path);
+        parseFile(path);
     }
 
-    @Override
     public void parseFile(Path file) {
         try (BufferedReader reader =
                      new BufferedReader(new FileReader(String.valueOf(file)))) {
@@ -52,17 +51,7 @@ public class ProfileDirectoryIOHandler extends DirectoryIOHandler {
             }
 
         } catch (IOException e) {
-            logger.error(e);
+            //logger.error(e);
         }
-    }
-
-    @Override
-    void writeToDB() {
-        // TODO Update DB batch style (this.profiles)
-    }
-
-    @Override
-    public Logger provideLogger() {
-        return logger;
     }
 }
