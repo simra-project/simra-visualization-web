@@ -8,8 +8,12 @@ class RoutePartitioner {
 
     fun partitionRoutes(rides: List<RideResource>): GeoJsonGeometryCollection? {
 
+        val result: MutableMap<Int, List<List<Point>>> = mutableMapOf()
+
+        // find ride segments which are used more than once
         val sharedCoordinates = rides.flatMap { ride -> ride.coordinatesForKotlin.zipWithNext() }.groupingBy { it }.eachCount().filter { it.value > 1 }
 
+        // Restructure Map in order to Count be Key
         val sharedCoordinatesPreprocessed = mutableMapOf<Int, List<Pair<Point, Point>>>().also { res ->
             sharedCoordinates.values.forEach { count ->
                 res[count] = sharedCoordinates.filter { it.value == count }.keys.map { it }
@@ -17,20 +21,27 @@ class RoutePartitioner {
         }.toMap()
 
 
-        // reverse partitions in order to simplify working on it
-        val sharedCoordinatesByCount = mutableMapOf<Int, Set<Point>>().also { res ->
-            sharedCoordinates.values.forEach { count ->
-                res[count] = sharedCoordinates.filter { it.value == count }.keys.flatMap { setOf(it.first, it.second) }.toSet()
-            }
-        }.toMap()
-
-        val distinctSharedLags = findDistinctLags(sharedCoordinatesPreprocessed)!!
+        val distinctSharedLags = findDistinctLags(sharedCoordinatesPreprocessed)
 
         val flatSharedLegs = distinctSharedLags.keys.flatten()
 
+        result[1] = findOnceUsedRideSegments(rides, flatSharedLegs)
 
-        val result: MutableMap<Int, List<List<Point>>> = mutableMapOf()
-        val rideLegs = mutableListOf<List<Point>>()
+        // add Route Legs that have been used more often than once
+        result.also { result ->
+            distinctSharedLags.values.forEach { count ->
+                result[count] = distinctSharedLags.filter { it.value == count }.keys.flatMap { listOf(it) }
+            }
+        }
+
+
+        val a = distinctSharedLags.entries
+
+        return null
+    }
+
+    private fun findOnceUsedRideSegments(rides: List<RideResource>, flatSharedLegs: List<Point>): List<List<Point>> {
+        val onceUsedRideLegs = mutableListOf<List<Point>>()
         rides.forEach { ride ->
             var rideLeg = mutableListOf<Point>()
             for (i in ride.coordinatesForKotlin.indices) {
@@ -42,7 +53,7 @@ class RoutePartitioner {
                             rideLeg.add(curPoint)
                         }
                         if (rideLeg.isNotEmpty()) {
-                            rideLegs.add(rideLeg.toList())
+                            onceUsedRideLegs.add(rideLeg.toList())
                             rideLeg = mutableListOf()
                         }
                     } else {
@@ -56,20 +67,9 @@ class RoutePartitioner {
                 }
 
             }
-            if (rideLeg.isNotEmpty()) rideLegs.add(rideLeg)
+            if (rideLeg.isNotEmpty()) onceUsedRideLegs.add(rideLeg)
         }
-        result[1] = rideLegs
-
-        result.also { result ->
-            distinctSharedLags.values.forEach { count ->
-                result[count] = distinctSharedLags.filter { it.value == count }.keys.flatMap { listOf(it) }
-            }
-        }.toMap()
-
-
-        val a = distinctSharedLags.entries
-
-        return null
+        return onceUsedRideLegs
     }
 
     private fun findDistinctLags(sharedCoordinates: Map<Int, List<Pair<Point, Point>>>): Map<List<Point>, Int> {
