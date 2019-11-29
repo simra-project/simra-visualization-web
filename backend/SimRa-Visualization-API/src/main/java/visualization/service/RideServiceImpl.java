@@ -85,9 +85,11 @@ public class RideServiceImpl implements RideService {
 
         RideResource ride1 = new RideResource();
         RideResource ride2 = new RideResource();
+        RideResource ride3 = new RideResource();
 
         ride1.setRideId("1");
         ride2.setRideId("2");
+        ride3.setRideId("3");
 
         Point[] array1 = {
                 new Point(0d, 0d),
@@ -108,12 +110,24 @@ public class RideServiceImpl implements RideService {
                 new Point(5d, 1d),
                 new Point(6d, 1d)
         };
+
+
+        Point[] array3 = {
+                new Point(4d, 2d),
+                new Point(4d, 1d),
+                new Point(5d, 1d),
+                new Point(6d, 2d)
+        };
         ride1.setCoordinates(new GeoJsonLineString(Arrays.asList(array1)));
 
         ride2.setCoordinates(new GeoJsonLineString(Arrays.asList(array2)));
 
+        ride3.setCoordinates(new GeoJsonLineString(Arrays.asList(array3)));
+
+
         rideResources.add(ride1);
         rideResources.add(ride2);
+        rideResources.add(ride3);
 
         GeoJsonGeometryCollection result = new RoutePartitioner().partitionRoutes(rideResources);
 
