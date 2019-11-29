@@ -95,7 +95,8 @@ public class RideServiceImpl implements RideService {
                 new Point(2d, 1d),
                 new Point(3d, 2d),
                 new Point(4d, 1d),
-                new Point(5d, 1d)
+                new Point(5d, 1d),
+                new Point(6d, 1d)
         };
 
         Point[] array2 = {
@@ -104,7 +105,8 @@ public class RideServiceImpl implements RideService {
                 new Point(2d, 1d),
                 new Point(3d, 0d),
                 new Point(4d, 1d),
-                new Point(5d, 1d)
+                new Point(5d, 1d),
+                new Point(6d, 1d)
         };
         ride1.setCoordinates(new GeoJsonLineString(Arrays.asList(array1)));
 

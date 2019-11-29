@@ -12,6 +12,13 @@ class RoutePartitioner {
 
         val sharedCoordinates = rides.flatMap { ride -> ride.coordinatesForKotlin.zipWithNext() }.groupingBy { it }.eachCount().filter { it.value > 1 }
 
+        val sharedCoordinatesPreprocessed = mutableMapOf<Int, List<Pair<Point, Point>>>().also { res ->
+            sharedCoordinates.values.forEach { count ->
+                res[count] = sharedCoordinates.filter { it.value == count }.keys.map { it }
+            }
+        }.toMap()
+
+
         // reverse partitions in order to simplify working on it
         val sharedCoordinatesByCount = mutableMapOf<Int, Set<Point>>().also { res ->
             sharedCoordinates.values.forEach { count ->
@@ -19,44 +26,65 @@ class RoutePartitioner {
             }
         }.toMap()
 
-        // Coords that need to be removed from the rides.
-        val toBeRemovedCoords = sharedCoordinatesByCount.map { it.value.drop(1).dropLast(1) }
+        val distinctSharedLags = findDistinctLags(sharedCoordinatesPreprocessed)!!
 
 
-        val result: MutableList<GeoJsonMultiLineString> = mutableListOf()
+        val flatSharedLegs = distinctSharedLags.flatten()
+
+
+        val result: MutableMap<List<List<Point>>, Int> = mutableMapOf()
         rides.forEach { ride ->
-            val legs = mutableListOf<List<Point>>()
-            toBeRemovedCoords.forEach { toBeRemovedCoords ->
-                var leg = mutableListOf<Point>()
-                for (i in ride.coordinatesForKotlin.indices) {
-                    val point = ride.coordinatesForKotlin[i]
-                    if (!toBeRemovedCoords.contains(point)) {
-                        leg.add(point)
+            val rideLegs = mutableListOf<List<Point>>()
+            var rideLeg = mutableListOf<Point>()
+            for (i in ride.coordinatesForKotlin.indices) {
+                try {
+                    val curPoint = ride.coordinatesForKotlin[i]
+                    val prevPoint = ride.coordinatesForKotlin.getOrNull(i - 1)
+                    if (flatSharedLegs.contains(curPoint)) {
+                        if (!flatSharedLegs.contains(prevPoint)) {
+                            rideLeg.add(curPoint)
+                        }
+                        if (rideLeg.isNotEmpty()) {
+                            rideLegs.add(rideLeg.toList())
+                            rideLeg = mutableListOf()
+                        }
                     } else {
-                        legs.add(leg.toList())
-                        leg = mutableListOf()
+                        if (flatSharedLegs.contains(prevPoint)) {
+                            rideLeg.add(prevPoint!!)
+                        }
+                        rideLeg.add(curPoint)
                     }
+                } catch (e: IndexOutOfBoundsException) {
+                    continue
                 }
-                legs.add(leg.toList())
-                result.add(parseRideToGeoJson(legs))
-                // todo add weight
-            }
-        }
-
-        sharedCoordinatesByCount.entries.forEach {
-            val legs = mutableListOf<List<Point>>()
-            it.value.forEach { point ->
-
 
             }
-
+            if (rideLeg.isNotEmpty()) rideLegs.add(rideLeg)
+            result[rideLegs] = 1
         }
-
-
 
 
 
         return null
+    }
+
+    private fun findDistinctLags(sharedCoordinates: Map<Int, List<Pair<Point, Point>>>): Set<List<Point>>? {
+
+        val result = hashSetOf<List<Point>>()
+
+        sharedCoordinates.forEach {
+            var leg = mutableListOf<Point>()
+            for (i in it.value.indices) {
+                leg.add(it.value[i].first)
+                leg.add(it.value[i].second)
+                if (i + 1 < it.value.size && it.value[i].second != it.value[i + 1].first || i + 1 == it.value.size) {
+                    result.add(leg.distinct().toList())
+                    leg = mutableListOf()
+                }
+            }
+        }
+
+        return result
     }
 
     private fun parseRideToGeoJson(legs: MutableList<List<Point>>): GeoJsonMultiLineString {
