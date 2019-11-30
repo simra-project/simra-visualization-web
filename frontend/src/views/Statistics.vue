@@ -9,7 +9,7 @@
             </b-select>
         </h2>
 
-        <div class="wrapper" v-if="ridesStatistics.accumulatedDistance != null">
+        <div class="wrapper" v-if="statistics.accumulatedDistance != null">
             <div class="top-text">
                 Over
                 <span class="highlight-text">
@@ -17,15 +17,15 @@
                         </span>
                 in {{ selectedLocation }} cycled
                 <span class="highlight-text">
-                            <ICountUp :delay="400" :endVal="Math.floor(ridesStatistics.accumulatedDistance / 1000)"/> km
+                            <ICountUp :delay="400" :endVal="Math.floor(statistics.accumulatedDistance / 1000)"/> km
                         </span>
                 so far reducing CO2 emissions by
                 <span class="highlight-text">
-                            <ICountUp :delay="700" :endVal="Math.floor(ridesStatistics.accumulatedSavedCO2)"/> kg</span>.
+                            <ICountUp :delay="700" :endVal="Math.floor(statistics.accumulatedSavedCO2)"/> kg</span>.
             </div>
-            <div class="top-subtext">
-                On average, one ride is {{ (ridesStatistics.accumulatedDistance / (1000 * ridesStatistics.rideCount)).toFixed(1) }} kilometers long and lasts {{ Math.floor(ridesStatistics.accumulatedDuration / (1000 * 60 * ridesStatistics.rideCount)) }} minutes.
-                That's a speed of {{ (3.6 * ridesStatistics.accumulatedDistance / (ridesStatistics.accumulatedDuration / 1000)).toFixed(1) }} km/h on average.
+            <div class="top-subtext"> <!-- TODO: calculate averages in backend -->
+                On average, one ride is {{ (statistics.accumulatedDistance / (1000 * statistics.rideCount)).toFixed(1) }} kilometers long and lasts {{ Math.floor(statistics.accumulatedDuration / (1000 * 60 * statistics.rideCount)) }} minutes.
+                That's a speed of {{ (3.6 * statistics.accumulatedDistance / (statistics.accumulatedDuration / 1000)).toFixed(1) }} km/h on average.
             </div>
 
             <hr style="margin-bottom: 2.5rem;">
@@ -51,7 +51,7 @@
                             <b-tag rounded>?</b-tag>
                         </b-tooltip>
                     </h4>
-                    <apexchart type=donut width=100% :options="chartOptions(['Not scary', 'Scary'])" :series="[incidentsStatistics.incidentCount, incidentsStatistics.countOfScary]"/>
+                    <apexchart type=donut width=100% :options="chartOptions(['Not scary', 'Scary'])" :series="[statistics.incidentCount, statistics.incidentCountScary]"/>
                 </div>
             </div>
 
@@ -105,10 +105,9 @@ export default {
         return {
             dataLoaded: false,
             selectedLocation: "Berlin",
-            ridesStatistics: {},
-            incidentsStatistics: {
+            statistics: {
                 incidentCount: 0,
-                countOfScary: 0,
+                incidentCountScary: 0,
             },
             incidentTypes: { labels: [], data: [], options: {} },
             participantTypes: { labels: [], data: [], options: {} },
@@ -124,13 +123,12 @@ export default {
                     .then(r => r.json())
                     .then(r => {
                         this.dataLoaded = true;
-                        this.ridesStatistics = r.ridesStatistics;
-                        this.incidentsStatistics = r.incidentsStatistics;
+                        this.statistics = r;
                         console.log(r);
 
-                        this.incidentTypes = this.processData(4, r.incidentsStatistics.incidentTypeLabels, r.incidentsStatistics.incidentTypeData);
-                        this.participantTypes = this.processData(4, r.incidentsStatistics.participantTypeLabels, r.incidentsStatistics.participantTypeData);
-                        this.bikeTypes = this.processData(4, r.incidentsStatistics.bikeTypeLabels, r.incidentsStatistics.bikeTypeData);
+                        this.incidentTypes = this.processData(4, r.incidentTypeLabels, r.incidentTypeData);
+                        this.participantTypes = this.processData(4, r.incidentParticipantTypeLabels, r.incidentParticipantTypeData);
+                        this.bikeTypes = this.processData(4, r.incidentBikeTypeLabels, r.incidentBikeTypeData);
                         this.bikeTypes.options.tooltip.enabled = false;
                     });
             }, 500);
