@@ -1,6 +1,7 @@
 package main.java.com.simra.app.csvimporter.services;
 
 import main.java.com.simra.app.csvimporter.handler.RideFileIOHandler;
+
 import java.nio.file.Path;
 
 /**
@@ -9,6 +10,7 @@ import java.nio.file.Path;
 public class RideImportTask implements Runnable {
 
     private Path filePath;
+    private String region;
     private Float minAccuracy;
     private Double rdpEpsilon;
 
@@ -16,13 +18,15 @@ public class RideImportTask implements Runnable {
      * Instantiates a new Ride import task.
      *
      * @param filePath    the file path
+     * @param region      the region of data origin
      * @param minAccuracy the min accuracy
      * @param rdpEpsilon  the rdp epsilon
      */
-    public RideImportTask(Path filePath, Float minAccuracy, Double rdpEpsilon) {
+    public RideImportTask(Path filePath, String region, Float minAccuracy, Double rdpEpsilon) {
         this.filePath = filePath;
-        this.minAccuracy=minAccuracy;
-        this.rdpEpsilon=rdpEpsilon;
+        this.region = region;
+        this.minAccuracy = minAccuracy;
+        this.rdpEpsilon = rdpEpsilon;
     }
 
     /**
@@ -35,7 +39,7 @@ public class RideImportTask implements Runnable {
     }
 
     public void run() {
-        RideFileIOHandler rideFileIOHandler=new RideFileIOHandler(filePath, minAccuracy, rdpEpsilon);
+        RideFileIOHandler rideFileIOHandler = new RideFileIOHandler(filePath, region, minAccuracy, rdpEpsilon);
         rideFileIOHandler.parseFile();
     }
 }

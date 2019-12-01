@@ -18,18 +18,27 @@ import java.util.List;
 public class Ride implements MongoDocument {
     private static final Logger logger = Logger.getLogger(Ride.class);
 
-
+    private String region;
     private List<RideCSV> rideBeans;
     private List<RideCSV> mapMatchedRideBeans;
     private List<IncidentCSV> incidents;
 
     private Float distance;
+    private Long duration;
 
     /**
      * Instantiates a new Ride.
      */
     public Ride() {
         // default constructor
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     /**
@@ -104,6 +113,14 @@ public class Ride implements MongoDocument {
         this.distance = distance;
     }
 
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
+
     /**
      * To document object document.
      *
@@ -113,7 +130,9 @@ public class Ride implements MongoDocument {
     public Document toDocumentObject() {
         Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
+        singleRide.put("region", this.region);
         singleRide.put("distance", this.distance);
+        singleRide.put("duration", this.duration);
 
         parseRideBeans(singleRide, rideBeans, "");
         parseRideBeans(singleRide, mapMatchedRideBeans, "MapMatched");

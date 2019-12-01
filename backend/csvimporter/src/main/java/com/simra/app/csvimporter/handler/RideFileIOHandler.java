@@ -16,7 +16,6 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,14 +24,16 @@ public class RideFileIOHandler {
 
     private static final String FILEVERSIONSPLITTER = "#";
     private Path filePath;
+    private String region;
     private RideFilter rideFilter;
     private MapMatchingService mapMatchingService = new MapMatchingService();
     private static DBService dbService; // TODO: why is this static?
 
 
-    public RideFileIOHandler(Path filePath, Float minAccuracy, Double rdpEpsilon) {
+    public RideFileIOHandler(Path filePath, String region, Float minAccuracy, Double rdpEpsilon) {
         this.rideFilter = new RideFilter(minAccuracy, rdpEpsilon);
-        this.filePath=filePath;
+        this.filePath = filePath;
+        this.region = region;
         dbService = new DBService();
     }
 
@@ -59,6 +60,7 @@ public class RideFileIOHandler {
             }
             /*CSV to Java Object*/
             Ride ride = new Ride();
+            ride.setRegion(region);
 
             if (incidentContent.length() > 0) {
                 this.incidentParse(ride, incidentContent, this.filePath);
@@ -97,6 +99,7 @@ public class RideFileIOHandler {
             ride.setMapMatchedRideBeans(mapMatchedRideBeans);
             /* 4. Distance Service.*/
             ride.setDistance(mapMatchingService.getCurrentRouteDistance());
+            ride.setDuration(mapMatchingService.getCurrentRouteDuration());
 
             /**
              * End of filters
@@ -141,6 +144,7 @@ public class RideFileIOHandler {
                 item.setFileId(path.getFileName().toString());
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
+                item.setRegion(this.region);
             });
             ride.setIncidents(incidentBeans);
         } catch (Exception e) {

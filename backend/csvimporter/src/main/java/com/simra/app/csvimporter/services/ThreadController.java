@@ -17,6 +17,7 @@ public class ThreadController {
     private ArrayList<Path> filePaths;
     private ThreadPoolExecutor executor;
     private String type;
+    private String region;
     private Float minAccuracy;
     private Double rdpEpsilon;
 
@@ -26,13 +27,15 @@ public class ThreadController {
      *
      * @param paths       the paths to import
      * @param type        the type
+     * @param region      the region of data origin
      * @param minAccuracy the min accuracy
      * @param rdpEpsilon  the rdp epsilon
      */
-    public ThreadController(ArrayList<Path> paths, String type, Float minAccuracy, Double rdpEpsilon) {
+    public ThreadController(ArrayList<Path> paths, String type, String region, Float minAccuracy, Double rdpEpsilon) {
         this.filePaths = paths;
         this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
         this.type = type;
+        this.region = region;
         this.minAccuracy = minAccuracy;
         this.rdpEpsilon = rdpEpsilon;
     }
@@ -44,7 +47,7 @@ public class ThreadController {
 
         this.filePaths.forEach(filePath -> {
             if (this.type.contains("r")) {
-                RideImportTask rideImportTask = new RideImportTask(filePath, this.minAccuracy, this.rdpEpsilon);
+                RideImportTask rideImportTask = new RideImportTask(filePath, this.region, this.minAccuracy, this.rdpEpsilon);
                 logger.info("Ride Task Created : " + rideImportTask.getFilePath());
                 this.executor.execute(rideImportTask);
             }

@@ -49,7 +49,7 @@ public class CSVImporter {
                     .help("Minimum accuracy of to be processed coordinates").setDefault(Float.valueOf(ConfigService.config.getProperty("min_accuracy")));
             parser.addArgument("-e", "--epsilon")
                     .help("Epsilon Parameter of RDP-Algorithm").setDefault(Double.valueOf(ConfigService.config.getProperty("rdp_epsilon")));
-            parser.addArgument("--statistics")
+            parser.addArgument("--statistics").setDefault("false")
                     .help("Use `--statistics true` to only recalculate the statistics");
 
             ns = parser.parseArgs(args);
@@ -67,14 +67,16 @@ public class CSVImporter {
             String pathType = ns.getString("path");
             if (pathType.contains("d")) {
                 String folder = ns.getString("file");
+                Path path = Paths.get(folder);
 
-                try (Stream<Path> walk = Files.walk(Paths.get(folder))) {
+                try (Stream<Path> walk = Files.walk(path)) {
                     ArrayList<Path> pathsToImport = (ArrayList<Path>) walk.filter(Files::isRegularFile).map(Path::toAbsolutePath).collect(Collectors.toList());
 
+                    String region = path.getName(path.getNameCount() - 1).toString();
                     Float minAccuracy = Float.valueOf(ns.getString("accuracy"));
                     Double rdpEpsilon = Double.valueOf(ns.getString("epsilon"));
 
-                    ThreadController threadController = new ThreadController(pathsToImport, type, minAccuracy, rdpEpsilon);
+                    ThreadController threadController = new ThreadController(pathsToImport, type, region, minAccuracy, rdpEpsilon);
                     threadController.executeFileRead();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -87,7 +89,7 @@ public class CSVImporter {
                 } else if (type.contains("r")) {
                     Float minAccuracy = Float.valueOf(ns.getString("accuracy"));
                     Double rdpEpsilon = Double.valueOf(ns.getString("epsilon"));
-                    RideFileIOHandler rideFileIOHandler = new RideFileIOHandler(path, minAccuracy, rdpEpsilon);
+                    RideFileIOHandler rideFileIOHandler = new RideFileIOHandler(path, "Berlin", minAccuracy, rdpEpsilon); // TODO ?
                     rideFileIOHandler.parseFile();
                 }
             }

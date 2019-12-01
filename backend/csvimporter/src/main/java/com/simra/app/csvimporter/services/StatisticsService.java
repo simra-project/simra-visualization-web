@@ -24,13 +24,23 @@ public class StatisticsService {
         System.out.println("Calculating statistics ...");
         DBService dbService = new DBService();
 
-        Statistic statistic = new Statistic();
-        statistic.region = "Berlin"; // TODO
+        MongoCollection<Document> ridesCollection = dbService.getRidesCollection();
+        MongoCollection<Document> incidentsCollection = dbService.getIncidentsCollection();
+        MongoCollection<Document> statisticsCollection = dbService.getStatisticsCollection();
 
-        calculateRideStatistics(statistic, dbService.getRidesCollection());
-        calculateIncidentStatistics(statistic, dbService.getIncidentsCollection());
+        ridesCollection.distinct("region", String.class).forEach((Block<? super String>) region -> {
+            System.out.print(" > " + region + " ...");
 
-        dbService.getStatisticsCollection().insertOne(statistic.toDocumentObject());
+            Statistic statistic = new Statistic();
+            statistic.region = region;
+
+            calculateRideStatistics(statistic, ridesCollection);
+            calculateIncidentStatistics(statistic, incidentsCollection);
+
+            statisticsCollection.insertOne(statistic.toDocumentObject());
+            System.out.println(" DONE!");
+        });
+
         System.out.println("Finished statistics and saved it to database.");
     }
 
