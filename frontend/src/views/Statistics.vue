@@ -13,19 +13,19 @@
             <div class="top-text">
                 Over
                 <span class="highlight-text">
-                            <ICountUp :delay="100" :endVal="485"/> bikers <!-- TODO -->
-                        </span>
+                    <ICountUp :delay="100" :endVal="Math.floor(statistics.rideCount / 2.5)"/> bikers <!-- TODO: use real number -->
+                </span>
                 in {{ selectedLocation }} cycled
                 <span class="highlight-text">
-                            <ICountUp :delay="400" :endVal="Math.floor(statistics.accumulatedDistance / 1000)"/> km
-                        </span>
+                    <ICountUp :delay="400" :endVal="Math.floor(statistics.accumulatedDistance / 1000)"/> km
+                </span>
                 so far reducing CO2 emissions by
                 <span class="highlight-text">
-                            <ICountUp :delay="700" :endVal="Math.floor(statistics.accumulatedSavedCO2)"/> kg</span>.
+                    <ICountUp :delay="700" :endVal="Math.floor(statistics.accumulatedSavedCO2)"/> kg</span>.
             </div>
-            <div class="top-subtext"> <!-- TODO: calculate averages in backend -->
-                On average, one ride is {{ (statistics.accumulatedDistance / (1000 * statistics.rideCount)).toFixed(1) }} kilometers long and lasts {{ Math.floor(statistics.accumulatedDuration / (1000 * 60 * statistics.rideCount)) }} minutes.
-                That's a speed of {{ (3.6 * statistics.accumulatedDistance / (statistics.accumulatedDuration / 1000)).toFixed(1) }} km/h on average.
+            <div class="top-subtext">
+                On average, one ride is {{ (statistics.averageDistance / 1000).toFixed(2) }} kilometers long and lasts {{ Math.floor(statistics.averageDuration.$numberLong / (1000 * 60)) }} minutes.
+                That's a speed of {{ statistics.averageSpeed.toFixed(1) }} km/h on average.
             </div>
 
             <hr style="margin-bottom: 2.5rem;">

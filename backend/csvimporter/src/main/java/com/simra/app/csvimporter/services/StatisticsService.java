@@ -59,11 +59,13 @@ public class StatisticsService {
         });
 
         statistic.rideCount = (int) rides.count();
-        statistic.accumulatedDistance = accumulatedDistance.floatValue();
-        statistic.accumulatedDuration = accumulatedDuration.intValue();
-        statistic.accumulatedSavedCO2 = (float) (statistic.accumulatedDistance * 0.183);
+        statistic.accumulatedDistance = accumulatedDistance.doubleValue();
+        statistic.accumulatedDuration = accumulatedDuration.longValue();
+        statistic.accumulatedSavedCO2 = statistic.accumulatedDistance * 0.183;
 
-        // TODO: averages hier anstatt im frontend?
+        statistic.averageDistance = statistic.accumulatedDistance / (double) statistic.rideCount;
+        statistic.averageDuration = statistic.accumulatedDuration / (long) statistic.rideCount;
+        statistic.averageSpeed = 3.6 * statistic.accumulatedDistance / (double) (statistic.accumulatedDuration / 1000);
     }
 
     private void calculateIncidentStatistics(Statistic statistic, MongoCollection<Document> incidents) {

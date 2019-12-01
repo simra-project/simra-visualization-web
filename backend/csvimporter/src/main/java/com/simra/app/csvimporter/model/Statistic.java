@@ -9,9 +9,12 @@ public class Statistic implements MongoDocument {
     public String region;
 
     public int rideCount;
-    public int accumulatedDuration;
-    public Float accumulatedDistance;
-    public Float accumulatedSavedCO2;
+    public Long accumulatedDuration;
+    public Double accumulatedDistance;
+    public Double accumulatedSavedCO2;
+    public Long averageDuration;
+    public Double averageDistance;
+    public Double averageSpeed;
 
     public int incidentCount;
     public List<String> incidentBikeTypeLabels;
@@ -37,6 +40,9 @@ public class Statistic implements MongoDocument {
         statistic.put("accumulatedDuration", accumulatedDuration);
         statistic.put("accumulatedDistance", accumulatedDistance);
         statistic.put("accumulatedSavedCO2", accumulatedSavedCO2);
+        statistic.put("averageDuration", averageDuration);
+        statistic.put("averageDistance", averageDistance);
+        statistic.put("averageSpeed", averageSpeed);
 
         statistic.put("incidentCount", incidentCount);
         statistic.put("incidentBikeTypeLabels", incidentBikeTypeLabels);
