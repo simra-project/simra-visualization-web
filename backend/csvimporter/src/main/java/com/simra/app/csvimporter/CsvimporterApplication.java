@@ -1,6 +1,7 @@
 package com.simra.app.csvimporter;
 
 import com.simra.app.csvimporter.controller.MonitorService;
+import com.simra.app.csvimporter.service.StatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,11 @@ public class CsvimporterApplication implements CommandLineRunner {
 
 
     public static void main(String[] args) {
+        if (args[0].equals("--statistics")) {
+            (new StatisticsService()).calculateStatistics();
+            return;
+        }
+
         SpringApplication.run(CsvimporterApplication.class, args);
     }
 
