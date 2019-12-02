@@ -43,6 +43,7 @@ public class RideServiceImpl implements RideService {
 
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
         List<RideEntity> rideEntities = rideRepository.findByLocationWithin(polygon);
+        System.out.println("Size of rideEntities: " + rideEntities.size());
         List<RideResource> rideResources = new ArrayList<>();
         return mapRideEntityToResource(rideEntities, rideResources);
     }
