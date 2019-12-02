@@ -22,6 +22,7 @@ import kotlin.math.sqrt
 class MapMatchingService {
 
     var currentRouteDistance: Float = 0F;
+    var currentRouteDuration: Long = 0L;
 
     /**
      * Snaps the GPS Coordinates onto OSM-Streets.
@@ -41,7 +42,8 @@ class MapMatchingService {
 
         val graphHopperConfiguration = CmdArgs()
         graphHopperConfiguration.put("graph.flag_encoders", "bike")
-        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/berlin.osm.pbf")
+        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf")
+
         val graphHopper = GraphHopperOSM().init(graphHopperConfiguration)
         graphHopper.importOrLoad()
 
@@ -96,6 +98,7 @@ class MapMatchingService {
         }
 
         currentRouteDistance = pathWrapper.distance.toFloat()
+        currentRouteDuration = rideBeans.last().timeStamp - rideBeans.first().timeStamp
 
         println("matching took: " + matchSW.seconds)
 

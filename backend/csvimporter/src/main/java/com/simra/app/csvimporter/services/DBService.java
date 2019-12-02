@@ -23,13 +23,13 @@ public class DBService {
     private String database = "simra";
 
 
-    private DBService() {
+    public DBService() {
         this.readProperties();
     }
 
-    public static DBService getInstance () {
+    public static DBService getInstance() {
         if (DBService.instance == null) {
-            DBService.instance = new DBService ();
+            DBService.instance = new DBService();
         }
         return DBService.instance;
     }
@@ -44,6 +44,10 @@ public class DBService {
 
     public MongoCollection<Document> getIncidentsCollection() {
         return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.incidentsCollection", "incidents"));
+    }
+
+    public MongoCollection<Document> getStatisticsCollection() {
+        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.statisticsCollection", "statistics"));
     }
 
     private void readProperties() {

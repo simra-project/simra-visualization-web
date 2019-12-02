@@ -3,9 +3,6 @@ package main.java.com.simra.app.csvimporter.model;
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.bson.Document;
-
-import java.util.Map;
 
 /**
  * The Profile csv model.

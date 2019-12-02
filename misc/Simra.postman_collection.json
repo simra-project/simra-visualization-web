@@ -1,151 +1,303 @@
 {
-	"info": {
-		"_postman_id": "c95a076c-ae5e-4741-b8a5-9159ea9b3a0c",
-		"name": "Simra",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "getIncidentByRideIdKey",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/incidents?lon=13.26155&lat=52.4308&max=5000",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"incidents"
-					],
-					"query": [
-						{
-							"key": "lon",
-							"value": "13.26155"
-						},
-						{
-							"key": "lat",
-							"value": "52.4308"
-						},
-						{
-							"key": "max",
-							"value": "5000"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getRidesById",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/rides/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"rides",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getIncidentNearLonLat",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/incidents?lon=13.26155&lat=52.4308&max=5000",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"incidents"
-					],
-					"query": [
-						{
-							"key": "lon",
-							"value": "13.26155"
-						},
-						{
-							"key": "lat",
-							"value": "52.4308"
-						},
-						{
-							"key": "max",
-							"value": "5000"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getRidesNearLonLat",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/rides?lon=13.26155&lat=52.4308&max=5000",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"rides"
-					],
-					"query": [
-						{
-							"key": "lon",
-							"value": "13.26155"
-						},
-						{
-							"key": "lat",
-							"value": "52.4308"
-						},
-						{
-							"key": "max",
-							"value": "5000"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getAllIncidentsOfRide",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/rides/1/incidents/all",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"rides",
-						"1",
-						"incidents",
-						"all"
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"protocolProfileBehavior": {}
+  "info": {
+    "_postman_id": "c95a076c-ae5e-4741-b8a5-9159ea9b3a0c",
+    "name": "Simra",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "getIncidentByRideIdKey",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/incidents?lon=13.26155&lat=52.4308&max=5000",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "incidents"
+          ],
+          "query": [
+            {
+              "key": "lon",
+              "value": "13.26155"
+            },
+            {
+              "key": "lat",
+              "value": "52.4308"
+            },
+            {
+              "key": "max",
+              "value": "5000"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getRidesById",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/rides/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "rides",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getIncidentNearLonLat",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/incidents?lon=13.26155&lat=52.4308&max=5000",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "incidents"
+          ],
+          "query": [
+            {
+              "key": "lon",
+              "value": "13.26155"
+            },
+            {
+              "key": "lat",
+              "value": "52.4308"
+            },
+            {
+              "key": "max",
+              "value": "5000"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getRidesNearLonLat",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/rides?lon=13.26155&lat=52.4308&max=5000",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "rides"
+          ],
+          "query": [
+            {
+              "key": "lon",
+              "value": "13.26155"
+            },
+            {
+              "key": "lat",
+              "value": "52.4308"
+            },
+            {
+              "key": "max",
+              "value": "5000"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getAllIncidentsOfRide",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/rides/1/incidents/all",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "rides",
+            "1",
+            "incidents",
+            "all"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getRidesWithin",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/rides/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "rides",
+            "area"
+          ],
+          "query": [
+            {
+              "key": "first",
+              "value": "13.297089,52.481744"
+            },
+            {
+              "key": "second",
+              "value": "13.448689,52.509574"
+            },
+            {
+              "key": "third",
+              "value": "13.456360,52.547463"
+            },
+            {
+              "key": "fourth",
+              "value": "13.305468, 52.546459"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getIncidentsWithin",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/incidents/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "incidents",
+            "area"
+          ],
+          "query": [
+            {
+              "key": "first",
+              "value": "13.297089,52.481744"
+            },
+            {
+              "key": "second",
+              "value": "13.448689,52.509574"
+            },
+            {
+              "key": "third",
+              "value": "13.456360,52.547463"
+            },
+            {
+              "key": "fourth",
+              "value": "13.305468, 52.546459"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getRidesWithin",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/rides/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "rides",
+            "area"
+          ],
+          "query": [
+            {
+              "key": "first",
+              "value": "13.297089,52.481744"
+            },
+            {
+              "key": "second",
+              "value": "13.448689,52.509574"
+            },
+            {
+              "key": "third",
+              "value": "13.456360,52.547463"
+            },
+            {
+              "key": "fourth",
+              "value": "13.305468, 52.546459"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getIncidentsWithin",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/incidents/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "incidents",
+            "area"
+          ],
+          "query": [
+            {
+              "key": "first",
+              "value": "13.297089,52.481744"
+            },
+            {
+              "key": "second",
+              "value": "13.448689,52.509574"
+            },
+            {
+              "key": "third",
+              "value": "13.456360,52.547463"
+            },
+            {
+              "key": "fourth",
+              "value": "13.305468, 52.546459"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "protocolProfileBehavior": {}
 }

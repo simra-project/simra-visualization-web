@@ -77,6 +77,8 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
     @CsvBindByName
     private boolean i10 = false;
 
+    private String region;
+
     /**
      * Gets key.
      *
@@ -455,6 +457,14 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         this.desc = desc;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     /**
      * To document object document.
      *
@@ -487,6 +497,7 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         document.put("scary", this.scary);
         document.put("description", this.desc);
 
+        document.put("region", this.region);
         document.put("ts", this.ts);
         document.put("weekday", Utils.getWeekday(this.ts));
         document.put("minuteOfDay", Utils.getMinuteOfDay(this.ts));

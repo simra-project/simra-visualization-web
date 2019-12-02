@@ -1,5 +1,6 @@
 package visualization.service;
 
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import visualization.web.resources.RideResource;
 
 import java.util.List;
@@ -10,5 +11,6 @@ public interface RideService {
 
     RideResource getRideById(String rideId);
 
-    List<RideResource> getRidesWithin(double[] bottomLeft, double[] upperRight);
+    List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth);
+
 }

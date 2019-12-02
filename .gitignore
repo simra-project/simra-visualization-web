@@ -126,6 +126,7 @@ $RECYCLE.BIN/
 /.idea/codeStyles/codeStyleConfig.xml
 /.idea/
 /.idea/compiler.xml
+/.idea/*.xml
 
 target/
 

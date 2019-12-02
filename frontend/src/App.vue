@@ -27,6 +27,7 @@ export default {
 <style lang="scss">
     .hero {
         background-color: #f3f3f3;
+        border-top: 1px solid #ddd;
     }
 
     // Import Bulma's core
@@ -57,4 +58,20 @@ export default {
     // Import Bulma and Buefy styles
     @import "~bulma";
     @import "~buefy/src/scss/buefy";
+
+    .fcp-container {
+        h2 {
+            margin-top: 30px;
+        }
+
+        & > .wrapper {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 16px 20px;
+
+            hr + h3 {
+                margin-top: 0;
+            }
+        }
+    }
 </style>

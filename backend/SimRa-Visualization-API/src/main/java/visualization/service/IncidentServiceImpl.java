@@ -1,8 +1,8 @@
 package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Box;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
 import visualization.data.mongodb.entities.IncidentEntity;
@@ -32,7 +32,7 @@ public class IncidentServiceImpl implements IncidentService {
         IncidentEntity.CompositeKey compositeKey = new IncidentEntity.CompositeKey(rideId, key);
         Optional<IncidentEntity> optional = incidentRepository.findById(compositeKey);
         optional.ifPresent(incidentEntity -> {
-            incidentResource[0] = mapEntityToResource(incidentEntity);
+                    incidentResource[0] = mapEntityToResource(incidentEntity);
 
                 }
         );
@@ -61,14 +61,12 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getIncidentsInWithin(double[] bottomLeft, double[] upperRight) {
+    public List<IncidentResource> getIncidentsInWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth) {
 
-        Box box = new Box(bottomLeft, upperRight);
-        
-        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationWithin(box);
+        GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
         List<IncidentResource> incidentResources;
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationWithin(polygon);
         incidentResources = incidentEntities.stream().map(this::mapEntityToResource).collect(Collectors.toList());
-
         return incidentResources;
     }
 

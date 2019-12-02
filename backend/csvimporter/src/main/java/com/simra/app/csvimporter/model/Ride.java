@@ -3,10 +3,12 @@ package main.java.com.simra.app.csvimporter.model;
 import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import main.java.com.simra.app.csvimporter.Utils;
+import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -14,18 +16,29 @@ import java.util.List;
  * The type Ride.
  */
 public class Ride implements MongoDocument {
+    private static final Logger logger = Logger.getLogger(Ride.class);
 
+    private String region;
     private List<RideCSV> rideBeans;
     private List<RideCSV> mapMatchedRideBeans;
     private List<IncidentCSV> incidents;
 
     private Float distance;
+    private Long duration;
 
     /**
      * Instantiates a new Ride.
      */
     public Ride() {
         // default constructor
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     /**
@@ -100,6 +113,14 @@ public class Ride implements MongoDocument {
         this.distance = distance;
     }
 
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
+
     /**
      * To document object document.
      *
@@ -109,7 +130,9 @@ public class Ride implements MongoDocument {
     public Document toDocumentObject() {
         Document singleRide = new Document();
         singleRide.put("rideId", ((RideCSV) this.getRideBeans().get(0)).getFileId());
+        singleRide.put("region", this.region);
         singleRide.put("distance", this.distance);
+        singleRide.put("duration", this.duration);
 
         parseRideBeans(singleRide, rideBeans, "");
         parseRideBeans(singleRide, mapMatchedRideBeans, "MapMatched");
@@ -117,6 +140,7 @@ public class Ride implements MongoDocument {
 
         singleRide.put("weekday", Utils.getWeekday(rideBeans.get(0).getTimeStamp()));
         singleRide.put("minuteOfDay", Utils.getMinuteOfDay(rideBeans.get(0).getTimeStamp()));
+        singleRide.put("importedAt", new Date());
 
         return singleRide;
     }
