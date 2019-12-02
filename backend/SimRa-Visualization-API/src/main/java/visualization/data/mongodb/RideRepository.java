@@ -3,6 +3,7 @@ package visualization.data.mongodb;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import visualization.data.mongodb.entities.RideEntity;
 
 import java.util.List;
@@ -16,5 +17,6 @@ public interface RideRepository extends MongoRepository<RideEntity, String> {
 
     Optional<RideEntity> findById(String id);
 
-    Optional<List<RideEntity>> findAllByTsBetween(Long fromTs, Long untilTs);
+    //@Query(sort = "{'ts': -1}")
+    List<RideEntity> findAllByTsBetween(Long fromTs, Long untilTs);
 }
