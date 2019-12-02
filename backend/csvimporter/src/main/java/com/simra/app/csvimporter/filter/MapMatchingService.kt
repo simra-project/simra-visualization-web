@@ -1,5 +1,6 @@
 package com.simra.app.csvimporter.filter
 
+import com.graphhopper.GraphHopper
 import com.graphhopper.PathWrapper
 import com.graphhopper.matching.MapMatching
 import com.graphhopper.matching.Observation
@@ -23,6 +24,36 @@ import kotlin.math.sqrt
 @Component
 class MapMatchingService {
 
+    lateinit var mapMatching: MapMatching
+
+    lateinit var graphHopper: GraphHopper
+
+    lateinit var opts: AlgorithmOptions
+
+    init {
+        val graphHopperConfiguration = CmdArgs()
+        graphHopperConfiguration.put("graph.flag_encoders", "bike")
+        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf")
+        graphHopper = GraphHopperOSM().init(graphHopperConfiguration)
+        graphHopper.importOrLoad()
+
+        val firstEncoder = graphHopper.encodingManager.fetchEdgeEncoders()[0]
+        opts = AlgorithmOptions.start()
+                .algorithm(Parameters.Algorithms.DIJKSTRA_BI)
+                .traversalMode(TraversalMode.EDGE_BASED)
+                .weighting(FastestWeighting(firstEncoder))
+                .maxVisitedNodes(2000)
+                .hints(HintsMap().put("weighting", "fastest")
+                        .put("vehicle", "bike"))
+                // Penalizing inner-link U-turns only works with fastest weighting, since
+                // shortest weighting does not apply penalties to unfavored virtual edges.
+                .build()
+
+        mapMatching = MapMatching(graphHopper, HintsMap(opts.hints))
+        mapMatching.setTransitionProbabilityBeta(2.0)
+        mapMatching.setMeasurementErrorSigma(50.0)
+    }
+
     var currentRouteDistance: Float = 0F;
 
     /**
@@ -39,29 +70,6 @@ class MapMatchingService {
                         }
                     }
                 }.build()
-
-
-        val graphHopperConfiguration = CmdArgs()
-        graphHopperConfiguration.put("graph.flag_encoders", "bike")
-        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf")
-        val graphHopper = GraphHopperOSM().init(graphHopperConfiguration)
-        graphHopper.importOrLoad()
-
-        val firstEncoder = graphHopper.encodingManager.fetchEdgeEncoders()[0]
-        val opts = AlgorithmOptions.start()
-                .algorithm(Parameters.Algorithms.DIJKSTRA_BI)
-                .traversalMode(TraversalMode.EDGE_BASED)
-                .weighting(FastestWeighting(firstEncoder))
-                .maxVisitedNodes(2000)
-                .hints(HintsMap().put("weighting", "fastest")
-                        .put("vehicle", "bike"))
-                // Penalizing inner-link U-turns only works with fastest weighting, since
-                // shortest weighting does not apply penalties to unfavored virtual edges.
-                .build()
-
-        val mapMatching = MapMatching(graphHopper, HintsMap(opts.hints))
-        mapMatching.setTransitionProbabilityBeta(2.0)
-        mapMatching.setMeasurementErrorSigma(50.0)
 
         val matchSW = StopWatch()
 
