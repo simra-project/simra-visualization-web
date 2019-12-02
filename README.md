@@ -38,29 +38,26 @@ $ mvn clean install -pl :<artifactId>
 ```
 
 # DB connection
-To connect to your mongodb use config.properties file to set up credentials.
+To connect to your mongodb use application.properties file to set up credentials.
 
-```shell script
-Default credentials are followings:  
-host: localhost  
-port: 27017   
+```Application.properties
+spring.data.mongodb.database=simra
+spring.data.mongodb.port=27017
+spring.data.mongodb.host=localhost  
 
-To import ride and its incidents use following command (change paths)
-$ java -jar backend/csvimporter/target/csvimporter-1.0-SNAPSHOT-jar-with-dependencies.jar -a 12 -e 0.00001 -t r /Users/developer/Downloads/SimRa_Sample_10_23_19/Berlin/Rides/VM2_-1430356997
+Log file path:
+logging.file.name = /Users/developer/IdeaProjects/csvimporter/csvimporter.log
 
-To import profile use following command (change paths)
-$ java -jar backend/csvimporter/target/csvimporter-1.0-SNAPSHOT-jar-with-dependencies.jar -t p /Users/developer/Downloads/SimRa_Sample_10_23_19/Berlin/Profiles/VM2_1138028561 
+CSV root folder to monitor :
+csv.monitor.path=/Users/developer/Downloads/SimRa_Sample_10_23_19
+
+Other configurations can be found in Application.properties file.
 
 ```
-Note: Rides and Profiles can not be imported simultaneously.
-
-| Parameter        |Mandatory     | Default Value | Description |
-| ---------------- |:------------:|:------------:|:------------:|
-|                  | Yes | - | Path to CSV Data or Directory |
-| ```-t``` / ```--type```| Yes | - | For Rides use ```r```, for Profiles use ```p``` |
-| ```-p``` / ```--path```| Yes | - | For Single file use ```f```, for Directory use ```d``` |
-| ```-a``` / ```--accuracy```| No | 20 | When importing Rides: Minimum acc-value of Coordinates that will pass Accuracy Filter |
-| ```-e``` / ```--epsilon``` | No | 0.0000001| When importing Rides: Epsilon value of RDP-Algorithm |
+# Run as Spring Boot Application
+```shell script
+$ java -jar backend/csvimporter/target/csvimporter-0.0.1-SNAPSHOT.jar  
+```
 
 
 
