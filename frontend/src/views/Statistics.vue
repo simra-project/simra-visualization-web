@@ -19,7 +19,7 @@
                 <span class="highlight-text">
                     <ICountUp :delay="400" :endVal="Math.floor(statistics.accumulatedDistance / 1000)"/> km
                 </span>
-                so far reducing CO2 emissions by
+                so far reducing CO<sub>2</sub> emissions by
                 <span class="highlight-text">
                     <ICountUp :delay="700" :endVal="Math.floor(statistics.accumulatedSavedCO2)"/> kg</span>.
             </div>

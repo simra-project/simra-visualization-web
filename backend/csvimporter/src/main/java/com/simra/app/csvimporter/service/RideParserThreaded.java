@@ -100,6 +100,7 @@ public class RideParserThreaded extends Thread {
             // adding to entity
             rideEntity.setMapMatchedRideBeans(mapMatchedRideBeans);
             rideEntity.setDistance(mapMatchingService.getCurrentRouteDistance());
+            rideEntity.setDuration(mapMatchingService.getCurrentRouteDuration());
 
             rideEntity.setMinuteOfDay(Utils.getMinuteOfDay(rideEntity.getTimeStamp()));
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));

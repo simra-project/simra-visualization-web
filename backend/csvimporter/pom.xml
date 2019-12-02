@@ -158,13 +158,12 @@
             <artifactId>jackson-dataformat-xml</artifactId>
             <version>2.10.1</version>
         </dependency>
-
-
-
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.11.2</version>
+        </dependency>
     </dependencies>
-
-
-
 
     <repositories>
         <repository>
@@ -186,13 +185,17 @@
                     <execution>
                         <id>compile</id>
                         <phase>process-sources</phase>
-                        <goals> <goal>compile</goal> </goals>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
                     </execution>
 
                     <execution>
                         <id>test-compile</id>
                         <phase>process-test-sources</phase>
-                        <goals> <goal>test-compile</goal> </goals>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

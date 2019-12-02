@@ -34,6 +34,8 @@ public class RideEntity extends RideCSV {
 
     private Float distance;
 
+    private Long duration;
+
     private Date addedAt;
 
     private String weekday;
@@ -81,6 +83,14 @@ public class RideEntity extends RideCSV {
 
     public void setDistance(Float distance) {
         this.distance = distance;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 
     public LineString getLocationMapMatched() {
