@@ -8,36 +8,37 @@ import main.java.com.simra.app.csvimporter.model.IncidentCSV;
 import main.java.com.simra.app.csvimporter.model.Ride;
 import main.java.com.simra.app.csvimporter.model.RideCSV;
 import main.java.com.simra.app.csvimporter.services.ConfigService;
+import main.java.com.simra.app.csvimporter.services.DBService;
 import org.apache.log4j.Logger;
-import org.bson.Document;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
-public class RideDirectoryIOHandler extends DirectoryIOHandler {
-    private static final Logger logger = Logger.getLogger(RideDirectoryIOHandler.class);
+public class RideFileIOHandler {
+    private static final Logger logger = Logger.getLogger(RideFileIOHandler.class);
 
     private static final String FILEVERSIONSPLITTER = "#";
-    private List<Ride> rides = new ArrayList<>();
-
+    private Path filePath;
+    private String region;
     private RideFilter rideFilter;
     private MapMatchingService mapMatchingService = new MapMatchingService();
+    private static DBService dbService; // TODO: why is this static?
 
-    public RideDirectoryIOHandler(Path path, Float minAccuracy, Double rdpEpsilon) {
+
+    public RideFileIOHandler(Path filePath, String region, Float minAccuracy, Double rdpEpsilon) {
         this.rideFilter = new RideFilter(minAccuracy, rdpEpsilon);
-        parseDirectory(path);
+        this.filePath = filePath;
+        this.region = region;
+        dbService = new DBService();
     }
 
-    @Override
-    public void parseFile(Path file) {
-        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+    public void parseFile() {
+        try (BufferedReader reader = Files.newBufferedReader(this.filePath, StandardCharsets.UTF_8)) {
             StringBuilder incidentContent = new StringBuilder();
             StringBuilder rideContent = new StringBuilder();
 
@@ -57,13 +58,18 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
                 }
                 line = reader.readLine();
             }
+            /*CSV to Java Object*/
             Ride ride = new Ride();
+            ride.setRegion(region);
+
             if (incidentContent.length() > 0) {
-                this.incidentParse(ride, incidentContent, file);
+                this.incidentParse(ride, incidentContent, this.filePath);
             }
             if (rideContent.length() > 0) {
-                this.rideParse(ride, rideContent, file);
+                this.rideParse(ride, rideContent, this.filePath);
             }
+            /*CSV to Java Object DONE*/
+
 
             if (ride.getRideBeans().isEmpty()) {
                 if (Boolean.getBoolean(ConfigService.config.getProperty("debug"))) {
@@ -79,14 +85,33 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
                 ride.setRideBeans(optimisedRideBeans);
             }
 
+
+
+
+            /*
+             * All filters and chain on Ride data must be implemented here.
+             */
+            /* 1. TODO: Empty Ride removal service */
+            /* 2. TODO: None Bike data remove Service */
+
+            /* 3. Matchig Service for ride */
             List mapMatchedRideBeans = mapMatchingService.matchToMap(ride.getRideBeans());
             ride.setMapMatchedRideBeans(mapMatchedRideBeans);
-
+            /* 4. Distance Service.*/
             ride.setDistance(mapMatchingService.getCurrentRouteDistance());
+            ride.setDuration(mapMatchingService.getCurrentRouteDuration());
 
-            this.rides.add(ride);
+            /**
+             * End of filters
+             */
 
-        } catch (Exception e) { // todo implement reasonable error handlingF
+            /*
+             * Each ride file/data is ready for db and gets inserted in db.
+             * Do not change.
+             */
+            dbService.getRidesCollection().insertOne(ride.toDocumentObject());
+
+        } catch (Exception e) {
             logger.error(e);
         }
     }
@@ -119,6 +144,7 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
                 item.setFileId(path.getFileName().toString());
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
+                item.setRegion(this.region);
             });
             ride.setIncidents(incidentBeans);
         } catch (Exception e) {
@@ -156,19 +182,5 @@ public class RideDirectoryIOHandler extends DirectoryIOHandler {
         } catch (Exception e) {
             logger.error(e);
         }
-    }
-
-    @Override
-    void writeToDB() {
-        dbService.getRidesCollection().insertMany(this.rides.stream().map(Ride::toDocumentObject).collect(Collectors.toList()));
-        List<Document> incidents = this.rides.stream().flatMap(it -> it.incidentsDocuments().stream()).collect(Collectors.toList());
-        if (!incidents.isEmpty()) {
-            dbService.getIncidentsCollection().insertMany(incidents);
-        }
-    }
-
-    @Override
-    public Logger provideLogger() {
-        return logger;
     }
 }

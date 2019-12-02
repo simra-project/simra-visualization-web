@@ -23,7 +23,7 @@ public class DBService {
     private String database = "simra";
 
 
-    private DBService() {
+    public DBService() {
         this.readProperties();
     }
 
@@ -44,6 +44,10 @@ public class DBService {
 
     public MongoCollection<Document> getIncidentsCollection() {
         return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.incidentsCollection", "incidents"));
+    }
+
+    public MongoCollection<Document> getStatisticsCollection() {
+        return this.rideDatabase.getCollection(ConfigService.config.getProperty("db.statisticsCollection", "statistics"));
     }
 
     private void readProperties() {
