@@ -1,4 +1,4 @@
-package main.java.com.simra.app.csvimporter.mapmatching
+package com.simra.app.csvimporter.filter
 
 import com.graphhopper.PathWrapper
 import com.graphhopper.matching.MapMatching
@@ -11,18 +11,19 @@ import com.graphhopper.routing.weighting.FastestWeighting
 import com.graphhopper.util.*
 import com.graphhopper.util.shapes.GHPoint
 import com.graphhopper.util.shapes.GHPoint3D
+import com.simra.app.csvimporter.model.RideCSV
 import io.jenetics.jpx.GPX
-import main.java.com.simra.app.csvimporter.model.RideCSV
+import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+@Component
 class MapMatchingService {
 
     var currentRouteDistance: Float = 0F;
-    var currentRouteDuration: Long = 0L;
 
     /**
      * Snaps the GPS Coordinates onto OSM-Streets.
@@ -43,7 +44,6 @@ class MapMatchingService {
         val graphHopperConfiguration = CmdArgs()
         graphHopperConfiguration.put("graph.flag_encoders", "bike")
         graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf")
-
         val graphHopper = GraphHopperOSM().init(graphHopperConfiguration)
         graphHopper.importOrLoad()
 
@@ -98,7 +98,6 @@ class MapMatchingService {
         }
 
         currentRouteDistance = pathWrapper.distance.toFloat()
-        currentRouteDuration = rideBeans.last().timeStamp - rideBeans.first().timeStamp
 
         println("matching took: " + matchSW.seconds)
 
