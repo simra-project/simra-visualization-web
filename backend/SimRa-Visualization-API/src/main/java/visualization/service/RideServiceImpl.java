@@ -57,4 +57,13 @@ public class RideServiceImpl implements RideService {
         return rideResources;
     }
 
+    @Override
+    public List<RideResource> getRidesAtTime(Long fromTs, Long untilTs) {
+
+        List<RideEntity> rideEntities = rideRepository.findAllByTsBetween(fromTs, untilTs);
+        List<RideResource> rideResources = rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+
+        return rideResources;
+    }
+
 }
