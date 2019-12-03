@@ -2,13 +2,13 @@ package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.geo.GeoJsonGeometryCollection;
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.RideRepository;
 import visualization.data.mongodb.entities.RideEntity;
+import visualization.web.resources.LegResource;
 import visualization.web.resources.RideResource;
 import visualization.web.resources.serializers.RideResourceMapper;
 
@@ -32,6 +32,9 @@ public class RideServiceImpl implements RideService {
 
     @Autowired
     private RideResourceMapper rideResourceMapper;
+
+    @Autowired
+    private RoutePartitioningService routePartitioningService;
 
     @Override
     public RideResource getRideById(String rideId) {
@@ -63,7 +66,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public GeoJsonGeometryCollection getRidesMapMatchedInRange(double longitude, double latitude, int maxDistance) {
+    public List<LegResource> getRidesMapMatchedInRange(double longitude, double latitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         List<RideResource> rideResources = new ArrayList<>();
         //List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
@@ -112,9 +115,7 @@ public class RideServiceImpl implements RideService {
         rideResources.add(ride2);
         rideResources.add(ride3);
 
-        GeoJsonGeometryCollection result = new RoutePartitioner().partitionRoutes(rideResources);
-
-        return null;
+        return routePartitioningService.partitionRoutes(rideResources);
     }
 
     @Override

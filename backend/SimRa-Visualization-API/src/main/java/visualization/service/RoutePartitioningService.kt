@@ -1,17 +1,21 @@
 package visualization.service
 
 import org.springframework.data.geo.Point
-import org.springframework.data.mongodb.core.geo.GeoJsonGeometryCollection
+import org.springframework.data.mongodb.core.geo.GeoJsonLineString
+import org.springframework.stereotype.Component
+import visualization.web.resources.LegResource
+import visualization.web.resources.LegResourceProperty
 import visualization.web.resources.RideResource
 
-class RoutePartitioner {
+@Component
+class RoutePartitioningService {
 
-    fun partitionRoutes(rides: List<RideResource>): GeoJsonGeometryCollection? {
+    fun partitionRoutes(rides: List<RideResource>): ArrayList<LegResource> {
 
-        val result: MutableMap<Int, List<List<Point>>> = mutableMapOf()
+        val partitionedRides: MutableMap<Int, List<List<Point>>> = mutableMapOf()
 
         // find ride segments which are used more than once
-        val sharedCoordinates = rides.flatMap { ride -> ride.geometry.coordinates.zipWithNext() }.groupingBy { it }.eachCount().filter { it.value > 1 }
+        val sharedCoordinates = rides.flatMap { ride -> ride.geometryForKotlin.coordinates.zipWithNext() }.groupingBy { it }.eachCount().filter { it.value > 1 }
 
         // Restructure Map in order to Count be Key
         val sharedCoordinatesPreprocessed = mutableMapOf<Int, List<Pair<Point, Point>>>().also { res ->
@@ -25,26 +29,40 @@ class RoutePartitioner {
 
         val flatSharedLegs = distinctSharedLags.keys.flatten()
 
-        result[1] = findOnceUsedRideSegments(rides, flatSharedLegs)
+        partitionedRides[1] = findOnceUsedRideSegments(rides, flatSharedLegs)
 
         // add Route Legs that have been used more often than once
-        result.also { result ->
+        partitionedRides.also { result ->
             distinctSharedLags.values.forEach { count ->
                 result[count] = distinctSharedLags.filter { it.value == count }.keys.flatMap { listOf(it) }
             }
         }
 
-        return null
+        val result = arrayListOf<LegResource>()
+
+        partitionedRides.forEach { count ->
+            val legResourceProperty = LegResourceProperty()
+            legResourceProperty.setWeightForKotlin(count.key)
+
+            count.value.forEach { points ->
+                val legResource = LegResource()
+                legResource.setGeometryForKotlin(GeoJsonLineString(points))
+                legResource.setPropertiesKotlin(legResourceProperty)
+                result.add(legResource)
+            }
+        }
+
+        return result
     }
 
     private fun findOnceUsedRideSegments(rides: List<RideResource>, flatSharedLegs: List<Point>): List<List<Point>> {
         val onceUsedRideLegs = mutableListOf<List<Point>>()
         rides.forEach { ride ->
             var rideLeg = mutableListOf<Point>()
-            for (i in ride.geometry.coordinates.indices) {
+            for (i in ride.geometryForKotlin.coordinates.indices) {
                 try {
-                    val curPoint = ride.geometry.coordinates[i]
-                    val prevPoint = ride.geometry.coordinates.getOrNull(i - 1)
+                    val curPoint = ride.geometryForKotlin.coordinates[i]
+                    val prevPoint = ride.geometryForKotlin.coordinates.getOrNull(i - 1)
                     if (flatSharedLegs.contains(curPoint)) {
                         if (!flatSharedLegs.contains(prevPoint)) {
                             rideLeg.add(curPoint)
