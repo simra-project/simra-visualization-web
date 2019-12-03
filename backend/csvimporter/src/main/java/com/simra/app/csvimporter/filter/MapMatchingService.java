@@ -34,11 +34,12 @@ public class MapMatchingService {
 
     private AlgorithmOptions opts;
 
+    private PathMerger pathMerger;
 
     MapMatchingService() {
         CmdArgs graphHopperConfiguration = new CmdArgs();
         graphHopperConfiguration.put("graph.flag_encoders", "bike");
-        graphHopperConfiguration.put("datareader.file", "/Users/developer/IdeaProjects/SimRa-Visualization/backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf");
+        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf");
         graphHopper = new GraphHopperOSM().init(graphHopperConfiguration);
         graphHopper.importOrLoad();
 
@@ -57,15 +58,21 @@ public class MapMatchingService {
         mapMatching = new MapMatching(graphHopper, new HintsMap(opts.getHints()));
         mapMatching.setTransitionProbabilityBeta(2.0);
         mapMatching.setMeasurementErrorSigma(50.0);
+
+        pathMerger = new PathMerger(graphHopper.getGraphHopperStorage(), opts.getWeighting());
     }
 
-
-
     private Float currentRouteDistance = 0F;
+
+    private Long currentRouteDuration = 0L;
 
 
     public Float getCurrentRouteDistance() {
         return currentRouteDistance;
+    }
+
+    public Long getCurrentRouteDuration() {
+        return currentRouteDuration;
     }
 
     public void setCurrentRouteDistance(Float currentRouteDistance) {
@@ -99,7 +106,7 @@ public class MapMatchingService {
         matchSW.stop();
 
         PathWrapper pathWrapper = new PathWrapper();
-        new PathMerger(graphHopper.getGraphHopperStorage(), opts.getWeighting()).doWork(pathWrapper, Arrays.asList(mr.getMergedPath()), graphHopper.getEncodingManager(), tr);
+        pathMerger.doWork(pathWrapper, Arrays.asList(mr.getMergedPath()), graphHopper.getEncodingManager(), tr);
 
         // Copy metainfo of closest (Raw) Point to Snapped Point
 
@@ -122,16 +129,17 @@ public class MapMatchingService {
                 ).collect(Collectors.toList());
 
         currentRouteDistance = (float) pathWrapper.getDistance();
+        currentRouteDuration = rideBeans.get(rideBeans.size() - 1).getTimeStamp() - rideBeans.get(0).getTimeStamp();
 
         return result;
     }
 
     private RideCSV findNearestPoint(List<RideCSV> rawRideCSVList, GHPoint3D matchedPoint) {
-        AtomicReference<RideCSV> nextPoint = null;
-        AtomicReference<Double> minDist = null;
+        AtomicReference<RideCSV> nextPoint = new AtomicReference<>();
+        AtomicReference<Double> minDist = new AtomicReference<>(Double.MAX_VALUE);
         rawRideCSVList.forEach(it -> {
             double dist = distance(Double.parseDouble(it.getLat()), Double.parseDouble(it.getLon()), matchedPoint.lat, matchedPoint.lon);
-            if (minDist.get() == null || dist < minDist.get()) {
+            if (dist < minDist.get()) {
                 minDist.set(dist);
                 nextPoint.set(it);
             }

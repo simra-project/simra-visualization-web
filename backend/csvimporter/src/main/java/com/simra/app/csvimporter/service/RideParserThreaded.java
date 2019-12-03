@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -90,7 +89,6 @@ public class RideParserThreaded extends Thread {
             // Map Matching
             List<RideCSV> mapMatchedRideBeans = mapMatchingService.matchToMap(optimisedRideBeans);
 
-
             /**
              * All filters must end before this
              */
@@ -99,7 +97,7 @@ public class RideParserThreaded extends Thread {
             // adding to entity
             rideEntity.setMapMatchedRideBeans(mapMatchedRideBeans);
             rideEntity.setDistance(mapMatchingService.getCurrentRouteDistance());
-            //rideEntity.setDuration(mapMatchingService.getCurrentRouteDuration());
+            rideEntity.setDuration(mapMatchingService.getCurrentRouteDuration());
 
             rideEntity.setMinuteOfDay(Utils.getMinuteOfDay(rideEntity.getTimeStamp()));
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));
