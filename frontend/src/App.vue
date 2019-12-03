@@ -27,6 +27,7 @@ export default {
 <style lang="scss">
     .hero {
         background-color: #f3f3f3;
+        border-top: 1px solid #ddd;
     }
 
     // Import Bulma's core
