@@ -88,8 +88,7 @@ public class RideParserThreaded extends Thread {
             // RDP Filter
             List<RideCSV> optimisedRideBeans = this.rideFilter.filterRide(rideBeans);
             // Map Matching
-            List mapMatchedRideBeans=null;
-                mapMatchedRideBeans = mapMatchingService.matchToMap(optimisedRideBeans);
+            List<RideCSV> mapMatchedRideBeans = mapMatchingService.matchToMap(optimisedRideBeans);
 
 
             /**
