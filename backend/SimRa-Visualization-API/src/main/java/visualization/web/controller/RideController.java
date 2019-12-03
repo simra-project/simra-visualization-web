@@ -50,6 +50,12 @@ public class RideController {
                 new GeoJsonPoint(fourth[0], fourth[1])));
     }
 
+    @GetMapping(value = "/rides/from/{fromTs}/to/{untilTs}")
+    public HttpEntity<List<RideResource>> getRidesAtTime(@PathVariable Long fromTs,
+                                                         @PathVariable Long untilTs){
+        return ResponseEntity.ok(rideService.getRidesAtTime(fromTs, untilTs));
+    }
+
     // this might be useful later...
 //    public HttpEntity<StatisticsResource> getFilteredStatistics(@RequestParam(value = "fromTs") Long fromTs,
 //                                                                @RequestParam(value = "untilTs") Long untilTs,
