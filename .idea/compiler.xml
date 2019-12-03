@@ -7,9 +7,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="csvimporter" />
-        <module name="SimRa-Visualization-API" />
         <module name="gs-rest-service" />
+        <module name="SimRa-Visualization-API" />
+        <module name="csvimporter" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

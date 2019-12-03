@@ -1,7 +1,6 @@
 package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.geo.GeoJsonGeometryCollection;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -39,23 +38,48 @@ public class RideController {
         return ResponseEntity.ok(rideService.getRidesInRange(longitude, latitude, maxDistance));
     }
 
-    // example:  http://localhost:8080/rides/area?first=13.297089,52.481744&second=13.448689,52.509574&third=13.456360,52.547463&fourth=13.305468, 52.546459
+    // example: http://localhost:8080/rides/area?bottomleft=13.297089,52.481744&topright=13.456360,52.547463
     @GetMapping(value = "/rides/area")
-    public HttpEntity<List<RideResource>> getRidesWithin(@RequestParam(value = "first") double[] first,
-                                                         @RequestParam(value = "second") double[] second,
-                                                         @RequestParam(value = "third") double[] third,
-                                                         @RequestParam(value = "fourth") double[] fourth) {
+    public HttpEntity<List<RideResource>> getRidesWithin(@RequestParam(value = "bottomleft") double[] first,
+                                                         @RequestParam(value = "topright") double[] second) {
         return ResponseEntity.ok(rideService.getRidesWithin(new GeoJsonPoint(first[0], first[1]),
+                new GeoJsonPoint(first[0], second[1]),
                 new GeoJsonPoint(second[0], second[1]),
-                new GeoJsonPoint(third[0], third[1]),
-                new GeoJsonPoint(fourth[0], fourth[1])));
+                new GeoJsonPoint(second[0], first[1])));
     }
 
-    @GetMapping(value = "/rides/mapMatched")
-    public ResponseEntity<GeoJsonGeometryCollection> getRidesMapMatchedNear(@RequestParam(value = "lon") double longitude,
-                                                                            @RequestParam(value = "lat") double latitude,
-                                                                            @RequestParam(value = "max") int maxDistance) {
-        return ResponseEntity.ok(rideService.getRidesMapMatchedInRange(longitude, latitude, maxDistance));
+    @GetMapping(value = "/rides/from/{fromTs}/to/{untilTs}")
+    public HttpEntity<List<RideResource>> getRidesAtTime(@PathVariable Long fromTs,
+                                                         @PathVariable Long untilTs){
+        return ResponseEntity.ok(rideService.getRidesAtTime(fromTs, untilTs));
     }
 
+    // this might be useful later...
+//    public HttpEntity<StatisticsResource> getFilteredStatistics(@RequestParam(value = "fromTs") Long fromTs,
+//                                                                @RequestParam(value = "untilTs") Long untilTs,
+//                                                                @RequestParam(value = "fromMinutesOfDay") Integer fromMinutesOfDay,
+//                                                                @RequestParam(value = "untilMinutesOfDay") Integer untilMinutesOfDay,
+//                                                                @RequestParam(value = "weekday") List<String> weekdays,
+//                                                                @RequestParam(value = "bikeTypes") List<Integer> bikeTypes,
+//                                                                @RequestParam(value = "incidentTypes") List<Integer> incidentTypes,
+//                                                                @RequestParam(value = "childInvolved") Boolean childInvolved,
+//                                                                @RequestParam(value = "trailerInvolved") Boolean trailerInvolved,
+//                                                                @RequestParam(value = "scary") Boolean scary,
+//                                                                @RequestParam(value = "participants") List<Integer> participants) {
+//
+//        return ResponseEntity.ok(statisticsService.getFilteredStatistics(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, parseParticipantsList(participants)));
+//    }
+//    private List<Boolean> parseParticipantsList(List<Integer> participants) {
+//        List<Boolean> boolParticipants = new ArrayList<>();
+//        if (participants.size() > 0) {
+//            for (int i = 0; i < 10; i++) {
+//                if (participants.contains(i)) {
+//                    boolParticipants.add(true);
+//                } else {
+//                    boolParticipants.add(false);
+//                }
+//            }
+//        }
+//        return boolParticipants;
+//    }
 }
