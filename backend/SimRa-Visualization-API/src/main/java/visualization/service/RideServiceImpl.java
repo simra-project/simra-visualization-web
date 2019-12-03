@@ -54,11 +54,6 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public List<RideResource> getRidesAtTime(Long fromTs, Long untilTs) {
-        return null;
-    }
-
-    @Override
     public List<RideResource> getRidesInRange(double latitude, double longitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
@@ -120,6 +115,15 @@ public class RideServiceImpl implements RideService {
         GeoJsonGeometryCollection result = new RoutePartitioner().partitionRoutes(rideResources);
 
         return null;
+    }
+
+    @Override
+    public List<RideResource> getRidesAtTime(Long fromTs, Long untilTs) {
+
+        List<RideEntity> rideEntities = rideRepository.findAllByTsBetween(fromTs, untilTs);
+        List<RideResource> rideResources = rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+
+        return rideResources;
     }
 
 }
