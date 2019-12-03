@@ -11,7 +11,7 @@ class RoutePartitioner {
         val result: MutableMap<Int, List<List<Point>>> = mutableMapOf()
 
         // find ride segments which are used more than once
-        val sharedCoordinates = rides.flatMap { ride -> ride.coordinatesForKotlin.zipWithNext() }.groupingBy { it }.eachCount().filter { it.value > 1 }
+        val sharedCoordinates = rides.flatMap { ride -> ride.geometry.coordinates.zipWithNext() }.groupingBy { it }.eachCount().filter { it.value > 1 }
 
         // Restructure Map in order to Count be Key
         val sharedCoordinatesPreprocessed = mutableMapOf<Int, List<Pair<Point, Point>>>().also { res ->
@@ -41,10 +41,10 @@ class RoutePartitioner {
         val onceUsedRideLegs = mutableListOf<List<Point>>()
         rides.forEach { ride ->
             var rideLeg = mutableListOf<Point>()
-            for (i in ride.coordinatesForKotlin.indices) {
+            for (i in ride.geometry.coordinates.indices) {
                 try {
-                    val curPoint = ride.coordinatesForKotlin[i]
-                    val prevPoint = ride.coordinatesForKotlin.getOrNull(i - 1)
+                    val curPoint = ride.geometry.coordinates[i]
+                    val prevPoint = ride.geometry.coordinates.getOrNull(i - 1)
                     if (flatSharedLegs.contains(curPoint)) {
                         if (!flatSharedLegs.contains(prevPoint)) {
                             rideLeg.add(curPoint)

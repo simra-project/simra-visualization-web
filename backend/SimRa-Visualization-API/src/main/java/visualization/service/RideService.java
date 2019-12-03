@@ -1,5 +1,6 @@
 package visualization.service;
 
+import org.springframework.data.mongodb.core.geo.GeoJsonGeometryCollection;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import visualization.web.resources.RideResource;
 
@@ -15,4 +16,5 @@ public interface RideService {
 
     List<RideResource> getRidesAtTime(Long fromTs, Long untilTs);
 
+    GeoJsonGeometryCollection getRidesMapMatchedInRange(double longitude, double latitude, int maxDistance);
 }
