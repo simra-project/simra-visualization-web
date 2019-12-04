@@ -18,8 +18,6 @@ public class IncidentEntity {
     @Id
     private CompositeKey id;
 
-    private String rideId;
-
     private int key;
 
     private int bike;
