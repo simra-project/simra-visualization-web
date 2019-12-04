@@ -20,20 +20,22 @@ public class IncidentParserThreaded extends Thread {
     private static final Logger LOG = LoggerFactory.getLogger(IncidentParserThreaded.class);
 
 
-    private File file;
+    private String fileName;
 
     private IncidentRepository incidentRepository;
+    private String csvString;
 
-    public IncidentParserThreaded(File f, IncidentRepository incidentRepository) {
-        this.file = f;
+    public IncidentParserThreaded(String fileName, IncidentRepository incidentRepository, String csvString) {
+
         this.incidentRepository = incidentRepository;
+        this.csvString=csvString;
+        this.fileName=fileName;
     }
-
 
     @Override
     public void run() {
-        LOG.info("Incident parser running " + this.file.getName());
-        try (BufferedReader reader = new BufferedReader(new FileReader(this.file))) {
+        LOG.info("Incident parser running {}", this.fileName);
+        try (BufferedReader reader = new BufferedReader(new StringReader(this.csvString))) {
             String line = reader.readLine();
             String[] arrOfStr = line.split("#");
 
@@ -63,7 +65,7 @@ public class IncidentParserThreaded extends Thread {
             incidentBeans = incidentBeans.stream().filter(item -> item.getTs() != 0).collect(Collectors.toList());
 
             incidentBeans.forEach(item -> {
-                item.setFileId(this.file.getName());
+                item.setFileId(this.fileName);
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
                 List<Double> places = Arrays.asList(Double.parseDouble(item.getLon()), Double.parseDouble(item.getLat()));
@@ -74,8 +76,8 @@ public class IncidentParserThreaded extends Thread {
                 item.setMinuteOfDay(Utils.getMinuteOfDay(item.getTs()));
                 item.setWeekday(Utils.getWeekday(item.getTs()));
 
-                HashMap<String, String> hm = new HashMap<String, String>();
-                hm.put("rideid", this.file.getName());
+                HashMap<String, String> hm = new HashMap<>();
+                hm.put("rideid", this.fileName);
                 hm.put("key", String.valueOf(item.getKey()));
                 item.setId(new HashMap(hm));
 
@@ -86,6 +88,6 @@ public class IncidentParserThreaded extends Thread {
         } catch (Exception e) {
             LOG.error(String.valueOf(e));
         }
-        LOG.info("Incident parser complete " + this.file.getName());
+        LOG.info("Incident parser complete {}", this.fileName);
     }
 }

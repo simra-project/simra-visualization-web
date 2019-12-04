@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +24,9 @@ public class RideParserThreaded extends Thread {
     private static final Logger LOG = LoggerFactory.getLogger(RideParserThreaded.class);
 
 
-    private File file;
+    private String fileName;
+
+    private String csvString;
 
     private RideRepository rideRepository;
 
@@ -35,18 +35,19 @@ public class RideParserThreaded extends Thread {
     private MapMatchingService mapMatchingService;
 
 
-    public RideParserThreaded(File f, RideRepository rideRepository, Float min_accuracy, double rdp_epsilion, MapMatchingService mapMatchingService) {
-        this.file = f;
+    public RideParserThreaded(String fileName,  RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString) {
+        this.fileName = fileName;
+        this.csvString=csvString;
         this.rideRepository = rideRepository;
-        this.rideFilter = new RideFilter(min_accuracy, rdp_epsilion);
+        this.rideFilter = new RideFilter(minAccuracy, rdpEpsilion);
         this.mapMatchingService = mapMatchingService;
     }
 
 
     @Override
     public void run() {
-        LOG.info("Ride parser running " + this.file.getName());
-        try (BufferedReader reader = new BufferedReader(new FileReader(this.file))) {
+        LOG.info("Ride parser running {}", this.fileName);
+        try (BufferedReader reader = new BufferedReader(new StringReader(this.csvString))) {
             String line = reader.readLine();
             String[] arrOfStr = line.split("#");
 
@@ -107,7 +108,7 @@ public class RideParserThreaded extends Thread {
         } catch (Exception e) {
             LOG.error(String.valueOf(e));
         }
-        LOG.info("Ride parser complete " + this.file.getName());
+        LOG.info("Ride parser complete {} ", this.fileName);
 
 
     }
@@ -115,8 +116,8 @@ public class RideParserThreaded extends Thread {
     @NotNull
     private RideEntity getRideEntity(String[] arrOfStr, List<RideCSV> rideBeans) {
         RideEntity rideEntity = new RideEntity();
-        rideEntity.setId(this.file.getName());
-        rideEntity.setFileId(this.file.getName());
+        rideEntity.setId(this.fileName);
+        rideEntity.setFileId(this.fileName);
         rideEntity.setAppVersion(arrOfStr[0]);
         rideEntity.setFileVersion(Integer.parseInt(arrOfStr[1]));
 
