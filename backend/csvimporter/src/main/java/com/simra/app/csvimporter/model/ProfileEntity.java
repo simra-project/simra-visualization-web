@@ -25,7 +25,6 @@ public class ProfileEntity extends ProfileCSV {
         this.id = id;
     }
 
-
     public String toString() {
         return String.format(" [id:%s] ", this.id);
     }

@@ -17,6 +17,8 @@ public class IncidentEntity extends IncidentCSV {
     @Id
     public HashMap id;
 
+    public String region;
+
     private Date addedAt;
 
     private String weekday;
@@ -85,4 +87,11 @@ public class IncidentEntity extends IncidentCSV {
         this.minuteOfDay = minuteOfDay;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
 }

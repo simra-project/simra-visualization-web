@@ -24,6 +24,8 @@ public class RideEntity extends RideCSV {
     @Id
     private String id;
 
+    private String region;
+
     private LineString location;
 
     private LineString locationMapMatched;
@@ -125,6 +127,13 @@ public class RideEntity extends RideCSV {
         this.minuteOfDay = minuteOfDay;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
 
     public void setMapMatchedRideBeans(List<RideCSV> mapMatchedRideBeans) {
         ArrayList<Position> coordinates = new ArrayList<>();

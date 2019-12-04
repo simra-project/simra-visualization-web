@@ -95,6 +95,7 @@ public class RideParserThreaded extends Thread {
              */
 
             RideEntity rideEntity = getRideEntity(arrOfStr, optimisedRideBeans);
+            rideEntity.setRegion("Berlin"); // TODO
             // adding to entity
             rideEntity.setMapMatchedRideBeans(mapMatchedRideBeans);
             rideEntity.setDistance(mapMatchingService.getCurrentRouteDistance());

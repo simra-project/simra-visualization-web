@@ -68,6 +68,7 @@ public class IncidentParserThreaded extends Thread {
                 item.setFileId(this.fileName);
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
+                item.setRegion("Berlin"); // TODO
                 List<Double> places = Arrays.asList(Double.parseDouble(item.getLon()), Double.parseDouble(item.getLat()));
                 Point geoPoint = new Point(new Position(places));
                 item.setLocation(geoPoint);
