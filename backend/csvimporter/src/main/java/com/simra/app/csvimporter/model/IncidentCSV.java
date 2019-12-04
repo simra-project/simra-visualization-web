@@ -1,18 +1,11 @@
-package main.java.com.simra.app.csvimporter.model;
+package com.simra.app.csvimporter.model;
 
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.CsvBindByName;
-import main.java.com.simra.app.csvimporter.Utils;
-import org.bson.Document;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * The Incident csv model.
  */
-public class IncidentCSV extends ApplicationFileVersion implements MongoDocument {
+public class IncidentCSV extends ApplicationFileVersion {
 
     @CsvBindByName
     private int key;
@@ -76,8 +69,6 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
 
     @CsvBindByName
     private boolean i10 = false;
-
-    private String region;
 
     /**
      * Gets key.
@@ -457,56 +448,4 @@ public class IncidentCSV extends ApplicationFileVersion implements MongoDocument
         this.desc = desc;
     }
 
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    /**
-     * To document object document.
-     *
-     * @return the document
-     */
-    public Document toDocumentObject() {
-        Document document = new Document();
-
-        Document contentCompositeId = new Document();
-        document.put("rideId", this.getFileId());
-        contentCompositeId.put("rideId", this.getFileId());
-        contentCompositeId.put("key", this.key);
-        document.put("_id", contentCompositeId);
-        document.put("key", this.key);
-        document.put("bike", this.bike);
-        document.put("childCheckBox", this.childCheckBox);
-        document.put("trailerCheckBox", this.trailerCheckBox);
-        document.put("pLoc", this.pLoc);
-        document.put("incident", this.incident);
-        document.put("i1", this.i1);
-        document.put("i2", this.i2);
-        document.put("i3", this.i3);
-        document.put("i4", this.i4);
-        document.put("i5", this.i5);
-        document.put("i6", this.i6);
-        document.put("i7", this.i7);
-        document.put("i8", this.i8);
-        document.put("i9", this.i9);
-        document.put("i10", this.i10);
-        document.put("scary", this.scary);
-        document.put("description", this.desc);
-
-        document.put("region", this.region);
-        document.put("ts", this.ts);
-        document.put("weekday", Utils.getWeekday(this.ts));
-        document.put("minuteOfDay", Utils.getMinuteOfDay(this.ts));
-
-        List<Double> places = Arrays.asList(Double.parseDouble(this.lat), Double.parseDouble(this.lon));
-
-        Point geoPoint = new Point(new Position(places));
-        document.put("location", geoPoint);
-
-        return document;
-    }
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class ApiService {
-    static async loadRoutes(lat: Number, lon: Number) {
+    static async loadRides(lat: Number, lon: Number) {
         // return axios(
         //     {method: "get",
         //             url: "http://localhost:8080/rides",

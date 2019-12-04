@@ -1,4 +1,6 @@
-package main.java.com.simra.app.csvimporter.model;
+package com.simra.app.csvimporter.model;
+
+import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
  * The type Application  and file version.
@@ -6,9 +8,12 @@ package main.java.com.simra.app.csvimporter.model;
  */
 public abstract class ApplicationFileVersion {
 
-    private String appVersion;
-    private int fileVersion;
-    private String fileId;
+    public String appVersion;
+
+    public int fileVersion;
+
+    @Indexed
+    public String fileId;
 
     /**
      * Gets app version.

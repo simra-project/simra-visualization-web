@@ -1,8 +1,10 @@
-package main.java.com.simra.app.csvimporter.services;
+package com.simra.app.csvimporter.service;
 
 import com.mongodb.Block;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
-import main.java.com.simra.app.csvimporter.model.Statistic;
+import com.mongodb.client.MongoDatabase;
+import com.simra.app.csvimporter.model.Statistic;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -22,11 +24,11 @@ public class StatisticsService {
 
     public void calculateStatistics() {
         System.out.println("Calculating statistics ...");
-        DBService dbService = new DBService();
 
-        MongoCollection<Document> ridesCollection = dbService.getRidesCollection();
-        MongoCollection<Document> incidentsCollection = dbService.getIncidentsCollection();
-        MongoCollection<Document> statisticsCollection = dbService.getStatisticsCollection();
+        MongoDatabase db = (new MongoClient("localhost", 27017)).getDatabase("simra");
+        MongoCollection<Document> ridesCollection = db.getCollection("rides");
+        MongoCollection<Document> incidentsCollection = db.getCollection("incidents");
+        MongoCollection<Document> statisticsCollection = db.getCollection("statistics");
 
         ridesCollection.distinct("region", String.class).forEach((Block<? super String>) region -> {
             System.out.print(" > " + region + " ...");
@@ -101,3 +103,4 @@ public class StatisticsService {
         );
     }
 }
+
