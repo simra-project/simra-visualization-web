@@ -73,7 +73,7 @@
         <l-geo-json
             v-if="showRoutes"
             v-for="route in routes"
-            :geojson="route.coordinates"
+            :geojson="route.geometry"
             :options="geoJsonOptions"
             @click="clickedOnRoute($event, route)"
         />
@@ -92,7 +92,7 @@
         </Vue2LeafletHeatmap>
         <l-geo-json v-for="marker in markers"
                     v-else-if="showIncidents"
-                    :geojson="marker.coordinates"
+                    :geojson="marker.geometry"
                     :options="geoJsonPopupOptions(marker)">
             <l-popup :content="marker.description"></l-popup>
         </l-geo-json>
@@ -194,8 +194,8 @@ export default {
             this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
 
             // Showing start & end point with circles
-            this.routeHighlightStart = [route.coordinates.coordinates[0][1], route.coordinates.coordinates[0][0]];
-            this.routeHighlightEnd = [route.coordinates.coordinates[route.coordinates.coordinates.length - 1][1], route.coordinates.coordinates[route.coordinates.coordinates.length - 1][0]];
+            this.routeHighlightStart = [route.geometry.coordinates[0][1], route.geometry.coordinates[0][0]];
+            this.routeHighlightEnd = [route.geometry.coordinates[route.geometry.coordinates.length - 1][1], route.geometry.coordinates[route.geometry.coordinates.length - 1][0]];
 
             // Fitting route into view if it's not already
             let routeBounds = event.target.getBounds().pad(0.1);
@@ -223,8 +223,8 @@ export default {
         },
         parseIncidents(response) {
             this.markers = response;
-            for (var i = 0; i < this.markers.length; i++) {
-                this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
+            for (let i = 0; i < this.markers.length; i++) {
+                this.incident_heatmap.push([this.markers[i].geometry.coordinates[1], this.markers[i].geometry.coordinates[0], 1]);
             }
         },
         geoJsonPopupOptions(marker) {
