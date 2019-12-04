@@ -6,8 +6,10 @@ import com.simra.app.csvimporter.controller.*;
 
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.model.CSVFile;
+import com.simra.app.csvimporter.model.CSVImporterRuntimeException;
 import com.simra.app.csvimporter.model.ProfileEntity;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,24 +97,7 @@ public class RecursiveWatcherService implements MonitorService {
 
         final Map<WatchKey, Path> keys = new HashMap<>();
 
-        Consumer<Path> register = p -> {
-            if (!p.toFile().exists() || !p.toFile().isDirectory()) {
-                throw new RuntimeException(String.format("folder %s does not exist or is not a directory", p ));
-            }
-            try {
-                Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                        LOG.info(String.format("registering %s in watcher service", dir.toString()));
-                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE});
-                        keys.put(watchKey, dir);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                LOG.error("Error registering path {} {}", p, e.getMessage());
-            }
-        };
+        Consumer<Path> register = getPathConsumer(keys);
 
         register.accept(rootFolder.toPath());
 
@@ -122,12 +107,13 @@ public class RecursiveWatcherService implements MonitorService {
                 try {
                     key = watcher.take(); // wait for a key to be available
                 } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
                     return;
                 }
 
                 final Path dir = keys.get(key);
                 if (dir == null) {
-                    LOG.error(String.format("WatchKey %s not recognized!", key));
+                    LOG.error("WatchKey {} not recognized!", key);
                     continue;
                 }
 
@@ -141,6 +127,28 @@ public class RecursiveWatcherService implements MonitorService {
 
     }
 
+    @NotNull
+    private Consumer<Path> getPathConsumer(Map<WatchKey, Path> keys) {
+        return p -> {
+                if (!p.toFile().exists() || !p.toFile().isDirectory()) {
+                    throw new CSVImporterRuntimeException(String.format("folder %s does not exist or is not a directory", p ));
+                }
+                try {
+                    Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                            LOG.info(String.format("registering %s in watcher service", dir.toString()));
+                            WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE});
+                            keys.put(watchKey, dir);
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                } catch (IOException e) {
+                    LOG.error("Error registering path {} {}", p, e.getMessage());
+                }
+            };
+    }
+
     private void keyPollEvents(Consumer<Path> register, WatchKey key, Path dir) {
         key.pollEvents().stream()
             .filter(e -> (e.kind() != OVERFLOW))
@@ -150,39 +158,45 @@ public class RecursiveWatcherService implements MonitorService {
                 if (absPath.toFile().isDirectory()) {
                     register.accept(absPath);
                 } else {
-                    final File f = absPath.toFile();
-                    LOG.info(String.format("Detected new file %s ",  f.getAbsolutePath()));
-                    LOG.info(String.format("FileName %s ", f.getName()) );
-                    if (f.getName().contains("VM")) {
-                        // Check of Already Parsed.
-                        if (csvFileRepository.findByFileId(f.getName()) == null) {
-                            // Differentiates Profile & Ride
-                            String type = "";
-                            try {
-                                String csvString = FileUtils.readFileToString(f, StandardCharsets.UTF_8);
-                                // Pass to correct Parser.
-                                if (csvString.contains("birth")) {
-                                    // Handle as Profile
-                                    type = "P";
-                                    profileParser(f);
-                                } else {
-                                    // Handle as incident and ride
-                                    type = "R";
-                                    incidentRideParser(f, csvString);
-
-                                }
-                            } catch (IOException | InterruptedException e) {
-                                LOG.error("File read failed: {}",e.getMessage() );
-
-                            }
-                            // Save status into Database.
-                            csvFileRepository.save(new CSVFile(f.getName(), type));
-                        } else {
-                            LOG.info("File already checked: {}" ,f.getName());
-                        }
-                    }
+                    genericFileParser(absPath);
                 }
             });
+    }
+
+    private void genericFileParser(Path absPath) {
+        final File f = absPath.toFile();
+        LOG.info("Detected new file {} ",  f.getAbsolutePath());
+        LOG.info("FileName {} ", f.getName());
+        if (f.getName().contains("VM")) {
+            // Check of Already Parsed.
+            if (csvFileRepository.findByFileId(f.getName()) == null) {
+                // Differentiates Profile & Ride
+                String type = "";
+                try {
+                    String csvString = FileUtils.readFileToString(f, StandardCharsets.UTF_8);
+                    // Pass to correct Parser.
+                    if (csvString.contains("birth")) {
+                        // Handle as Profile
+                        type = "P";
+                        profileParser(f);
+                    } else {
+                        // Handle as incident and ride
+                        type = "R";
+                        incidentRideParser(f, csvString);
+
+                    }
+                } catch (IOException e) {
+                    LOG.error("File read failed: {}",e.getMessage() );
+                } catch (InterruptedException e){
+                    LOG.error("File read failed: {}",e.getMessage() );
+                    Thread.currentThread().interrupt();
+                }
+                // Save status into Database.
+                csvFileRepository.save(new CSVFile(f.getName(), type));
+            } else {
+                LOG.info("File already checked: {}" ,f.getName());
+            }
+        }
     }
 
     private void profileParser(File f) {
@@ -242,8 +256,7 @@ public class RecursiveWatcherService implements MonitorService {
 
         RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString);
         rideParserThreaded.start();
-        incidentParserThreaded.join();
-        rideParserThreaded.join();
+
 
     }
 }
