@@ -43,10 +43,10 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getIncidentsByRideId(String rideId) {
+    public List<IncidentResource> getIncidentsByFileId(String rideId) {
 
         List<IncidentResource> incidents;
-        List<IncidentEntity> incidentEntities = incidentRepository.findByRideId(rideId);
+        List<IncidentEntity> incidentEntities = incidentRepository.findByFileId(rideId);
         incidents = incidentEntities.stream().map(incidentEntity -> incidentResourceMapper.mapEntityToResource(incidentEntity)).collect(Collectors.toList());
         return incidents;
     }

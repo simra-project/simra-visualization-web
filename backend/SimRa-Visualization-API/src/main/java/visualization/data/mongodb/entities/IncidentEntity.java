@@ -18,6 +18,8 @@ public class IncidentEntity {
     @Id
     private CompositeKey id;
 
+    private String fileId;
+
     private int key;
 
     private int bike;
@@ -64,7 +66,7 @@ public class IncidentEntity {
     @Setter
     @AllArgsConstructor
     public static class CompositeKey implements Serializable {
-        private String rideId;
+        private String rideid;
         private String key;
     }
 
