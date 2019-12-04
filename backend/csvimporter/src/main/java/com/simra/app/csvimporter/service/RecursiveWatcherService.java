@@ -68,10 +68,10 @@ public class RecursiveWatcherService implements MonitorService {
 
 
     @Value("${min_accuracy}")
-    private float min_accuracy;
+    private float minAccuracy;
 
     @Value("${rdp_epsilion}")
-    private double rdp_epsilion;
+    private double rdpEpsilion;
 
     @PostConstruct
     public void init() throws IOException {
@@ -110,7 +110,7 @@ public class RecursiveWatcherService implements MonitorService {
                     }
                 });
             } catch (IOException e) {
-                throw new RuntimeException("Error registering path " + p);
+                LOG.error("Error registering path " + p);
             }
         };
 
@@ -127,7 +127,7 @@ public class RecursiveWatcherService implements MonitorService {
 
                 final Path dir = keys.get(key);
                 if (dir == null) {
-                    LOG.error("WatchKey " + key + " not recognized!");
+                    LOG.error(String.format("WatchKey %s not recognized!", key));
                     continue;
                 }
 
@@ -140,8 +140,8 @@ public class RecursiveWatcherService implements MonitorService {
                                 register.accept(absPath);
                             } else {
                                 final File f = absPath.toFile();
-                                LOG.info("Detected new file " + f.getAbsolutePath());
-                                LOG.info("FileName " + f.getName());
+                                LOG.info(String.format("Detected new file %s ",  f.getAbsolutePath()));
+                                LOG.info(String.format("FileName %s ", f.getName()) );
                                 if (f.getName().contains("VM")) {
                                     // Check of Already Parsed.
                                     if (csvFileRepository.findByFileId(f.getName()) == null) {
@@ -163,13 +163,13 @@ public class RecursiveWatcherService implements MonitorService {
                                             }
                                         } catch (IOException e) {
                                             e.printStackTrace();
-                                            LOG.error("File read failed: " + e.getMessage());
+                                            LOG.error("File read failed: {}",e.getMessage() );
 
                                         }
                                         // Save status into Database.
                                         csvFileRepository.save(new CSVFile(f.getName(), type));
                                     } else {
-                                        LOG.info("File already checked: " + f.getName());
+                                        LOG.info("File already checked: {}" ,f.getName());
                                     }
                                 }
                             }
@@ -235,12 +235,9 @@ public class RecursiveWatcherService implements MonitorService {
          * TODO: QUEUE
          */
         IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f, incidentRepository);
-        incidentParserThreaded.start();
+        incidentParserThreaded.run();
 
-
-        RideParserThreaded rideParserThreaded = new RideParserThreaded(f, rideRepository, min_accuracy, rdp_epsilion, mapMatchingService);
-        rideParserThreaded.start();
-
-
+        RideParserThreaded rideParserThreaded = new RideParserThreaded(f, rideRepository, minAccuracy, rdpEpsilion, mapMatchingService);
+        rideParserThreaded.run();
     }
 }
