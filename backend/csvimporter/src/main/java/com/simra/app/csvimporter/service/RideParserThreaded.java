@@ -35,7 +35,7 @@ public class RideParserThreaded extends Thread {
 
     private MapMatchingService mapMatchingService;
 
-    @Value("${simra.region.Berlin}")
+    @Value("${simra.region.default}")
     private String region;
 
 
