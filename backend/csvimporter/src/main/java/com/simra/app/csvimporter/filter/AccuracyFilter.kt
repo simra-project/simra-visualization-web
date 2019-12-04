@@ -1,6 +1,7 @@
-package main.java.com.simra.app.csvimporter.filter
+package com.simra.app.csvimporter.filter
 
-import main.java.com.simra.app.csvimporter.model.RideCSV
+import com.simra.app.csvimporter.model.RideCSV
+
 
 class AccuracyFilter {
     companion object {

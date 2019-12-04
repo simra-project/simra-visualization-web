@@ -1,11 +1,11 @@
-package main.java.com.simra.app.csvimporter.model;
+package com.simra.app.csvimporter.model;
 
 import org.bson.Document;
 
 import java.util.Date;
 import java.util.List;
 
-public class Statistic implements MongoDocument {
+public class Statistic {
     public String region;
 
     public int rideCount;
@@ -30,7 +30,6 @@ public class Statistic implements MongoDocument {
     public Statistic() {
     }
 
-    @Override
     public Document toDocumentObject() {
         Document statistic = new Document();
         statistic.put("region", region);

@@ -1,4 +1,4 @@
-package main.java.com.simra.app.csvimporter;
+package com.simra.app.csvimporter.service;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;

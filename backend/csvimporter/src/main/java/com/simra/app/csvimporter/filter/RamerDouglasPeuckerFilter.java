@@ -1,6 +1,7 @@
-package main.java.com.simra.app.csvimporter.filter;
+package com.simra.app.csvimporter.filter;
 
-import main.java.com.simra.app.csvimporter.model.RideCSV;
+
+import com.simra.app.csvimporter.model.RideCSV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +10,10 @@ import java.util.List;
  * The Ramer–Douglas–Peucker algorithm (RDP) is an algorithm for reducing the number of points in a
  * curve that is approximated by a series of points.
  * <p>
+ *
+ * @author Justin Wetherell <phishman3579@gmail.com>
  * @see <a href="https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm">Ramer–Douglas–Peucker Algorithm (Wikipedia)</a>
  * <br>
- * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class RamerDouglasPeuckerFilter {
 
