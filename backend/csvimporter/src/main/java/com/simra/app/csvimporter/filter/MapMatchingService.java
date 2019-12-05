@@ -28,38 +28,14 @@ import java.util.stream.StreamSupport;
 @Service
 public class MapMatchingService {
 
-    private MapMatching mapMatching;
-
     private GraphHopper graphHopper;
 
-    private AlgorithmOptions opts;
-
-    private PathMerger pathMerger;
-
-    MapMatchingService() {
+    public MapMatchingService() {
         CmdArgs graphHopperConfiguration = new CmdArgs();
         graphHopperConfiguration.put("graph.flag_encoders", "bike");
         graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf");
         graphHopper = new GraphHopperOSM().init(graphHopperConfiguration);
         graphHopper.importOrLoad();
-
-        FlagEncoder firstEncoder = graphHopper.getEncodingManager().fetchEdgeEncoders().get(0);
-        opts = AlgorithmOptions.start()
-                .algorithm(Parameters.Algorithms.DIJKSTRA_BI)
-                .traversalMode(TraversalMode.EDGE_BASED)
-                .weighting(new FastestWeighting(firstEncoder))
-                .maxVisitedNodes(2000)
-                .hints(new HintsMap().put("weighting", "fastest")
-                        .put("vehicle", "bike"))
-                // Penalizing inner-link U-turns only works with fastest weighting, since
-                // shortest weighting does not apply penalties to unfavored virtual edges.
-                .build();
-
-        mapMatching = new MapMatching(graphHopper, new HintsMap(opts.getHints()));
-        mapMatching.setTransitionProbabilityBeta(2.0);
-        mapMatching.setMeasurementErrorSigma(50.0);
-
-        pathMerger = new PathMerger(graphHopper.getGraphHopperStorage(), opts.getWeighting());
     }
 
     private Float currentRouteDistance = 0F;
@@ -100,6 +76,24 @@ public class MapMatchingService {
         List<Observation> measurements = gpx.getTracks().get(0).segments().flatMap(segment ->
                 segment.points().map(point ->
                         new Observation(new GHPoint(point.getLatitude().doubleValue(), point.getLongitude().doubleValue())))).collect(Collectors.toList());
+
+        FlagEncoder firstEncoder = graphHopper.getEncodingManager().fetchEdgeEncoders().get(0);
+        AlgorithmOptions opts = AlgorithmOptions.start()
+                .algorithm(Parameters.Algorithms.DIJKSTRA_BI)
+                .traversalMode(TraversalMode.EDGE_BASED)
+                .weighting(new FastestWeighting(firstEncoder))
+                .maxVisitedNodes(2000)
+                .hints(new HintsMap().put("weighting", "fastest")
+                        .put("vehicle", "bike"))
+                // Penalizing inner-link U-turns only works with fastest weighting, since
+                // shortest weighting does not apply penalties to unfavored virtual edges.
+                .build();
+
+        MapMatching mapMatching = new MapMatching(graphHopper, new HintsMap(opts.getHints()));
+        mapMatching.setTransitionProbabilityBeta(2.0);
+        mapMatching.setMeasurementErrorSigma(50.0);
+
+        PathMerger pathMerger = new PathMerger(graphHopper.getGraphHopperStorage(), opts.getWeighting());
 
         matchSW.start();
         MatchResult mr = mapMatching.doWork(measurements);

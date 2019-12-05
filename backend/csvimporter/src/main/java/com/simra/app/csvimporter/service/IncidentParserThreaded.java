@@ -8,6 +8,7 @@ import com.simra.app.csvimporter.controller.IncidentRepository;
 import com.simra.app.csvimporter.model.IncidentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.util.Arrays;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class IncidentParserThreaded extends Thread {
+public class IncidentParserThreaded implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(IncidentParserThreaded.class);
 
 
@@ -24,6 +25,8 @@ public class IncidentParserThreaded extends Thread {
 
     private IncidentRepository incidentRepository;
     private String csvString;
+    @Value("${simra.region.default}")
+    private String region;
 
     public IncidentParserThreaded(String fileName, IncidentRepository incidentRepository, String csvString) {
 
@@ -68,7 +71,7 @@ public class IncidentParserThreaded extends Thread {
                 item.setFileId(this.fileName);
                 item.setAppVersion(arrOfStr[0]);
                 item.setFileVersion(Integer.parseInt(arrOfStr[1]));
-                item.setRegion("Berlin"); // TODO
+                item.setRegion(region);
                 List<Double> places = Arrays.asList(Double.parseDouble(item.getLon()), Double.parseDouble(item.getLat()));
                 Point geoPoint = new Point(new Position(places));
                 item.setLocation(geoPoint);

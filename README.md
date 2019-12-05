@@ -51,7 +51,9 @@ logging.file.name = /Users/developer/IdeaProjects/csvimporter/csvimporter.log
 CSV root folder to monitor :
 csv.monitor.path=/Users/developer/Downloads/SimRa_Sample_10_23_19
 
-Other configurations can be found in Application.properties file.
+simra.region.default=Berlin
+
+# Other configurations can be found in Application.properties file.
 
 ```
 # Run as Spring Boot Application

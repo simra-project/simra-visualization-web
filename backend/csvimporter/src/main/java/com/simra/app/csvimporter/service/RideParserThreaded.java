@@ -12,6 +12,7 @@ import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -20,7 +21,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class RideParserThreaded extends Thread {
+public class RideParserThreaded implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(RideParserThreaded.class);
 
 
@@ -33,6 +34,9 @@ public class RideParserThreaded extends Thread {
     private RideFilter rideFilter;
 
     private MapMatchingService mapMatchingService;
+
+    @Value("${simra.region.default}")
+    private String region;
 
 
     public RideParserThreaded(String fileName,  RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString) {
@@ -90,13 +94,15 @@ public class RideParserThreaded extends Thread {
             // Map Matching
             List<RideCSV> mapMatchedRideBeans = mapMatchingService.matchToMap(optimisedRideBeans);
 
-            /**
-             * All filters must end before this
+            /*
+             * All filters related to csv parsed data must end before this
              */
 
             RideEntity rideEntity = getRideEntity(arrOfStr, optimisedRideBeans);
-            rideEntity.setRegion("Berlin"); // TODO
-            // adding to entity
+            rideEntity.setRegion(region);
+            /*
+             * needed modified entity properties must insert here.
+             */
             rideEntity.setMapMatchedRideBeans(mapMatchedRideBeans);
             rideEntity.setDistance(mapMatchingService.getCurrentRouteDistance());
             rideEntity.setDuration(mapMatchingService.getCurrentRouteDuration());
