@@ -8,8 +8,6 @@ import com.simra.app.csvimporter.controller.IncidentRepository;
 import com.simra.app.csvimporter.model.IncidentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.*;
 import java.util.Arrays;
 import java.util.Date;
@@ -25,14 +23,14 @@ public class IncidentParserThreaded implements Runnable {
 
     private IncidentRepository incidentRepository;
     private String csvString;
-    @Value("${simra.region.default}")
     private String region;
 
-    public IncidentParserThreaded(String fileName, IncidentRepository incidentRepository, String csvString) {
+    public IncidentParserThreaded(String fileName, IncidentRepository incidentRepository, String csvString, String region) {
 
         this.incidentRepository = incidentRepository;
         this.csvString=csvString;
         this.fileName=fileName;
+        this.region=region;
     }
 
     @Override

@@ -12,8 +12,6 @@ import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -35,16 +33,16 @@ public class RideParserThreaded implements Runnable {
 
     private MapMatchingService mapMatchingService;
 
-    @Value("${simra.region.default}")
     private String region;
 
 
-    public RideParserThreaded(String fileName,  RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString) {
+    public RideParserThreaded(String fileName,  RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString, String region) {
         this.fileName = fileName;
         this.csvString=csvString;
         this.rideRepository = rideRepository;
         this.rideFilter = new RideFilter(minAccuracy, rdpEpsilion);
         this.mapMatchingService = mapMatchingService;
+        this.region=region;
     }
 
 
