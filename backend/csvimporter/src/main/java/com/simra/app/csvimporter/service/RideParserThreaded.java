@@ -6,7 +6,7 @@ import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.simra.app.csvimporter.controller.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
-import com.simra.app.csvimporter.filter.RideFilter;
+import com.simra.app.csvimporter.filter.RideSmoother;
 import com.simra.app.csvimporter.model.RideCSV;
 import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
@@ -31,19 +31,24 @@ public class RideParserThreaded implements Runnable {
 
     private RideRepository rideRepository;
 
-    private RideFilter rideFilter;
+    private RideSmoother rideSmoother;
 
     private MapMatchingService mapMatchingService;
 
     @Value("${simra.region.default}")
     private String region;
 
+    @Value("${min_ride_distance}")
+    private Integer minRideDistance;
 
-    public RideParserThreaded(String fileName,  RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString) {
+    @Value("${min_ride_duration}")
+    private Integer minRideDuration;
+
+    public RideParserThreaded(String fileName, RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString) {
         this.fileName = fileName;
-        this.csvString=csvString;
+        this.csvString = csvString;
         this.rideRepository = rideRepository;
-        this.rideFilter = new RideFilter(minAccuracy, rdpEpsilion);
+        this.rideSmoother = new RideSmoother(minAccuracy, rdpEpsilion);
         this.mapMatchingService = mapMatchingService;
     }
 
@@ -89,10 +94,20 @@ public class RideParserThreaded implements Runnable {
             /*
              * ALl filters before DB Entity must chain here.
              */
-            // RDP Filter
-            List<RideCSV> optimisedRideBeans = this.rideFilter.filterRide(rideBeans);
+            // Acc & RDP Filter
+            List<RideCSV> optimisedRideBeans = this.rideSmoother.smoothRide(rideBeans);
             // Map Matching
             List<RideCSV> mapMatchedRideBeans = mapMatchingService.matchToMap(optimisedRideBeans);
+
+            // filter short Distance Rides
+            if (mapMatchingService.getCurrentRouteDistance() < minRideDistance) {
+                return;
+            }
+
+            // filter short Duration Rides
+            if (mapMatchingService.getCurrentRouteDuration() < minRideDuration) {
+                return;
+            }
 
             /*
              * All filters related to csv parsed data must end before this
