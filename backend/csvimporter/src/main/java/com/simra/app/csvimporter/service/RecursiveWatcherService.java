@@ -68,6 +68,8 @@ public class RecursiveWatcherService implements MonitorService {
 
     private ExecutorService executor;
 
+    private ExecutorService rideIncidentExecutor;
+
 
     @Value("${min_accuracy}")
     private float minAccuracy;
@@ -79,6 +81,8 @@ public class RecursiveWatcherService implements MonitorService {
     public void init() throws IOException {
         watcher = FileSystems.getDefault().newWatchService();
         executor = Executors.newSingleThreadExecutor();
+        rideIncidentExecutor = Executors.newFixedThreadPool(100);
+
     }
 
 
@@ -187,9 +191,6 @@ public class RecursiveWatcherService implements MonitorService {
                     }
                 } catch (IOException e) {
                     LOG.error("File read failed: {}",e.getMessage() );
-                } catch (InterruptedException e){
-                    LOG.error("File read failed: {}",e.getMessage() );
-                    Thread.currentThread().interrupt();
                 }
                 // Save status into Database.
                 csvFileRepository.save(new CSVFile(f.getName(), type));
@@ -229,6 +230,7 @@ public class RecursiveWatcherService implements MonitorService {
                     .build().parse();
             if (!profileBeans.isEmpty()) {
                 ProfileEntity profile = profileBeans.get(0);
+                profile.setId(f.getName());
                 profile.setFileId(f.getName());
                 profile.setAppVersion(arrOfStr[0]);
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));
@@ -245,18 +247,16 @@ public class RecursiveWatcherService implements MonitorService {
     }
 
 
-    private void incidentRideParser(File f, String csvString) throws InterruptedException {
+    private void incidentRideParser(File f, String csvString){
         /*
          * Start thread to parse file and save incidents
-         * TODO: QUEUE
+         * INFO: QUEUE
          */
         // incidents are parsed parallel to ride
         IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(),incidentRepository, csvString);
-        incidentParserThreaded.start();
-
         RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString);
-        rideParserThreaded.start();
-
+        this.rideIncidentExecutor.execute(incidentParserThreaded);
+        this.rideIncidentExecutor.execute(rideParserThreaded);
 
     }
 }

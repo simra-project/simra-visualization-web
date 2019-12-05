@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class RideParserThreaded extends Thread {
+public class RideParserThreaded implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(RideParserThreaded.class);
 
 
