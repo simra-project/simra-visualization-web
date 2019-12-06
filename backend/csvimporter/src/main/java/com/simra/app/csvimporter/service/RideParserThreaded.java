@@ -39,10 +39,16 @@ public class RideParserThreaded implements Runnable {
     private String region;
 
     @Value("${min_ride_distance}")
-    private Integer minRideDistance;
+    private Integer minRideDistance = 200;
 
     @Value("${min_ride_duration}")
-    private Integer minRideDuration;
+    private Integer minRideDuration = 20 * 60000;
+
+    @Value("${max_ride_average_speed}")
+    private Integer maxRideAverageSpeed = 30;
+
+    @Value("${min_distance_to_cover_by_user_in_5_min}")
+    private Integer minDistanceToCoverByUserIn5Min = 100;
 
     public RideParserThreaded(String fileName, RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString) {
         this.fileName = fileName;
@@ -99,14 +105,32 @@ public class RideParserThreaded implements Runnable {
             // Map Matching
             List<RideCSV> mapMatchedRideBeans = mapMatchingService.matchToMap(optimisedRideBeans);
 
+            Float routeDistance = mapMatchingService.getCurrentRouteDistance();
+            Long routeDuration = mapMatchingService.getCurrentRouteDuration();
+
             // filter short Distance Rides
-            if (mapMatchingService.getCurrentRouteDistance() < minRideDistance) {
+            if (routeDistance < minRideDistance) {
+                LOG.info(fileName + " filtered due to routeDistance = " + routeDistance + "m");
                 return;
             }
 
             // filter short Duration Rides
-            if (mapMatchingService.getCurrentRouteDuration() < minRideDuration) {
+            if (routeDuration < minRideDuration) {
+                LOG.info(fileName + " filtered due to routeDuration = " + (routeDuration / 60000) + "min");
                 return;
+            }
+
+            // filter high average speed
+            double averageSpeed = Utils.calcAverageSpeed(routeDistance, routeDuration);
+            if (averageSpeed > maxRideAverageSpeed) {
+                LOG.info(fileName + " filtered due to averageSpeed = " + averageSpeed + "km/h");
+                return;
+            }
+
+            // filter rides that user did not stop
+            if (isUserForgotToStopRecording(optimisedRideBeans)) {
+                LOG.info(fileName + " filtered due to User forgot to stop recording");
+                //return;
             }
 
             /*
@@ -159,5 +183,35 @@ public class RideParserThreaded implements Runnable {
 
         rideEntity.setAddedAt(new Date());
         return rideEntity;
+    }
+
+    /*
+     * heuristic approach
+     *
+     * ride will be classified as 'forgot to stop' when User does not
+     * exceed ${min_distance_to_cover_by_user_in_5_min} in 5min (300sec) (300*6000millis)
+     *
+     * 5min in 3sec steps = 100steps
+     */
+    private boolean isUserForgotToStopRecording(List<RideCSV> rideCSVList) {
+
+        for (int i = 0; i < rideCSVList.size(); i++) {
+            double cumulatedDistance = 0d;
+            for (int j = 0; j < 100; j++) {
+                try {
+                    cumulatedDistance += Utils.calcDistance(
+                            Double.parseDouble(rideCSVList.get(i + j).getLat()),
+                            Double.parseDouble(rideCSVList.get(i + j).getLon()),
+                            Double.parseDouble(rideCSVList.get(i + j + 1).getLat()),
+                            Double.parseDouble(rideCSVList.get(i + j + 1).getLon()));
+                } catch (IndexOutOfBoundsException e) {
+                    break;
+                }
+            }
+            if (cumulatedDistance < minDistanceToCoverByUserIn5Min) {
+                return true;
+            }
+        }
+        return false;
     }
 }
