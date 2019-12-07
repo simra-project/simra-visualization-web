@@ -2,19 +2,24 @@ package com.simra.app.csvimporter.service;
 
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.simra.app.csvimporter.model.Statistic;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.simra.app.csvimporter.model.Statistic.ProfileAgeGroupEntry;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -28,7 +33,8 @@ public class StatisticsService {
     public void calculateStatistics() {
         System.out.println("Calculating statistics ...");
 
-        MongoDatabase db = (new MongoClient("localhost", 27017)).getDatabase("simra");
+        CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        MongoDatabase db = (new MongoClient("localhost", 27017)).getDatabase("simra").withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Document> ridesCollection = db.getCollection("rides");
         MongoCollection<Document> incidentsCollection = db.getCollection("incidents");
         MongoCollection<Document> profileCollection = db.getCollection("profile");
@@ -69,7 +75,7 @@ public class StatisticsService {
         statistic.rideCount = (int) rides.countDocuments(filter);
         statistic.accumulatedDistance = accumulatedDistance.doubleValue();
         statistic.accumulatedDuration = accumulatedDuration.longValue();
-        statistic.accumulatedSavedCO2 = statistic.accumulatedDistance * 0.183;
+        statistic.accumulatedSavedCO2 = getSavedCO2(statistic.accumulatedDistance);
 
         statistic.averageDistance = statistic.accumulatedDistance / (double) statistic.rideCount;
         statistic.averageDuration = statistic.accumulatedDuration / (long) statistic.rideCount;
@@ -134,6 +140,67 @@ public class StatisticsService {
         statistic.profileAgeDistributionDataOther = IntStream.range(1, AGE_GROUPS.size() + 1)
                 .mapToObj(i -> (int) profiles.countDocuments(and(regionFilter, eq("birth", i), eq("gender", 3))))
                 .collect(Collectors.toList());
+
+        statistic.profileAgeGroupCrossData = IntStream.range(1, AGE_GROUPS.size() + 1).mapToObj(i -> {
+            ProfileAgeGroupEntry row = new ProfileAgeGroupEntry();
+            row.ageGroup = AGE_GROUPS.get(i - 1);
+            row.bikerCount = (int) profiles.countDocuments(and(regionFilter, eq("birth", i)));
+
+            LongAccumulator rideCount = new LongAccumulator(Long::sum, 0L);
+            DoubleAccumulator accumulatedDistance = new DoubleAccumulator(Double::sum, 0.0d);
+            LongAccumulator accumulatedDuration = new LongAccumulator(Long::sum, 0L);
+            LongAccumulator scaryIncidentCount = new LongAccumulator(Long::sum, 0L);
+
+            profiles.find(and(regionFilter, eq("birth", i))).forEach((Block<? super Document>) profile -> {
+                Integer numberOfRides = profile.getInteger("numberOfRides");
+                Double distance = profile.getDouble("distance");
+                Long duration = profile.getLong("duration");
+                Integer scaryIncidents = profile.getInteger("numberOfScary");
+
+                if (numberOfRides != null && numberOfRides != 0 && distance != null && distance != 0 && duration != null && duration != 0) {
+                    rideCount.accumulate((long) numberOfRides);
+                    accumulatedDistance.accumulate(distance);
+                    accumulatedDuration.accumulate(duration);
+                    scaryIncidentCount.accumulate(scaryIncidents);
+                }
+            });
+
+            row.rideCount = (int) rideCount.longValue();
+            row.accumulatedDistance = accumulatedDistance.doubleValue();
+            row.accumulatedDuration = accumulatedDuration.longValue();
+            row.accumulatedSavedCO2 = getSavedCO2(row.accumulatedDistance);
+            row.scaryIncidentCount = (int) scaryIncidentCount.longValue();
+
+            if (row.rideCount > 0) {
+                row.averageDistance = row.accumulatedDistance / (double) row.rideCount;
+                row.averageDuration = row.accumulatedDuration / (long) row.rideCount;
+                row.averageSpeed = 3.6 * row.accumulatedDistance / (double) (row.accumulatedDuration / 1000);
+                row.averageSavedCO2 = row.accumulatedSavedCO2 / (double) row.rideCount;
+                row.averageScaryIncidentCount = row.scaryIncidentCount / (double) row.rideCount;
+            }
+
+            return row;
+        }).collect(Collectors.toList());
+
+        ProfileAgeGroupEntry total = statistic.profileAgeGroupCrossData.stream().reduce(new ProfileAgeGroupEntry(), (ProfileAgeGroupEntry lhs, ProfileAgeGroupEntry rhs) -> {
+            lhs.bikerCount += rhs.bikerCount;
+            lhs.rideCount += rhs.rideCount;
+            lhs.accumulatedDuration += rhs.accumulatedDuration;
+            lhs.accumulatedDistance += rhs.accumulatedDistance;
+            lhs.accumulatedSavedCO2 += rhs.accumulatedSavedCO2;
+            lhs.scaryIncidentCount += rhs.scaryIncidentCount;
+            return lhs;
+        });
+        total.averageDistance = total.accumulatedDistance / (double) total.rideCount;
+        total.averageDuration = total.accumulatedDuration / (long) total.rideCount;
+        total.averageSpeed = 3.6 * total.accumulatedDistance / (double) (total.accumulatedDuration / 1000);
+        total.averageSavedCO2 = total.accumulatedSavedCO2 / (double) total.rideCount;
+        total.averageScaryIncidentCount = total.scaryIncidentCount / (double) total.rideCount;
+        statistic.profileAgeGroupCrossTotal = total;
+    }
+
+    private Double getSavedCO2(double distance) {
+        return (distance * 0.183) / 1000.0;
     }
 }
 

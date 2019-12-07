@@ -65,18 +65,84 @@
 
             <div class="columns users">
                 <div class="column">
-<!--                    <h4>Bike Types</h4>-->
                     <apexchart type=donut width=100% :options="bikeTypes.options" :series="bikeTypes.data"/>
                 </div>
                 <div class="column" style="align-self: center">
-<!--                    <h4>Age Distribution</h4>-->
-                    <apexchart type=bar width=100% :options="ageGroupOptions" :series="ageGroupData"/>
+                    <apexchart type=bar width=100% :options="ageDistributionOptions" :series="ageDistributionData"/>
                 </div>
                 <div class="column">
-<!--                    <h4>Gender</h4>-->
                     <apexchart type=donut width=100% :options="chartOptions(['Male', 'Female', 'Other'])" :series="[statistics.profileCountMale, statistics.profileCountFemale, statistics.profileCountOther]"/>
                 </div>
             </div>
+
+            <hr>
+
+            <h3>Raw data</h3>
+            <table class="table is-striped is-hoverable is-bordered is-narrow">
+                <thead>
+                <tr>
+                    <th>Age Group</th>
+                    <th style="white-space: nowrap;"># Bikers</th>
+                    <th style="white-space: nowrap;"># Rides</th>
+                    <th>Total Distance</th>
+                    <th>Total Duration</th>
+                    <th>Average Distance</th>
+                    <th>Average Duration</th>
+                    <th>Average Speed</th>
+                    <th>#&nbsp;Scary Incidents</th>
+                    <th>Average # Scary Incidents</th>
+                    <th>Total CO<sub>2</sub> saved</th>
+                    <th>Average CO<sub>2</sub> saved</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="row in statistics.profileAgeGroupCrossData">
+                    <td><strong>{{ row.ageGroup }}</strong></td>
+                    <td>{{ row.bikerCount.toLocaleString('en') }}</td>
+                    <td>{{ row.rideCount.toLocaleString('en') }}</td>
+
+                    <td>{{ Math.floor(row.accumulatedDistance / 1000).toLocaleString('en') }} km</td>
+                    <td>{{ Math.floor(row.accumulatedDuration.$numberLong / (1000 * 60 * 60)).toLocaleString('en') }} h</td>
+
+                    <template v-if="row.rideCount > 0">
+                        <td>{{ (row.averageDistance / 1000).toFixed(2) }} km</td>
+                        <td>{{ Math.floor(row.averageDuration.$numberLong / (1000 * 60)) }} min</td>
+                        <td>{{ row.averageSpeed.toFixed(1) }} km/h</td>
+                    </template>
+                    <template v-else>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </template>
+
+                    <td>{{ row.scaryIncidentCount.toLocaleString('en') }}</td>
+                    <td>{{ row.rideCount > 0 ? row.averageScaryIncidentCount.toFixed(1).toLocaleString('en') : '-' }}</td>
+
+                    <td>{{ Math.floor(row.accumulatedSavedCO2).toLocaleString('en') }} kg</td>
+                    <td>{{ row.rideCount > 0 ? (Math.floor(row.averageSavedCO2).toLocaleString('en') + ' kg') : '-' }}</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th><strong>Total</strong></th>
+                    <th>{{ statistics.profileAgeGroupCrossTotal.bikerCount.toLocaleString('en') }}</th>
+                    <th>{{ statistics.profileAgeGroupCrossTotal.rideCount.toLocaleString('en') }}</th>
+
+                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.accumulatedDistance / 1000).toLocaleString('en') }} km</th>
+                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.accumulatedDuration.$numberLong / (1000 * 60 * 60)).toLocaleString('en') }} h</th>
+
+                    <th>{{ (statistics.profileAgeGroupCrossTotal.averageDistance / 1000).toFixed(2) }} km</th>
+                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.averageDuration.$numberLong / (1000 * 60)) }} min</th>
+                    <th>{{ statistics.profileAgeGroupCrossTotal.averageSpeed.toFixed(1) }} km/h</th>
+
+                    <th>{{ statistics.profileAgeGroupCrossTotal.scaryIncidentCount.toLocaleString('en') }}</th>
+                    <th>{{ statistics.profileAgeGroupCrossTotal.averageScaryIncidentCount.toFixed(1).toLocaleString('en') }}</th>
+
+                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.accumulatedSavedCO2).toLocaleString('en') }} kg</th>
+                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.averageSavedCO2).toLocaleString('en') }} kg</th>
+                </tr>
+                </tfoot>
+            </table>
 
             <hr>
 
@@ -118,7 +184,7 @@ export default {
             incidentTypes: { labels: [], data: [], options: {} },
             participantTypes: { labels: [], data: [], options: {} },
             bikeTypes: { labels: [], data: [], options: {} },
-            ageGroupOptions: {
+            ageDistributionOptions: {
                 chart: {
                     stacked: true,
                     toolbar: {
@@ -146,7 +212,7 @@ export default {
                     show: false,
                 },
             },
-            ageGroupData: [],
+            ageDistributionData: [],
         };
     },
     methods: {
@@ -164,8 +230,8 @@ export default {
                         this.participantTypes = this.processData(4, r.incidentParticipantTypeLabels, r.incidentParticipantTypeData);
                         this.bikeTypes = this.processData(4, r.profileBikeTypeLabels, r.profileBikeTypeData);
 
-                        this.ageGroupOptions.xaxis.categories = r.profileAgeDistributionLabels;
-                        this.ageGroupData = [
+                        this.ageDistributionOptions.xaxis.categories = r.profileAgeDistributionLabels;
+                        this.ageDistributionData = [
                             { name: 'Male', data: r.profileAgeDistributionDataMale },
                             { name: "Female", data: r.profileAgeDistributionDataFemale },
                             { name: "Other", data: r.profileAgeDistributionDataOther },

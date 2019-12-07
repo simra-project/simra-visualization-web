@@ -1,6 +1,7 @@
 package com.simra.app.csvimporter.model;
 
 import org.bson.Document;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,10 @@ public class Statistic {
     public List<Integer> profileAgeDistributionDataMale;
     public List<Integer> profileAgeDistributionDataFemale;
     public List<Integer> profileAgeDistributionDataOther;
+
+    public List<ProfileAgeGroupEntry> profileAgeGroupCrossData;
+    public ProfileAgeGroupEntry profileAgeGroupCrossTotal;
+
     public Statistic() {
     }
 
@@ -72,6 +77,48 @@ public class Statistic {
         statistic.put("profileAgeDistributionDataMale", profileAgeDistributionDataMale);
         statistic.put("profileAgeDistributionDataFemale", profileAgeDistributionDataFemale);
         statistic.put("profileAgeDistributionDataOther", profileAgeDistributionDataOther);
+
+        statistic.put("profileAgeGroupCrossData", profileAgeGroupCrossData);
+        statistic.put("profileAgeGroupCrossTotal", profileAgeGroupCrossTotal);
+
         return statistic;
+    }
+
+    public static class ProfileAgeGroupEntry {
+        @BsonProperty("ageGroup")
+        public String ageGroup;
+
+        @BsonProperty("bikerCount")
+        public int bikerCount;
+
+        @BsonProperty("rideCount")
+        public int rideCount;
+
+        @BsonProperty("accumulatedDuration")
+        public long accumulatedDuration;
+
+        @BsonProperty("accumulatedDistance")
+        public double accumulatedDistance;
+
+        @BsonProperty("accumulatedSavedCO2")
+        public double accumulatedSavedCO2;
+
+        @BsonProperty("averageDuration")
+        public Long averageDuration;
+
+        @BsonProperty("averageDistance")
+        public Double averageDistance;
+
+        @BsonProperty("averageSpeed")
+        public Double averageSpeed;
+
+        @BsonProperty("averageSavedCO2")
+        public Double averageSavedCO2;
+
+        @BsonProperty("scaryIncidentCount")
+        public int scaryIncidentCount;
+
+        @BsonProperty("averageScaryIncidentCount")
+        public Double averageScaryIncidentCount;
     }
 }
