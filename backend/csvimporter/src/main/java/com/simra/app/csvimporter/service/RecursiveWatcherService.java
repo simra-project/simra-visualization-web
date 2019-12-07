@@ -234,6 +234,7 @@ public class RecursiveWatcherService implements MonitorService {
             if (!profileBeans.isEmpty()) {
                 ProfileEntity profile = profileBeans.get(0);
                 profile.setId(f.getName());
+                profile.setDirectoryRegion(this.region);
                 profile.setFileId(f.getName());
                 profile.setAppVersion(arrOfStr[0]);
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));

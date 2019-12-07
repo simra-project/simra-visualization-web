@@ -13,7 +13,7 @@
             <div class="top-text">
                 Over
                 <span class="highlight-text">
-                    <ICountUp :delay="100" :endVal="Math.floor(statistics.rideCount / 2.5)"/> bikers <!-- TODO: use real number -->
+                    <ICountUp :delay="100" :endVal="statistics.profileCount"/> bikers
                 </span>
                 in {{ selectedLocation }} cycled
                 <span class="highlight-text">
@@ -36,7 +36,14 @@
                     <h4>Incident Types</h4>
                     <apexchart type=donut width=100% :options="incidentTypes.options" :series="incidentTypes.data"/>
                 </div>
-
+                <div class="column">
+                    <h4>Scary Incidents
+                        <b-tooltip label="A scary incident is one where the cyclist fears for their safety." type="is-light" style="vertical-align: bottom;">
+                            <b-tag rounded>?</b-tag>
+                        </b-tooltip>
+                    </h4>
+                    <apexchart type=donut width=100% :options="{...chartOptions(['Not scary', 'Scary']), colors: ['#3f51b5', '#e52e71'] }" :series="[statistics.incidentCount, statistics.incidentCountScary]"/>
+                </div>
                 <div class="column">
                     <h4>Participants
                         <b-tooltip label="The other participant in the incident." type="is-light" style="vertical-align: bottom;">
@@ -45,30 +52,29 @@
                     </h4>
                     <apexchart type=donut width=100% :options="participantTypes.options" :series="participantTypes.data"/>
                 </div>
-                <div class="column">
-                    <h4>Scary Incidents
-                        <b-tooltip label="A scary incident is one where the cyclist fears for their safety." type="is-light" style="vertical-align: bottom;">
-                            <b-tag rounded>?</b-tag>
-                        </b-tooltip>
-                    </h4>
-                    <apexchart type=donut width=100% :options="chartOptions(['Not scary', 'Scary'])" :series="[statistics.incidentCount, statistics.incidentCountScary]"/>
-                </div>
             </div>
 
             <hr>
 
             <h3>Users</h3>
+            <div class="columns reset-columns">
+                <div class="column"><h4>Bike Types</h4></div>
+                <div class="column"><h4>Age Distribution</h4></div>
+                <div class="column"><h4>Gender</h4></div>
+            </div>
+
             <div class="columns users">
                 <div class="column">
-                    <h4>Bike Types</h4>
+<!--                    <h4>Bike Types</h4>-->
                     <apexchart type=donut width=100% :options="bikeTypes.options" :series="bikeTypes.data"/>
                 </div>
-                <div class="column">
-                    <h4>Age Distribution (todo)</h4>
+                <div class="column" style="align-self: center">
+<!--                    <h4>Age Distribution</h4>-->
+                    <apexchart type=bar width=100% :options="ageGroupOptions" :series="ageGroupData"/>
                 </div>
                 <div class="column">
-                    <h4>Gender (todo)</h4>
-                    <apexchart type=donut width=100% :options="chartOptions(['Male', 'Female'])" :series="[63, 37]"/>
+<!--                    <h4>Gender</h4>-->
+                    <apexchart type=donut width=100% :options="chartOptions(['Male', 'Female', 'Other'])" :series="[statistics.profileCountMale, statistics.profileCountFemale, statistics.profileCountOther]"/>
                 </div>
             </div>
 
@@ -83,7 +89,7 @@
             </div>
         </div>
         <div class="wrapper" v-else style="height: 300px">
-            <b-loading :is-full-page="false" :active="true" :can-cancel="false"></b-loading>
+            <b-loading :is-full-page="false" :active="true" :can-cancel="false"/>
         </div>
     </div>
 </template>
@@ -112,6 +118,35 @@ export default {
             incidentTypes: { labels: [], data: [], options: {} },
             participantTypes: { labels: [], data: [], options: {} },
             bikeTypes: { labels: [], data: [], options: {} },
+            ageGroupOptions: {
+                chart: {
+                    stacked: true,
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                legend: {
+                    offsetY: -8,
+                },
+                plotOptions: {
+                    bar: {
+                        barHeight: "90%",
+                    },
+                },
+                theme: {
+                    palette: "palette2",
+                },
+                xaxis: {
+                    categories: [],
+                },
+                yaxis: {
+                    show: false,
+                },
+            },
+            ageGroupData: [],
         };
     },
     methods: {
@@ -124,12 +159,17 @@ export default {
                     .then(r => {
                         this.dataLoaded = true;
                         this.statistics = r;
-                        console.log(r);
 
                         this.incidentTypes = this.processData(4, r.incidentTypeLabels, r.incidentTypeData);
                         this.participantTypes = this.processData(4, r.incidentParticipantTypeLabels, r.incidentParticipantTypeData);
-                        this.bikeTypes = this.processData(4, r.incidentBikeTypeLabels, r.incidentBikeTypeData);
-                        this.bikeTypes.options.tooltip.enabled = false;
+                        this.bikeTypes = this.processData(4, r.profileBikeTypeLabels, r.profileBikeTypeData);
+
+                        this.ageGroupOptions.xaxis.categories = r.profileAgeDistributionLabels;
+                        this.ageGroupData = [
+                            { name: 'Male', data: r.profileAgeDistributionDataMale },
+                            { name: "Female", data: r.profileAgeDistributionDataFemale },
+                            { name: "Other", data: r.profileAgeDistributionDataOther },
+                        ];
                     });
             }, 500);
         },
@@ -217,6 +257,14 @@ export default {
                     text-align: center;
                     font-weight: normal;
                     margin-bottom: 8px;
+                }
+            }
+
+            &.reset-columns {
+                margin-bottom: 0;
+
+                .column {
+                    padding: 0;
                 }
             }
         }
