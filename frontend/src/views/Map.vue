@@ -55,6 +55,7 @@
                 <div>Zoom: {{ zoom }}</div>
                 <div>Center: {{ center }}</div>
                 <div>Bounds: {{ bounds }}</div>
+                <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
         <l-control position="bottomleft" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
@@ -94,13 +95,13 @@
                     v-else-if="showIncidents"
                     :geojson="incident.geometry"
                     :options="geoJsonPopupOptions(incident)">
-            <l-popup :content="incident.description"></l-popup>
+            <l-popup :content="incident.description"/>
         </l-geo-json>
     </l-map>
 </template>
 
 <script>
-import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker, LGeoJson } from "vue2-leaflet";
+import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
@@ -189,8 +190,10 @@ export default {
             }).catch(() => {});
         },
         clickedOnRide(event, ride) {
+            if (this.rideHighlightId != null) this.unfocusRideHighlight();
+
             // Highlighting this ride
-            this.rideHighlightId = ride.rideId;
+            this.rideHighlightId = ride.properties.rideId;
             this.rideHighlightContent = { length: "10.2 km", duration: "37 min" };
 
             // Showing start & end point with circles
