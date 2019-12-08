@@ -77,6 +77,9 @@ public class RecursiveWatcherService implements MonitorService {
     @Value("${rdp_epsilion}")
     private double rdpEpsilion;
 
+    @Value("${simra.region.default}")
+    private String region;
+
     @PostConstruct
     public void init() throws IOException {
         watcher = FileSystems.getDefault().newWatchService();
@@ -231,6 +234,7 @@ public class RecursiveWatcherService implements MonitorService {
             if (!profileBeans.isEmpty()) {
                 ProfileEntity profile = profileBeans.get(0);
                 profile.setId(f.getName());
+                profile.setDirectoryRegion(this.region);
                 profile.setFileId(f.getName());
                 profile.setAppVersion(arrOfStr[0]);
                 profile.setFileVersion(Integer.parseInt(arrOfStr[1]));
@@ -253,8 +257,9 @@ public class RecursiveWatcherService implements MonitorService {
          * INFO: QUEUE
          */
         // incidents are parsed parallel to ride
-        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(),incidentRepository, csvString);
-        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString);
+
+        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(),incidentRepository, csvString, this.region);
+        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString, this.region);
         this.rideIncidentExecutor.execute(incidentParserThreaded);
         this.rideIncidentExecutor.execute(rideParserThreaded);
 
