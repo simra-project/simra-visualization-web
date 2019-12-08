@@ -12,6 +12,7 @@ import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -35,25 +36,37 @@ public class RideParserThreaded implements Runnable {
 
     private String region;
 
-    @Value("${min_ride_distance}")
-    private Integer minRideDistance = 200;
+    private Integer minRideDistance;
 
-    @Value("${min_ride_duration}")
-    private Integer minRideDuration = 20 * 60000;
+    private Integer minRideDuration;
 
-    @Value("${max_ride_average_speed}")
-    private Integer maxRideAverageSpeed = 30;
+    private Integer maxRideAverageSpeed;
 
-    @Value("${min_distance_to_cover_by_user_in_5_min}")
-    private Integer minDistanceToCoverByUserIn5Min = 100;
+    private Integer minDistanceToCoverByUserIn5Min;
 
-    public RideParserThreaded(String fileName,  RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString, String region) {
+    public RideParserThreaded(
+            String fileName,
+            RideRepository rideRepository,
+            Float minAccuracy,
+            double rdpEpsilon,
+            MapMatchingService mapMatchingService,
+            String csvString,
+            String region,
+            Integer minRideDistance,
+            Integer minRideDuration,
+            Integer maxRideAverageSpeed,
+            Integer minDistanceToCoverByUserIn5Min) {
+
         this.fileName = fileName;
         this.csvString = csvString;
         this.rideRepository = rideRepository;
-        this.rideSmoother = new RideSmoother(minAccuracy, rdpEpsilion);
+        this.rideSmoother = new RideSmoother(minAccuracy, rdpEpsilon);
         this.mapMatchingService = mapMatchingService;
-        this.region=region;
+        this.region = region;
+        this.minRideDistance = minRideDistance;
+        this.minRideDuration = minRideDuration * 60 * 1000; // minutes to millis
+        this.maxRideAverageSpeed = maxRideAverageSpeed;
+        this.minDistanceToCoverByUserIn5Min = minDistanceToCoverByUserIn5Min;
     }
 
 

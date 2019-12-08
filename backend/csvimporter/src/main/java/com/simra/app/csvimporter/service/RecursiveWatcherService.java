@@ -3,7 +3,6 @@ package com.simra.app.csvimporter.service;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.simra.app.csvimporter.controller.*;
-
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.model.CSVFile;
 import com.simra.app.csvimporter.model.CSVImporterRuntimeException;
@@ -16,16 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
@@ -34,10 +28,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 
 @Service
@@ -79,6 +71,18 @@ public class RecursiveWatcherService implements MonitorService {
 
     @Value("${simra.region.default}")
     private String region;
+
+    @Value("${min_ride_distance}")
+    private Integer minRideDistance;
+
+    @Value("${min_ride_duration}")
+    private Integer minRideDuration;
+
+    @Value("${max_ride_average_speed}")
+    private Integer maxRideAverageSpeed;
+
+    @Value("${min_distance_to_cover_by_user_in_5_min}")
+    private Integer minDistanceToCoverByUserIn5Min;
 
     @PostConstruct
     public void init() throws IOException {
@@ -137,42 +141,42 @@ public class RecursiveWatcherService implements MonitorService {
     @NotNull
     private Consumer<Path> getPathConsumer(Map<WatchKey, Path> keys) {
         return p -> {
-                if (!p.toFile().exists() || !p.toFile().isDirectory()) {
-                    throw new CSVImporterRuntimeException(String.format("folder %s does not exist or is not a directory", p ));
-                }
-                try {
-                    Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
-                        @Override
-                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                            LOG.info(String.format("registering %s in watcher service", dir.toString()));
-                            WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE});
-                            keys.put(watchKey, dir);
-                            return FileVisitResult.CONTINUE;
-                        }
-                    });
-                } catch (IOException e) {
-                    LOG.error("Error registering path {} {}", p, e.getMessage());
-                }
-            };
+            if (!p.toFile().exists() || !p.toFile().isDirectory()) {
+                throw new CSVImporterRuntimeException(String.format("folder %s does not exist or is not a directory", p));
+            }
+            try {
+                Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                        LOG.info(String.format("registering %s in watcher service", dir.toString()));
+                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE});
+                        keys.put(watchKey, dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                LOG.error("Error registering path {} {}", p, e.getMessage());
+            }
+        };
     }
 
     private void keyPollEvents(Consumer<Path> register, WatchKey key, Path dir) {
         key.pollEvents().stream()
-            .filter(e -> (e.kind() != OVERFLOW))
-            .map(e -> ((WatchEvent<Path>) e).context())
-            .forEach(p -> {
-                final Path absPath = dir.resolve(p);
-                if (absPath.toFile().isDirectory()) {
-                    register.accept(absPath);
-                } else {
-                    genericFileParser(absPath);
-                }
-            });
+                .filter(e -> (e.kind() != OVERFLOW))
+                .map(e -> ((WatchEvent<Path>) e).context())
+                .forEach(p -> {
+                    final Path absPath = dir.resolve(p);
+                    if (absPath.toFile().isDirectory()) {
+                        register.accept(absPath);
+                    } else {
+                        genericFileParser(absPath);
+                    }
+                });
     }
 
     private void genericFileParser(Path absPath) {
         final File f = absPath.toFile();
-        LOG.info("Detected new file {} ",  f.getAbsolutePath());
+        LOG.info("Detected new file {} ", f.getAbsolutePath());
         LOG.info("FileName {} ", f.getName());
         if (f.getName().contains("VM")) {
             // Check of Already Parsed.
@@ -193,12 +197,12 @@ public class RecursiveWatcherService implements MonitorService {
 
                     }
                 } catch (IOException e) {
-                    LOG.error("File read failed: {}",e.getMessage() );
+                    LOG.error("File read failed: {}", e.getMessage());
                 }
                 // Save status into Database.
                 csvFileRepository.save(new CSVFile(f.getName(), type));
             } else {
-                LOG.info("File already checked: {}" ,f.getName());
+                LOG.info("File already checked: {}", f.getName());
             }
         }
     }
@@ -251,15 +255,15 @@ public class RecursiveWatcherService implements MonitorService {
     }
 
 
-    private void incidentRideParser(File f, String csvString){
+    private void incidentRideParser(File f, String csvString) {
         /*
          * Start thread to parse file and save incidents
          * INFO: QUEUE
          */
         // incidents are parsed parallel to ride
 
-        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(),incidentRepository, csvString, this.region);
-        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString, this.region);
+        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(), incidentRepository, csvString, this.region);
+        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min);
         this.rideIncidentExecutor.execute(incidentParserThreaded);
         this.rideIncidentExecutor.execute(rideParserThreaded);
 
