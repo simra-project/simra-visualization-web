@@ -6,12 +6,13 @@ import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.simra.app.csvimporter.controller.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
-import com.simra.app.csvimporter.filter.RideFilter;
+import com.simra.app.csvimporter.filter.RideSmoother;
 import com.simra.app.csvimporter.model.RideCSV;
 import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -29,20 +30,43 @@ public class RideParserThreaded implements Runnable {
 
     private RideRepository rideRepository;
 
-    private RideFilter rideFilter;
+    private RideSmoother rideSmoother;
 
     private MapMatchingService mapMatchingService;
 
     private String region;
 
+    private Integer minRideDistance;
 
-    public RideParserThreaded(String fileName,  RideRepository rideRepository, Float minAccuracy, double rdpEpsilion, MapMatchingService mapMatchingService, String csvString, String region) {
+    private Integer minRideDuration;
+
+    private Integer maxRideAverageSpeed;
+
+    private Integer minDistanceToCoverByUserIn5Min;
+
+    public RideParserThreaded(
+            String fileName,
+            RideRepository rideRepository,
+            Float minAccuracy,
+            double rdpEpsilon,
+            MapMatchingService mapMatchingService,
+            String csvString,
+            String region,
+            Integer minRideDistance,
+            Integer minRideDuration,
+            Integer maxRideAverageSpeed,
+            Integer minDistanceToCoverByUserIn5Min) {
+
         this.fileName = fileName;
-        this.csvString=csvString;
+        this.csvString = csvString;
         this.rideRepository = rideRepository;
-        this.rideFilter = new RideFilter(minAccuracy, rdpEpsilion);
+        this.rideSmoother = new RideSmoother(minAccuracy, rdpEpsilon);
         this.mapMatchingService = mapMatchingService;
-        this.region=region;
+        this.region = region;
+        this.minRideDistance = minRideDistance;
+        this.minRideDuration = minRideDuration * 60 * 1000; // minutes to millis
+        this.maxRideAverageSpeed = maxRideAverageSpeed;
+        this.minDistanceToCoverByUserIn5Min = minDistanceToCoverByUserIn5Min;
     }
 
 
@@ -87,10 +111,38 @@ public class RideParserThreaded implements Runnable {
             /*
              * ALl filters before DB Entity must chain here.
              */
-            // RDP Filter
-            List<RideCSV> optimisedRideBeans = this.rideFilter.filterRide(rideBeans);
+            // Acc & RDP Filter
+            List<RideCSV> optimisedRideBeans = this.rideSmoother.smoothRide(rideBeans);
             // Map Matching
             List<RideCSV> mapMatchedRideBeans = mapMatchingService.matchToMap(optimisedRideBeans);
+
+            Float routeDistance = mapMatchingService.getCurrentRouteDistance();
+            Long routeDuration = mapMatchingService.getCurrentRouteDuration();
+
+            // filter short Distance Rides
+            if (routeDistance < minRideDistance) {
+                LOG.info(fileName + " filtered due to routeDistance = " + routeDistance + "m");
+                return;
+            }
+
+            // filter short Duration Rides
+            if (routeDuration < minRideDuration) {
+                LOG.info(fileName + " filtered due to routeDuration = " + (routeDuration / 60000) + "min");
+                return;
+            }
+
+            // filter high average speed
+            double averageSpeed = Utils.calcAverageSpeed(routeDistance, routeDuration);
+            if (averageSpeed > maxRideAverageSpeed) {
+                LOG.info(fileName + " filtered due to averageSpeed = " + averageSpeed + "km/h");
+                return;
+            }
+
+            // filter rides that user did not stop
+            if (isUserForgotToStopRecording(optimisedRideBeans)) {
+                LOG.info(fileName + " filtered due to User forgot to stop recording");
+                //return;
+            }
 
             /*
              * All filters related to csv parsed data must end before this
@@ -142,5 +194,35 @@ public class RideParserThreaded implements Runnable {
 
         rideEntity.setAddedAt(new Date());
         return rideEntity;
+    }
+
+    /*
+     * heuristic approach
+     *
+     * ride will be classified as 'forgot to stop' when User does not
+     * exceed ${min_distance_to_cover_by_user_in_5_min} in 5min (300sec) (300*6000millis)
+     *
+     * 5min in 3sec steps = 100steps
+     */
+    private boolean isUserForgotToStopRecording(List<RideCSV> rideCSVList) {
+
+        for (int i = 0; i < rideCSVList.size(); i++) {
+            double cumulatedDistance = 0d;
+            for (int j = 0; j < 100; j++) {
+                try {
+                    cumulatedDistance += Utils.calcDistance(
+                            Double.parseDouble(rideCSVList.get(i + j).getLat()),
+                            Double.parseDouble(rideCSVList.get(i + j).getLon()),
+                            Double.parseDouble(rideCSVList.get(i + j + 1).getLat()),
+                            Double.parseDouble(rideCSVList.get(i + j + 1).getLon()));
+                } catch (IndexOutOfBoundsException e) {
+                    break;
+                }
+            }
+            if (cumulatedDistance < minDistanceToCoverByUserIn5Min) {
+                return true;
+            }
+        }
+        return false;
     }
 }
