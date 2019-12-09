@@ -12,13 +12,13 @@
         <l-control position="topright">
             <div class="overlay">
                 <div class="field">
-                    <b-switch v-model="showRoutes">Show Trips</b-switch>
+                    <b-switch v-model="showRides">Show Rides</b-switch>
                 </div>
                 <div class="field">
                     <b-switch v-model="showIncidents">Show Incidents</b-switch>
                 </div>
 
-                <!-- Sliders to fine tune heatmap settings.               -->
+                <!-- Sliders to fine tune heatmap settings -->
                 MaxZoom
                 <vue-slider
                     class="slider"
@@ -55,52 +55,53 @@
                 <div>Zoom: {{ zoom }}</div>
                 <div>Center: {{ center }}</div>
                 <div>Bounds: {{ bounds }}</div>
+                <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-        <l-control position="bottomleft" v-if="routeHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
+        <l-control position="bottomleft" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
             <div class="overlay" style="display: flex">
                 <div style="flex: 1 0; text-align: center">
-                    Showing route details here... <br> <!-- TODO: Routendetails hier später einfügen -->
-                    Length: <strong>{{ routeHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ routeHighlightContent.duration }}</strong>
+                    Showing ride details here... <br> <!-- TODO: Routendetails hier später einfügen -->
+                    Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>
                 </div>
                 <div style="flex: 0 0; align-self: center">
-                    <a class="delete" @click="unfocusRouteHighlight"></a>
+                    <a class="delete" @click="unfocusRideHighlight"></a>
                 </div>
             </div>
         </l-control>
 
-        <!--    Stellt eine Route dar    -->
+        <!-- Rides-->
         <l-geo-json
-            v-if="showRoutes"
-            v-for="route in routes"
-            :geojson="route.coordinates"
+            v-if="showRides"
+            v-for="ride in rides"
+            :geojson="ride.geometry"
             :options="geoJsonOptions"
-            @click="clickedOnRoute($event, route)"
+            @click="clickedOnRide($event, ride)"
         />
-        <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightStart"/> <!-- Highlighted Route start point -->
-        <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightEnd"/>   <!-- Highlighted Route end point -->
+        <l-circle-marker v-show="showRides && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
+        <l-circle-marker v-show="showRides && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
 
-        <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
+        <!--  Incident Markers (with heatmap on higher zoom) -->
         <Vue2LeafletHeatmap
             v-if="zoom <= heatmapMaxZoom && showIncidents"
-            :lat-lng="incident_heatmap"
+            :lat-lng="incidentHeatmap"
             :radius="heatmapRadius"
             :min-opacity="heatmapMinOpacity"
             :max-zoom="10" :blur="heatmapBlur"
             :max="heatmapMaxPointIntensity">
 
         </Vue2LeafletHeatmap>
-        <l-geo-json v-for="marker in markers"
+        <l-geo-json v-for="incident in incidents"
                     v-else-if="showIncidents"
-                    :geojson="marker.coordinates"
-                    :options="geoJsonPopupOptions(marker)">
-            <l-popup :content="marker.description"></l-popup>
+                    :geojson="incident.geometry"
+                    :options="geoJsonPopupOptions(incident)">
+            <l-popup :content="incident.description"/>
         </l-geo-json>
     </l-map>
 </template>
 
 <script>
-import { LControl, LMap, LMarker, LPolyline, LPopup, LTileLayer, LCircleMarker, LGeoJson } from "vue2-leaflet";
+import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
@@ -130,15 +131,15 @@ export default {
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            showRoutes: true,
+            showRides: true,
             showIncidents: true,
-            routes: [],
-            routeHighlightId: null,
-            routeHighlightContent: null,
-            routeHighlightStart: [0, 0],
-            routeHighlightEnd: [0, 0],
-            markers: [],
-            incident_heatmap: [],
+            rides: [],
+            rideHighlightId: null,
+            rideHighlightContent: null,
+            rideHighlightStart: [0, 0],
+            rideHighlightEnd: [0, 0],
+            incidents: [],
+            incidentHeatmap: [],
             heatmapMaxZoom: 15,
             heatmapMinOpacity: 0.75,
             heatmapMaxPointIntensity: 1.0,
@@ -149,21 +150,21 @@ export default {
             },
             geoJsonOptions: {
                 style: {
-                    color: 'hsl(217, 71%, 53%)',
+                    color: "hsl(217, 71%, 53%)",
                     weight: 3,
-                    opacity: 0.6
+                    opacity: 0.6,
                 },
             },
             geoJsonStyleHighlight: {
                 // color: 'hsl(0,100%,50%)',
-                color: 'hsl(171, 100%, 41%)',
+                color: "hsl(171, 100%, 41%)",
                 weight: 4,
-                opacity: 0.8
+                opacity: 0.8,
             },
             geoJsonStyleNormal: {
-                color: 'hsl(217, 71%, 53%)',
+                color: "hsl(217, 71%, 53%)",
                 weight: 3,
-                opacity: 0.6
+                opacity: 0.6,
             },
         };
     },
@@ -188,52 +189,54 @@ export default {
                 },
             }).catch(() => {});
         },
-        clickedOnRoute(event, route) {
-            // Highlighting this route
-            this.routeHighlightId = route.rideId;
-            this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
+        clickedOnRide(event, ride) {
+            if (this.rideHighlightId != null) this.unfocusRideHighlight();
+
+            // Highlighting this ride
+            this.rideHighlightId = ride.properties.rideId;
+            this.rideHighlightContent = { length: "10.2 km", duration: "37 min" };
 
             // Showing start & end point with circles
-            this.routeHighlightStart = [route.coordinates.coordinates[0][1], route.coordinates.coordinates[0][0]];
-            this.routeHighlightEnd = [route.coordinates.coordinates[route.coordinates.coordinates.length - 1][1], route.coordinates.coordinates[route.coordinates.coordinates.length - 1][0]];
+            this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
+            this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
 
-            // Fitting route into view if it's not already
-            let routeBounds = event.target.getBounds().pad(0.1);
-            if (!this.bounds.contains(routeBounds)) {
-                this.$refs.map.mapObject.flyToBounds(routeBounds);
+            // Fitting ride into view if it's not already
+            let rideBounds = event.target.getBounds().pad(0.1);
+            if (!this.bounds.contains(rideBounds)) {
+                this.$refs.map.mapObject.flyToBounds(rideBounds);
             }
 
             event.sourceTarget.setStyle(this.geoJsonStyleHighlight);
-            this.routeHighlighted = event.sourceTarget;
+            this.rideHighlighted = event.sourceTarget;
         },
-        unfocusRouteHighlight() {
-            this.routeHighlightId = null;
-            this.routeHighlightContent = null;
-            this.routeHighlightStart = [0, 0];
-            this.routeHighlightEnd = [0, 0];
-            this.routeHighlighted.setStyle(this.geoJsonStyleNormal);
+        unfocusRideHighlight() {
+            this.rideHighlightId = null;
+            this.rideHighlightContent = null;
+            this.rideHighlightStart = [0, 0];
+            this.rideHighlightEnd = [0, 0];
+            this.rideHighlighted.setStyle(this.geoJsonStyleNormal);
         },
         clickedOnMap(event) {
-            if (event.originalEvent.target.nodeName !== 'path' && this.routeHighlightId != null) {
-                this.unfocusRouteHighlight();
+            if (event.originalEvent.target.nodeName !== "path" && this.rideHighlightId != null) {
+                this.unfocusRideHighlight();
             }
         },
-        parseRoutes(response) {
-            this.routes = response;
+        parseRides(response) {
+            this.rides = response;
         },
         parseIncidents(response) {
-            this.markers = response;
-            for (var i = 0; i < this.markers.length; i++) {
-                this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
+            this.incidents = response;
+            for (let i = 0; i < this.incidents.length; i++) {
+                this.incidentHeatmap.push([this.incidents[i].geometry.coordinates[1], this.incidents[i].geometry.coordinates[0], 1]);
             }
         },
-        geoJsonPopupOptions(marker) {
+        geoJsonPopupOptions(incidentMarker) {
             return {
                 onEachFeature: function onEachFeature(feature, layer) {
-                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${marker.rideId}</td></tr><tr><td>Scary:</td><td>${marker.scary}</td></tr></table><p>${marker.description}</p>`);
-                }
-            }
-        }
+                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${ incidentMarker.rideId }</td></tr><tr><td>Scary:</td><td>${ incidentMarker.scary }</td></tr></table><p>${ incidentMarker.description }</p>`);
+                },
+            };
+        },
     },
     // Laden der Daten aus der API
     mounted() {
@@ -246,7 +249,7 @@ export default {
         let lat = this.center[0];
         let lon = this.center[1];
 
-        ApiService.loadRoutes(lat, lon).then(response => (this.parseRoutes(response)));
+        ApiService.loadRides(lat, lon).then(response => (this.parseRides(response)));
         ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
     },
 };

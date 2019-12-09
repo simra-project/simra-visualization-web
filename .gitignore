@@ -131,3 +131,5 @@ $RECYCLE.BIN/
 target/
 
 backend/csvimporter/map-data/*.osm-gh/
+
+backend/csvimporter/src/main/resources/application.properties

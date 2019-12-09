@@ -1,4 +1,4 @@
-package main.java.com.simra.app.csvimporter.model;
+package com.simra.app.csvimporter.model;
 
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;

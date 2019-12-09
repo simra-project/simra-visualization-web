@@ -18,14 +18,14 @@ Representation of a Ride
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude
-public class RideResource {
+public class RideResourceProperty {
 
     @JsonProperty
-    private String type = "Feature";
-
-    @JsonSerialize(using = GeoJsonLineStringSerializer.class)
-    private GeoJsonLineString geometry;
+    private String rideId;
 
     @JsonProperty
-    private RideResourceProperty properties;
+    private ArrayList ts;
+
+    @JsonProperty
+    private Float distance;
 }
