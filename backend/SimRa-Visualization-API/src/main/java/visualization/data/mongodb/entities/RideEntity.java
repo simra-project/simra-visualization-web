@@ -24,6 +24,8 @@ public class RideEntity {
 
     private Float distance;
 
+    private Long duration;
+
     public Long getDuration() {
         return ts.get(ts.size() - 1) - ts.get(0);
     }

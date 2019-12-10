@@ -16,7 +16,7 @@ public class RideResourceMapper {
             rideResourceProperty.setRideId(rideEntity.getId());
             rideResourceProperty.setTs(rideEntity.getTs());
             rideResourceProperty.setDistance(rideEntity.getDistance());
-
+            rideResourceProperty.setDuration(rideEntity.getDuration());
             rideResource.setGeometry(rideEntity.getLocation());
             rideResource.setProperties(rideResourceProperty);
 
