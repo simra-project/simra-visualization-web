@@ -1,17 +1,11 @@
 package visualization.web.controller;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import visualization.service.StatisticsService;
+import visualization.web.resources.StatisticsResource;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -20,7 +14,10 @@ import static com.mongodb.client.model.Filters.eq;
 @RestController
 public class StatisticsController {
 
-    @GetMapping(value = "/statistics")
+    @Autowired
+    private StatisticsService statisticsService;
+
+    /*@GetMapping(value = "/statistics")
     public HttpEntity<String> getStatistics(@RequestParam(value = "region") String region) {
         MongoDatabase db = (new MongoClient("localhost", 27017)).getDatabase("simra");
         MongoCollection<Document> collection = db.getCollection("statistics");
@@ -35,5 +32,10 @@ public class StatisticsController {
         } else {
             return ResponseEntity.status(404).headers(headers).body("{ \"error\": \"No statistic found for this region.\" }");
         }
+    }*/
+
+    @GetMapping(value = "/statisticsnew")
+    public HttpEntity<StatisticsResource> getStatisticsByRegion(@RequestParam(value = "region") String region) {
+        return ResponseEntity.ok(statisticsService.getStatisticsByRegion(region));
     }
 }

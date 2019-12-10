@@ -1,11 +1,13 @@
 package visualization.data.mongodb;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import visualization.data.mongodb.entities.IncidentEntity;
+import visualization.data.mongodb.entities.StatisticsEntity;
+
+import java.util.Optional;
 
 
-public interface StatisticsRepository extends MongoRepository<IncidentEntity, String> {
+public interface StatisticsRepository extends MongoRepository<StatisticsEntity, String> {
 
-//DB Interface for Statistics data
+    Optional<StatisticsEntity> findByRegion(String region);
 
 }
