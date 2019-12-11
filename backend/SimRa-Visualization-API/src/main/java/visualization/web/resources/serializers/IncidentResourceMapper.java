@@ -15,8 +15,8 @@ public class IncidentResourceMapper {
         IncidentResource incidentResource = new IncidentResource();
         IncidentResourceProperty incidentResourceProperty = new IncidentResourceProperty();
 
-        incidentResourceProperty.setRideId(incidentEntity.getRideId());
-        incidentResourceProperty.setKey(incidentEntity.getKey());
+        incidentResourceProperty.setRideId(incidentEntity.getFileId());
+        incidentResourceProperty.setKey(incidentEntity.getId().getKey());
         incidentResourceProperty.setTs(incidentEntity.getTs());
         incidentResourceProperty.setChild(incidentEntity.getChildCheckBox());
         incidentResourceProperty.setTrailer(incidentEntity.getTrailerCheckBox());

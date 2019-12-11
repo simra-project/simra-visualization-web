@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface IncidentRepository extends MongoRepository<IncidentEntity, IncidentEntity.CompositeKey>, IncidentRepositoryCustom {
 
-    List<IncidentEntity> findByRideId(String rideId);
+    List<IncidentEntity> findByFileId(String rideid);
 
     Optional<IncidentEntity> findById(IncidentEntity.CompositeKey id);
 

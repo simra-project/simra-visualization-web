@@ -19,7 +19,7 @@ public class IncidentResourceProperty {
     private String rideId;
 
     @JsonProperty
-    private int key;
+    private String key;
 
     @JsonProperty
     private long ts;

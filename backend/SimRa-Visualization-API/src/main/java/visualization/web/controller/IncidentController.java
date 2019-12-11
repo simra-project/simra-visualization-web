@@ -34,7 +34,7 @@ public class IncidentController {
     // get all incidents of one ride by id
     @GetMapping(value = "/rides/{rideId}/incidents/all")
     public HttpEntity<List<IncidentResource>> getRideIncidents(@PathVariable String rideId) {
-        return ResponseEntity.ok(incidentService.getIncidentsByRideId(rideId));
+        return ResponseEntity.ok(incidentService.getIncidentsByFileId(rideId));
     }
 
     // get all incidents in range minDistance and maxDistance around a Point (longitude, latitude)

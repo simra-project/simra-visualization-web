@@ -12,7 +12,7 @@ import visualization.web.resources.RideResource;
 import java.util.List;
 
 
-/*⁄ø
+/*⁄
 
 This is the place where we communicate with the frontend
 
