@@ -1,4 +1,6 @@
-import Vue from "vue";
+import Vue from 'vue';
+// @ts-ignore
+import VueWorker from 'vue-worker';
 import App from "./App.vue";
 import router from "./router";
 import "leaflet/dist/leaflet.css";
@@ -12,6 +14,7 @@ import "leaflet-defaulticon-compatibility";
 Vue.config.productionTip = false;
 
 Vue.use(Buefy);
+Vue.use(VueWorker);
 
 new Vue({
     router,
