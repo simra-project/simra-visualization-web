@@ -1,8 +1,6 @@
 package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.stereotype.Service;
@@ -12,8 +10,6 @@ import visualization.web.resources.LegResource;
 import visualization.web.resources.RideResource;
 import visualization.web.resources.serializers.RideResourceMapper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,52 +64,8 @@ public class RideServiceImpl implements RideService {
     @Override
     public List<LegResource> getRidesMapMatchedInRange(double longitude, double latitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
-        List<RideResource> rideResources = new ArrayList<>();
-        //List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
-        //rideResources = mapRideEntityToResource(rideEntities, rideResources, true);
-
-        RideResource ride1 = new RideResource();
-        RideResource ride2 = new RideResource();
-        RideResource ride3 = new RideResource();
-
-        Point[] array1 = {
-                new Point(0d, 0d),
-                new Point(1d, 1d),
-                new Point(2d, 1d),
-                new Point(3d, 2d),
-                new Point(4d, 1d),
-                new Point(5d, 1d),
-                new Point(6d, 1d)
-        };
-        GeoJsonLineString geoJson1 = new GeoJsonLineString(Arrays.asList(array1));
-
-
-        Point[] array2 = {
-                new Point(0d, 2d),
-                new Point(1d, 1d),
-                new Point(2d, 1d),
-                new Point(3d, 0d),
-                new Point(4d, 1d),
-                new Point(5d, 1d),
-                new Point(6d, 1d)
-        };
-        GeoJsonLineString geoJson2 = new GeoJsonLineString(Arrays.asList(array2));
-
-
-        Point[] array3 = {
-                new Point(4d, 2d),
-                new Point(4d, 1d),
-                new Point(5d, 1d),
-                new Point(6d, 2d)
-        };
-        GeoJsonLineString geoJson3 = new GeoJsonLineString(Arrays.asList(array3));
-        ride1.setGeometry(geoJson1);
-        ride2.setGeometry(geoJson2);
-        ride3.setGeometry(geoJson3);
-
-        rideResources.add(ride1);
-        rideResources.add(ride2);
-        rideResources.add(ride3);
+        List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
+        List<RideResource> rideResources = rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
 
         return routePartitioningService.partitionRoutes(rideResources);
     }
