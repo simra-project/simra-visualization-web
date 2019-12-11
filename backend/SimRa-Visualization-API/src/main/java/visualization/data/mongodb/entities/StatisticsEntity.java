@@ -19,5 +19,49 @@ public class StatisticsEntity {
 
     private String region;
 
-    // TBD : add db fields
+    private String timestamp;
+
+    private int rideCount;
+
+    private Double accumulatedDuration;
+
+    private Double accumulatedDistance;
+
+    private Double accumulatedSavedCO2;
+
+    private Long averageDuration;
+
+    private Double averageDistance;
+
+    private Double averageSpeed;
+
+    private int incidentCount;
+
+    private ArrayList<String> incidentTypeLabels;
+
+    private ArrayList<Integer> incidentTypeData;
+
+    private ArrayList<String> incidentParticipantTypeLabels;
+
+    private ArrayList<Integer> incidentParticipantTypeData;
+
+    private int incidentCountWithChildrenInvolved;
+
+    private int incidentCountWithTrailersInvolved;
+
+    private int incidentCountScary;
+
+    private int profileCount;
+
+    private int profileCountMale;
+
+    private int profileCountFemale;
+
+    private int profileCountOther;
+
+    private ArrayList<String> profileBikeTypeLabels;
+
+    private ArrayList<Integer> profileBikeTypeData;
+
+    private ArrayList<String> profileAgeDistributionLabels;
 }
