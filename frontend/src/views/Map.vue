@@ -69,14 +69,22 @@
             </div>
         </l-control>
 
-        <!--    Stellt eine Route dar    -->
+        <!--    Stellt zusammengefasste routen da    -->
         <l-geo-json
-            v-if="showRoutes"
-            v-for="route in routes"
-            :geojson="route.coordinates"
+            v-if="showRoutes && aggregatetRoutes"
+            :geojson="routes"
             :options="geoJsonOptions"
+        />
+
+        <!--    Stellt detaillierte routen da    -->
+        <l-geo-json
+            v-if="showRoutes && !aggregatetRoutes"
+            v-for="route in detailedRoutes"
+            :geojson="route"
+            :options="geoJsonOptionsDetail"
             @click="clickedOnRoute($event, route)"
         />
+
         <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightStart"/> <!-- Highlighted Route start point -->
         <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightEnd"/>   <!-- Highlighted Route end point -->
 
@@ -92,9 +100,8 @@
         </Vue2LeafletHeatmap>
         <l-geo-json v-for="marker in markers"
                     v-else-if="showIncidents"
-                    :geojson="marker.coordinates"
-                    :options="geoJsonPopupOptions(marker)">
-            <l-popup :content="marker.description"></l-popup>
+                    :geojson="marker"
+                    :options="geoJsonOptionsMarker">
         </l-geo-json>
     </l-map>
 </template>
@@ -108,6 +115,7 @@ import VGeosearch from "vue2-leaflet-geosearch";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
 import { ApiService } from "@/services/ApiService";
+
 
 export default {
     components: {
@@ -131,7 +139,7 @@ export default {
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
             showRoutes: true,
-            showIncidents: true,
+            showIncidents: false,
             routes: [],
             routeHighlightId: null,
             routeHighlightContent: null,
@@ -142,17 +150,31 @@ export default {
             heatmapMaxZoom: 15,
             heatmapMinOpacity: 0.75,
             heatmapMaxPointIntensity: 1.0,
-            heatmapRadius: 25,
-            heatmapBlur: 15,
+            heatmapRadius: 20,
+            heatmapBlur: 30,
+            aggregatetRoutes: true,
+            detailedAreasLoaded: {},
+            detailedRoutes: [],
+            detailedRoutesLoaded: {},
             geosearchOptions: {
                 provider: new OpenStreetMapProvider(),
             },
             geoJsonOptions: {
+                style: function style(feature) {
+                    return {
+                        // color: 'hsl(' + (Math.max(200 - feature.properties.weight * 50, 0)) +', 71%, 53%)',
+                        color: 'hsl(217, 71%, 53%)',
+                        weight: Math.log(feature.properties.weight) + 1,
+                        opacity: 1
+                    };
+                }
+            },
+            geoJsonOptionsDetail: {
                 style: {
-                    color: 'hsl(217, 71%, 53%)',
-                    weight: 3,
-                    opacity: 0.6
-                },
+                        color: 'hsl(217, 71%, 53%)',
+                        weight: 3,
+                        opacity: 0.6
+                    }
             },
             geoJsonStyleHighlight: {
                 // color: 'hsl(0,100%,50%)',
@@ -165,15 +187,27 @@ export default {
                 weight: 3,
                 opacity: 0.6
             },
+            geoJsonOptionsMarker: {
+                onEachFeature: function onEachFeature(feature, layer) {
+                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${feature.properties.rideId}</td></tr><tr><td>Scary:</td><td>${feature.properties.scary}</td></tr></table><p>${feature.properties.description}</p>`);
+                }
+            }
         };
     },
     methods: {
         zoomUpdated(zoom) {
             this.zoom = zoom;
+            this.aggregatetRoutes = zoom < 17;
+            if (!this.aggregatetRoutes) {
+                this.loadDetailedRoutes();
+            }
         },
         centerUpdated(center) {
             this.center = center;
             this.updateUrlQuery();
+            if (!this.aggregatetRoutes) {
+                this.loadDetailedRoutes();
+            }
         },
         boundsUpdated(bounds) {
             this.bounds = bounds;
@@ -190,12 +224,12 @@ export default {
         },
         clickedOnRoute(event, route) {
             // Highlighting this route
-            this.routeHighlightId = route.rideId;
+            this.routeHighlightId = route.properties.rideId;
             this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
 
             // Showing start & end point with circles
-            this.routeHighlightStart = [route.coordinates.coordinates[0][1], route.coordinates.coordinates[0][0]];
-            this.routeHighlightEnd = [route.coordinates.coordinates[route.coordinates.coordinates.length - 1][1], route.coordinates.coordinates[route.coordinates.coordinates.length - 1][0]];
+            this.routeHighlightStart = [route.geometry.coordinates[0][1], route.geometry.coordinates[0][0]];
+            this.routeHighlightEnd = [route.geometry.coordinates[route.geometry.coordinates.length - 1][1], route.geometry.coordinates[route.geometry.coordinates.length - 1][0]];
 
             // Fitting route into view if it's not already
             let routeBounds = event.target.getBounds().pad(0.1);
@@ -220,23 +254,50 @@ export default {
         },
         parseRoutes(response) {
             this.routes = response;
+            console.log(`${this.routes.features.length} routes loaded.`);
         },
         parseIncidents(response) {
             this.markers = response;
             for (var i = 0; i < this.markers.length; i++) {
-                this.incident_heatmap.push([this.markers[i].coordinates.coordinates[1], this.markers[i].coordinates.coordinates[0], 1]);
+                this.incident_heatmap.push([this.markers[i].geometry.coordinates[1], this.markers[i].geometry.coordinates[0], 1]);
             }
+            console.log("Incidents loaded.");
         },
-        geoJsonPopupOptions(marker) {
-            return {
-                onEachFeature: function onEachFeature(feature, layer) {
-                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${marker.rideId}</td></tr><tr><td>Scary:</td><td>${marker.scary}</td></tr></table><p>${marker.description}</p>`);
+        loadDetailedRoutes() {
+            // times 100 to avoid floating point errors
+            let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
+            let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
+            let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
+            let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
+
+            for (let y = min_y; y < max_y; y++ ) {
+                for (let x = min_x; x < max_x; x++) {
+                    this.loadChunk(x, y);
                 }
+            }
+
+            console.log(`minx: ${min_x}, maxx: ${max_x}`);
+            console.log(`miny: ${min_y}, maxy: ${max_y}`);
+        },
+        loadChunk(x, y) {
+            if (this.detailedAreasLoaded[`${x},${y}`] == null) {
+                this.detailedAreasLoaded[`${x},${y}`] = [];
+                console.log("Started loading new chunk.");
+                ApiService.loadRoutes(y/100, x/100, (y+1)/100, (x+1)/100).then(response => {
+                    this.detailedAreasLoaded[`${x},${y}`] = response;
+                    response.forEach(route => {
+                        if (this.detailedRoutesLoaded[route.properties.rideId] == null) {
+                            this.detailedRoutesLoaded[route.properties.rideId] = route;
+                            this.detailedRoutes.push(route);
+                            console.log("added route");
+                        }
+                    })
+                })
             }
         }
     },
     // Laden der Daten aus der API
-    mounted() {
+    async mounted() {
         this.$nextTick(() => {
             this.zoom = this.$refs.map.mapObject.getZoom();
             this.center = this.$refs.map.mapObject.getCenter();
@@ -245,8 +306,22 @@ export default {
 
         let lat = this.center[0];
         let lon = this.center[1];
+        // function sleep(ms) {
+        //     return new Promise(resolve => setTimeout(resolve, ms));
+        // }
+        // this.apiWorker = new Worker("/ApiWorker.js");
+        //
+        // this.apiWorker.onmessage = function(event) {
+        //     console.log(event.data);
+        // };
+        //
+        // this.apiWorker.postMessage("init");
+        // this.apiWorker.postMessage("add");
+        //
+        // await sleep(1000);
+        // this.apiWorker.postMessage("readAll");
 
-        ApiService.loadRoutes(lat, lon).then(response => (this.parseRoutes(response)));
+        ApiService.loadRoutesMatched(lat, lon).then(response => (this.parseRoutes(response)));
         ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
     },
 };
