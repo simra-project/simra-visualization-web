@@ -46,9 +46,11 @@ class RoutePartitioningService {
 
             count.value.forEach { points ->
                 val legResource = LegResource()
-                legResource.setGeometryForKotlin(GeoJsonLineString(points))
-                legResource.setPropertiesKotlin(legResourceProperty)
-                result.add(legResource)
+                if (points.size > 1) {
+                    legResource.setGeometryForKotlin(GeoJsonLineString(points))
+                    legResource.setPropertiesKotlin(legResourceProperty)
+                    result.add(legResource)
+                }
             }
         }
 

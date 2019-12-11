@@ -8,17 +8,22 @@ import visualization.web.resources.RideResourceProperty;
 @Component
 public class RideResourceMapper {
 
-    public RideResource mapRideEntityToResource(RideEntity rideEntity) {
+    public RideResource mapRideEntityToResource(RideEntity rideEntity, boolean mapMatched) {
 
-            RideResource rideResource = new RideResource();
-            RideResourceProperty rideResourceProperty = new RideResourceProperty();
+        RideResource rideResource = new RideResource();
+        RideResourceProperty rideResourceProperty = new RideResourceProperty();
 
-            rideResourceProperty.setRideId(rideEntity.getId());
+        rideResourceProperty.setRideId(rideEntity.getId());
+        rideResourceProperty.setDistance(rideEntity.getDistance());
+
+        if (!mapMatched) {
             rideResourceProperty.setTs(rideEntity.getTs());
-            rideResourceProperty.setDistance(rideEntity.getDistance());
-
             rideResource.setGeometry(rideEntity.getLocation());
-            rideResource.setProperties(rideResourceProperty);
+        } else {
+            rideResourceProperty.setTs(rideEntity.getTsMapMatched());
+            rideResource.setGeometry(rideEntity.getLocationMapMatched());
+        }
+        rideResource.setProperties(rideResourceProperty);
 
         return rideResource;
     }

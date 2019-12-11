@@ -29,7 +29,7 @@ public class RideServiceImpl implements RideService {
     public RideResource getRideById(String rideId) {
         RideEntity rideEntity = rideRepository.findById(rideId).get();
 
-        return rideResourceMapper.mapRideEntityToResource(rideEntity);
+        return rideResourceMapper.mapRideEntityToResource(rideEntity, false);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class RideServiceImpl implements RideService {
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
         List<RideEntity> rideEntities = rideRepository.findByLocationWithin(polygon);
 
-        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
 
     @Override
@@ -45,14 +45,14 @@ public class RideServiceImpl implements RideService {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
 
-        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
 
     @Override
     public List<LegResource> getRidesMapMatchedInRange(double longitude, double latitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
-        List<RideResource> rideResources = rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+        List<RideResource> rideResources = rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, true)).collect(Collectors.toList());
 
         return routePartitioningService.partitionRoutes(rideResources);
     }
@@ -61,6 +61,6 @@ public class RideServiceImpl implements RideService {
     public List<RideResource> getRidesAtTime(Long fromTs, Long untilTs) {
         List<RideEntity> rideEntities = rideRepository.findAllByTsBetween(fromTs, untilTs);
 
-        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
 }
