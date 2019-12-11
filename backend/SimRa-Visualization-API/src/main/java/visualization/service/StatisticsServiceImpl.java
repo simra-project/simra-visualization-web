@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import visualization.data.mongodb.StatisticsRepository;
 import visualization.data.mongodb.entities.StatisticsEntity;
 import visualization.web.resources.StatisticsResource;
+import visualization.web.resources.serializers.StatisticsResourceMapper;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
@@ -12,10 +13,12 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Autowired
     private StatisticsRepository statisticsRepository;
 
+    @Autowired
+    private StatisticsResourceMapper statisticsResourceMapper;
+
     @Override
     public StatisticsResource getStatisticsByRegion(String region) {
-        StatisticsEntity statisticsEntity = statisticsRepository.findByRegion(region).get();
-        //TBD
-        return null;
+        StatisticsEntity statisticsEntity = statisticsRepository.findTop1ByRegionOrderByTimestampDesc(region, 0).get();
+        return statisticsResourceMapper.mapRideEntityToResource(statisticsEntity);
     }
 }
