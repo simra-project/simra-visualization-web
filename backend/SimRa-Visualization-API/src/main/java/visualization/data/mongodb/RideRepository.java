@@ -9,7 +9,7 @@ import visualization.data.mongodb.entities.RideEntity;
 import java.util.List;
 import java.util.Optional;
 
-public interface RideRepository extends MongoRepository<RideEntity, String> {
+public interface RideRepository extends MongoRepository<RideEntity, String>, RideRepositoryCustom {
 
     List<RideEntity> findByLocationNear(GeoJsonPoint coordinates, int maxDistance);
 

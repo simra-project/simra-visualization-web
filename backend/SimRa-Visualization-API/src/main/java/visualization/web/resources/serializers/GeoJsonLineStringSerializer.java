@@ -24,7 +24,7 @@ public class GeoJsonLineStringSerializer extends StdSerializer<GeoJsonLineString
         jsonGenerator.writeStringField("type", to_serialize.getType());
         jsonGenerator.writeArrayFieldStart("coordinates");
         for (Point point : to_serialize.getCoordinates()) {
-            jsonGenerator.writeArray(new double[]{point.getY(), point.getX()}, 0, 2);
+            jsonGenerator.writeArray(new double[]{point.getX(), point.getY()}, 0, 2);
         }
         jsonGenerator.writeEndArray();
         jsonGenerator.writeEndObject();

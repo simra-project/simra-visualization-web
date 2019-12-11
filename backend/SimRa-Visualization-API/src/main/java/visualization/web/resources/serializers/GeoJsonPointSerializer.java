@@ -22,8 +22,8 @@ public class GeoJsonPointSerializer extends StdSerializer<GeoJsonPoint> {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("type", to_serialize.getType());
         jsonGenerator.writeArrayFieldStart("coordinates");
-        jsonGenerator.writeNumber(to_serialize.getY());
         jsonGenerator.writeNumber(to_serialize.getX());
+        jsonGenerator.writeNumber(to_serialize.getY());
         jsonGenerator.writeEndArray();
         jsonGenerator.writeEndObject();
     }

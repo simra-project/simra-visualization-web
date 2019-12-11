@@ -35,7 +35,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth) {
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
-        List<RideEntity> rideEntities = rideRepository.findByLocationWithin(polygon);
+        List<RideEntity> rideEntities = rideRepository.findByPolygonIntersects(polygon);
 
         return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
