@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import visualization.service.RideService;
+import visualization.web.resources.LegResource;
 import visualization.web.resources.RideResource;
 
 import java.util.List;
@@ -50,8 +51,16 @@ public class RideController {
 
     @GetMapping(value = "/rides/from/{fromTs}/to/{untilTs}")
     public HttpEntity<List<RideResource>> getRidesAtTime(@PathVariable Long fromTs,
-                                                         @PathVariable Long untilTs){
+                                                         @PathVariable Long untilTs) {
         return ResponseEntity.ok(rideService.getRidesAtTime(fromTs, untilTs));
+    }
+
+    // get all rides map-matched in range minDistance and maxDistance around a Point (longitude, latitude)
+    @GetMapping(value = "/ridesMapMatched")
+    public HttpEntity<List<LegResource>> getRidesMapMatchedNear(@RequestParam(value = "lon") double longitude,
+                                                                @RequestParam(value = "lat") double latitude,
+                                                                @RequestParam(value = "max") int maxDistance) {
+        return ResponseEntity.ok(rideService.getRidesMapMatchedInRange(longitude, latitude, maxDistance));
     }
 
     // this might be useful later...
