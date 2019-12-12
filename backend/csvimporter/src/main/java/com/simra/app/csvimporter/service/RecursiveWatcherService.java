@@ -53,6 +53,9 @@ public class RecursiveWatcherService implements MonitorService {
     private RideRepository rideRepository;
 
     @Autowired
+    private LegRepository legRepository;
+
+    @Autowired
     private MapMatchingService mapMatchingService;
 
 
@@ -263,7 +266,7 @@ public class RecursiveWatcherService implements MonitorService {
         // incidents are parsed parallel to ride
 
         IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(), incidentRepository, csvString, this.region);
-        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min);
+        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, legRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min);
         this.rideIncidentExecutor.execute(incidentParserThreaded);
         this.rideIncidentExecutor.execute(rideParserThreaded);
 

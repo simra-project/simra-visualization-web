@@ -4,14 +4,19 @@ import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.simra.app.csvimporter.controller.LegRepository;
 import com.simra.app.csvimporter.controller.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.filter.RideSmoother;
+import com.simra.app.csvimporter.model.LegEntity;
+import com.simra.app.csvimporter.model.LegPropertyEntity;
 import com.simra.app.csvimporter.model.RideCSV;
 import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -30,6 +35,8 @@ public class RideParserThreaded implements Runnable {
 
     private RideRepository rideRepository;
 
+    private LegRepository legRepository;
+
     private RideSmoother rideSmoother;
 
     private MapMatchingService mapMatchingService;
@@ -47,6 +54,7 @@ public class RideParserThreaded implements Runnable {
     public RideParserThreaded(
             String fileName,
             RideRepository rideRepository,
+            LegRepository legRepository,
             Float minAccuracy,
             double rdpEpsilon,
             MapMatchingService mapMatchingService,
@@ -60,6 +68,7 @@ public class RideParserThreaded implements Runnable {
         this.fileName = fileName;
         this.csvString = csvString;
         this.rideRepository = rideRepository;
+        this.legRepository = legRepository;
         this.rideSmoother = new RideSmoother(minAccuracy, rdpEpsilon);
         this.mapMatchingService = mapMatchingService;
         this.region = region;
@@ -159,6 +168,24 @@ public class RideParserThreaded implements Runnable {
 
             rideEntity.setMinuteOfDay(Utils.getMinuteOfDay(rideEntity.getTimeStamp()));
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));
+
+
+            LegEntity legEntity = new LegEntity();
+
+            ArrayList<Point> coordinates = new ArrayList<>();
+            mapMatchedRideBeans.forEach(ride -> {
+                Point point = new Point(Double.parseDouble(ride.getLon()), Double.parseDouble(ride.getLat()));
+                coordinates.add(point);
+            });
+
+            legEntity.setGeometry(new GeoJsonLineString(coordinates));
+            ArrayList array = new ArrayList<String>();
+            array.add("asd");
+            array.add("fads");
+            legEntity.setProperties(new LegPropertyEntity(array));
+
+            legRepository.save(legEntity);
+
 
             rideRepository.save(rideEntity);
 
