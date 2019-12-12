@@ -16,19 +16,25 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
     fun mergeRideIntoLegs(ride: RideEntity): List<LegEntity> {
 
-        val rideLeg = parseRideToLeg(ride)
+        val rideAsLeg = parseRideToLeg(ride)
 
-        val legIntersectEntities = legRepository.findByGeometryIntersection(rideLeg)
+        val legsOnNewRide = mutableSetOf(rideAsLeg) //todo Einstieg: Der alte ganze ride muss am ende raus!!! Bzw immer der, der zerlegt wurde
+
+        val legIntersectEntities = legRepository.findByGeometryIntersection(rideAsLeg)
 
         val result: MutableList<LegEntity> = mutableListOf()
 
+        val subLegs: MutableSet<LegEntity> = mutableSetOf()
         for (intersectingLeg in legIntersectEntities) {
 
+            for (legOnNewRide in legsOnNewRide) {
+                subLegs.addAll(findSubLegs(legOnNewRide, intersectingLeg).toMutableList())
+                subLegs.addAll(findSubLegs(intersectingLeg, legOnNewRide))
+            }
 
-            val subLegs = findSubLegs(rideLeg, intersectingLeg).toMutableList()
-            subLegs.addAll(findSubLegs(intersectingLeg, rideLeg))
+            legsOnNewRide.addAll(subLegs.filter { it.propertiesForKotlin.fileIdSetForKotlin.contains(ride.fileId) })
 
-            val test = subLegs.toSet()
+            val test = subLegs.distinct()
             val a = 12
         }
 
