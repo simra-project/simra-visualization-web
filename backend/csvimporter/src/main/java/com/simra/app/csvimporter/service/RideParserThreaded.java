@@ -9,14 +9,11 @@ import com.simra.app.csvimporter.controller.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.filter.RideSmoother;
 import com.simra.app.csvimporter.model.LegEntity;
-import com.simra.app.csvimporter.model.LegPropertyEntity;
 import com.simra.app.csvimporter.model.RideCSV;
 import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -174,25 +171,14 @@ public class RideParserThreaded implements Runnable {
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));
 
 
-            LegEntity legEntity = new LegEntity();
+            LegEntity legEntity = legPartitioningService.parseRideToLeg(rideEntity);
 
-            ArrayList<Point> coordinates = new ArrayList<>();
-            mapMatchedRideBeans.forEach(ride -> {
-                Point point = new Point(Double.parseDouble(ride.getLon()), Double.parseDouble(ride.getLat()));
-                coordinates.add(point);
-            });
-
-            legEntity.setGeometry(new GeoJsonLineString(coordinates));
-            ArrayList array = new ArrayList<String>();
-            array.add(rideEntity.fileId);
-            legEntity.setProperties(new LegPropertyEntity(array));
-
-            List<LegEntity> legIntersectEntities = legRepository.findByGeometryIntersection(legEntity);
+//            legEntity.setGeometry(new GeoJsonLineString(legEntity.getGeometry().getCoordinates().subList(2,10)));
 
 
-            List<LegEntity> result = legPartitioningService.partitionLegs(legIntersectEntities, rideEntity);
+            List<LegEntity> result = legPartitioningService.mergeRideIntoLegs(rideEntity);
 
-            legRepository.save(legEntity);
+            // legRepository.save(legEntity);
             rideRepository.save(rideEntity);
 
         } catch (Exception e) {

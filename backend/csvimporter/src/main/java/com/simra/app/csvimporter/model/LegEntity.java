@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @ToString
@@ -29,5 +31,27 @@ public class LegEntity {
 
     public GeoJsonLineString getGeometryForKotlin() {
         return this.geometry;
+    }
+
+    public void setPropertiesForKotlin(LegPropertyEntity properties) {
+        this.properties = properties;
+    }
+
+    public LegPropertyEntity getPropertiesForKotlin() {
+        return properties;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LegEntity legEntity = (LegEntity) o;
+        return Objects.equals(geometry.getCoordinates(), legEntity.geometry.getCoordinates()) &&
+                Objects.equals(properties, legEntity.properties);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(geometry, properties);
     }
 }
