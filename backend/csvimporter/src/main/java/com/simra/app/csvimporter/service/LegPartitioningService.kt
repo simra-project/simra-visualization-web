@@ -86,13 +86,30 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                     pointList.add(nextCoordinate)
                 }
                 subLeg.propertiesForKotlin = subLegProperty
-                if (pointList.size < 2) { // intersections can only intersect at one point. Ignore then
-                    pointList.clear()
-                    continue
+                if (pointList.size == 1) { // intersections can only intersect at one point. Then merge with prev and next
+                    pointList.add(Point(0.0, 0.0))
+                    subLeg.removeForKotlin = true
                 }
                 subLeg.geometryForKotlin = GeoJsonLineString(pointList.distinct())
                 result.add(subLeg)
                 pointList.clear()
+            }
+        }
+
+        for (j in 0 until result.size) {
+            try {
+                if (result[j].removeForKotlin) {
+                    val pointIntersection = result[j]
+                    val newGeoJsonPoints = mutableListOf<Point>()
+                    newGeoJsonPoints.add(pointIntersection.geometryForKotlin.coordinates.first { it.x != 0.0 && it.y != 0.0 })
+                    newGeoJsonPoints.addAll(result[j + 1].geometryForKotlin.coordinates)
+                    newGeoJsonPoints.addAll(result[j - 1].geometryForKotlin.coordinates)
+                    result[j - 1].geometryForKotlin = GeoJsonLineString(newGeoJsonPoints)
+                    result.removeAt(j + 1)
+                    result.removeAt(j)
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                break
             }
         }
         return result

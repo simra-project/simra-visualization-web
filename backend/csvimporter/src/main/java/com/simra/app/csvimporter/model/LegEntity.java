@@ -1,6 +1,7 @@
 package com.simra.app.csvimporter.model;
 
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,6 +25,9 @@ public class LegEntity {
 
     private LegPropertyEntity properties;
 
+    @JsonIgnore
+    private Boolean remove = false;
+
     //Lombock and Kotlin seem to have difficulties interacting. Looking for a nicer fix
     public void setGeometryForKotlin(GeoJsonLineString geometry) {
         this.geometry = geometry;
@@ -41,6 +45,14 @@ public class LegEntity {
         return properties;
     }
 
+    public void setRemoveForKotlin(Boolean remove) {
+        this.remove = remove;
+    }
+
+    public Boolean getRemoveForKotlin() {
+        return this.remove;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,6 +61,7 @@ public class LegEntity {
         return Objects.equals(geometry.getCoordinates(), legEntity.geometry.getCoordinates()) &&
                 Objects.equals(properties, legEntity.properties);
     }
+
 
     @Override
     public int hashCode() {
