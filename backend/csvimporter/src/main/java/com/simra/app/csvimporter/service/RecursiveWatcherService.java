@@ -58,6 +58,8 @@ public class RecursiveWatcherService implements MonitorService {
     @Autowired
     private MapMatchingService mapMatchingService;
 
+    @Autowired
+    private LegPartitioningService legPartitioningService;
 
     private WatchService watcher;
 
@@ -183,7 +185,7 @@ public class RecursiveWatcherService implements MonitorService {
         LOG.info("FileName {} ", f.getName());
         if (f.getName().contains("VM")) {
             // Check of Already Parsed.
-            if (csvFileRepository.findByFileId(f.getName()) == null) {
+            if (true /*csvFileRepository.findByFileId(f.getName() todo change!! ) == null*/) {
                 // Differentiates Profile & Ride
                 String type = "";
                 try {
@@ -266,7 +268,7 @@ public class RecursiveWatcherService implements MonitorService {
         // incidents are parsed parallel to ride
 
         IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(), incidentRepository, csvString, this.region);
-        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, legRepository, minAccuracy, rdpEpsilion, mapMatchingService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min);
+        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, legRepository, minAccuracy, rdpEpsilion, mapMatchingService, legPartitioningService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min);
         this.rideIncidentExecutor.execute(incidentParserThreaded);
         this.rideIncidentExecutor.execute(rideParserThreaded);
 

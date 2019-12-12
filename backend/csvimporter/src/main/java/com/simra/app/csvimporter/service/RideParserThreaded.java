@@ -41,6 +41,8 @@ public class RideParserThreaded implements Runnable {
 
     private MapMatchingService mapMatchingService;
 
+    private LegPartitioningService legPartitioningService;
+
     private String region;
 
     private Integer minRideDistance;
@@ -58,6 +60,7 @@ public class RideParserThreaded implements Runnable {
             Float minAccuracy,
             double rdpEpsilon,
             MapMatchingService mapMatchingService,
+            LegPartitioningService legPartitioningService,
             String csvString,
             String region,
             Integer minRideDistance,
@@ -71,6 +74,7 @@ public class RideParserThreaded implements Runnable {
         this.legRepository = legRepository;
         this.rideSmoother = new RideSmoother(minAccuracy, rdpEpsilon);
         this.mapMatchingService = mapMatchingService;
+        this.legPartitioningService = legPartitioningService;
         this.region = region;
         this.minRideDistance = minRideDistance;
         this.minRideDuration = minRideDuration * 60 * 1000; // minutes to millis
@@ -174,20 +178,21 @@ public class RideParserThreaded implements Runnable {
 
             ArrayList<Point> coordinates = new ArrayList<>();
             mapMatchedRideBeans.forEach(ride -> {
-                Point point = new Point(Double.parseDouble(ride.getLon()) - 10d, Double.parseDouble(ride.getLat()) - 10d);
+                Point point = new Point(Double.parseDouble(ride.getLon()), Double.parseDouble(ride.getLat()));
                 coordinates.add(point);
             });
 
-            legEntity.setGeometry(new GeoJsonLineString(coordinates.subList(2, 10)));
+            legEntity.setGeometry(new GeoJsonLineString(coordinates));
             ArrayList array = new ArrayList<String>();
-            array.add("asd");
-            array.add("fads");
+            array.add(rideEntity.fileId);
             legEntity.setProperties(new LegPropertyEntity(array));
-
-            legRepository.save(legEntity);
 
             List<LegEntity> legIntersectEntities = legRepository.findByGeometryIntersection(legEntity);
 
+
+            List<LegEntity> result = legPartitioningService.partitionLegs(legIntersectEntities, rideEntity);
+
+            legRepository.save(legEntity);
             rideRepository.save(rideEntity);
 
         } catch (Exception e) {

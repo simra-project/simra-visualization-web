@@ -21,4 +21,13 @@ public class LegEntity {
     private GeoJsonLineString geometry;
 
     private LegPropertyEntity properties;
+
+    //Lombock and Kotlin seem to have difficulties interacting. Looking for a nicer fix
+    public void setGeometryForKotlin(GeoJsonLineString geometry) {
+        this.geometry = geometry;
+    }
+
+    public GeoJsonLineString getGeometryForKotlin() {
+        return this.geometry;
+    }
 }
