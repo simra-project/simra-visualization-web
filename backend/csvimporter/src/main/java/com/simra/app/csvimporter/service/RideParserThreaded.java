@@ -174,11 +174,11 @@ public class RideParserThreaded implements Runnable {
 
             ArrayList<Point> coordinates = new ArrayList<>();
             mapMatchedRideBeans.forEach(ride -> {
-                Point point = new Point(Double.parseDouble(ride.getLon()), Double.parseDouble(ride.getLat()));
+                Point point = new Point(Double.parseDouble(ride.getLon()) - 10d, Double.parseDouble(ride.getLat()) - 10d);
                 coordinates.add(point);
             });
 
-            legEntity.setGeometry(new GeoJsonLineString(coordinates));
+            legEntity.setGeometry(new GeoJsonLineString(coordinates.subList(2, 10)));
             ArrayList array = new ArrayList<String>();
             array.add("asd");
             array.add("fads");
@@ -186,6 +186,7 @@ public class RideParserThreaded implements Runnable {
 
             legRepository.save(legEntity);
 
+            List<LegEntity> legIntersectEntities = legRepository.findByGeometryIntersection(legEntity);
 
             rideRepository.save(rideEntity);
 
