@@ -14,6 +14,7 @@ import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.geo.Point;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RideParserThreaded implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(RideParserThreaded.class);
@@ -170,13 +172,68 @@ public class RideParserThreaded implements Runnable {
             rideEntity.setMinuteOfDay(Utils.getMinuteOfDay(rideEntity.getTimeStamp()));
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));
 
+            List<LegEntity> rideResources = new ArrayList<>();
+            //List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
+            //rideResources = mapRideEntityToResource(rideEntities, rideResources, true);
+
+            RideEntity ride1 = new RideEntity();
+            RideEntity ride2 = new RideEntity();
+            RideEntity ride3 = new RideEntity();
+
+            Point[] array1 = {
+                    new Point(0d, 1d),
+                    new Point(1d, 1d),
+                    new Point(2d, 1d),
+                    new Point(3d, 1d),
+                    new Point(4d, 1d),
+                    new Point(5d, 1d),
+                    new Point(6d, 1d)
+            };
+            LineString geoJson1 = new LineString(Arrays.stream(array1).map(it -> new Position(Arrays.asList(it.getX(), it.getY()))).collect(Collectors.toList()));
+
+
+            Point[] array2 = {
+                    new Point(0d, 2d),
+                    new Point(1d, 1d),
+                    new Point(2d, 1d),
+                    new Point(3d, 1d),
+                    new Point(4d, 1d),
+                    new Point(5d, 2d),
+                    new Point(6d, 2d)
+            };
+            LineString geoJson2 = new LineString(Arrays.stream(array2).map(it -> new Position(Arrays.asList(it.getX(), it.getY()))).collect(Collectors.toList()));
+
+
+            Point[] array3 = {
+                    new Point(0d, 0d),
+                    new Point(1d, 0d),
+                    new Point(2d, 1d),
+                    new Point(3d, 1d),
+                    new Point(4d, 1d),
+                    new Point(5d, 1d),
+                    new Point(6d, 0d)
+            };
+            LineString geoJson3 = new LineString(Arrays.stream(array3).map(it -> new Position(Arrays.asList(it.getX(), it.getY()))).collect(Collectors.toList()));
+            ride1.setLocationMapMatched(geoJson1);
+            ride2.setLocationMapMatched(geoJson2);
+            ride3.setLocationMapMatched(geoJson3);
+
+            ride1.setFileId("File1");
+            ride2.setFileId("File2");
+            ride3.setFileId("File3");
+
+
+            legPartitioningService.mergeRideIntoLegs(ride1);
+            legPartitioningService.mergeRideIntoLegs(ride2);
+            legPartitioningService.mergeRideIntoLegs(ride3);
+
 
             LegEntity legEntity = legPartitioningService.parseRideToLeg(rideEntity);
 
 //            legEntity.setGeometry(new GeoJsonLineString(legEntity.getGeometry().getCoordinates().subList(2,10)));
 
 
-            legPartitioningService.mergeRideIntoLegs(rideEntity);
+//            legPartitioningService.mergeRideIntoLegs(rideEntity);
 
             // legRepository.save(legEntity);
             rideRepository.save(rideEntity);

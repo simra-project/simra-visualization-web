@@ -20,7 +20,9 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
         val legsOnNewRide = mutableSetOf(rideAsLeg)
 
-        val legIntersectEntities = legRepository.findByGeometryIntersection(rideAsLeg)
+        var legIntersectEntities = legRepository.findByGeometryIntersection(rideAsLeg)
+
+
 
         if (legIntersectEntities.isEmpty()) {
             legRepository.save(rideAsLeg)
@@ -31,7 +33,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
         for (intersectingLeg in legIntersectEntities) {
 
             for (legOnNewRide in legsOnNewRide) {
-                subLegs.addAll(findSubLegs(legOnNewRide, intersectingLeg).toMutableList())
+                subLegs.addAll(findSubLegs(legOnNewRide, intersectingLeg))
                 subLegs.addAll(findSubLegs(intersectingLeg, legOnNewRide))
             }
 
