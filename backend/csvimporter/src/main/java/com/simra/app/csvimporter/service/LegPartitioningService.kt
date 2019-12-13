@@ -38,7 +38,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
             }
 
             legsOnNewRide.removeAll(legsOnNewRide)
-            legsOnNewRide.addAll(subLegs.filter { it.propertiesForKotlin.fileIdSetForKotlin.contains(ride.fileId) })
+            legsOnNewRide.addAll(subLegs)
         }
 
         legRepository.deleteAll(legIntersectEntities)
@@ -71,9 +71,10 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 pointList.add(coordinate)
                 val subLeg = LegEntity()
                 subLeg.propertiesForKotlin = toBeSlicedLeg.propertiesForKotlin
+                if (intersectingLeg.geometryForKotlin.coordinates.contains(coordinate))
+                    subLeg.propertiesForKotlin.fileIdSetForKotlin.addAll(intersectingLeg.propertiesForKotlin.fileIdSetForKotlin)
                 if (pointList.size == 1) { // intersections can only intersect at one point. Then merge with prev and next
-                    pointList.add(Point(0.0, 0.0))
-                    subLeg.markForRemovalForKotlin = true
+                    continue
                 }
                 subLeg.geometryForKotlin = GeoJsonLineString(pointList)
                 result.add(subLeg)
@@ -100,29 +101,12 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 }
                 subLeg.propertiesForKotlin = subLegProperty
                 if (pointList.size == 1) { // intersections can only intersect at one point. Then merge with prev and next
-                    pointList.add(Point(0.0, 0.0))
-                    subLeg.markForRemovalForKotlin = true
+                    pointList.clear()
+                    continue
                 }
                 subLeg.geometryForKotlin = GeoJsonLineString(pointList)
                 result.add(subLeg)
                 pointList.clear()
-            }
-        }
-
-        for (j in 0 until result.size) {
-            try {
-                if (result[j].markForRemovalForKotlin) {
-                    val pointIntersection = result[j]
-                    val newGeoJsonPoints = mutableListOf<Point>()
-                    newGeoJsonPoints.add(pointIntersection.geometryForKotlin.coordinates.first { it.x != 0.0 && it.y != 0.0 })
-                    newGeoJsonPoints.addAll(result[j + 1].geometryForKotlin.coordinates)
-                    newGeoJsonPoints.addAll(result[j - 1].geometryForKotlin.coordinates)
-                    result[j - 1].geometryForKotlin = GeoJsonLineString(newGeoJsonPoints)
-                    result.removeAt(j + 1)
-                    result.removeAt(j)
-                }
-            } catch (e: IndexOutOfBoundsException) {
-                break
             }
         }
         return result
