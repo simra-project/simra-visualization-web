@@ -25,16 +25,16 @@ class RoutePartitioningService {
         }.toMap()
 
 
-        val distinctSharedLags = findDistinctLags(sharedCoordinatesPreprocessed)
+        val distinctSharedLegs = findDistinctLegs(sharedCoordinatesPreprocessed)
 
-        val flatSharedLegs = distinctSharedLags.keys.flatten()
+        val flatSharedLegs = distinctSharedLegs.keys.flatten()
 
         partitionedRides[1] = findOnceUsedRideSegments(rides, flatSharedLegs)
 
         // add Route Legs that have been used more often than once
         partitionedRides.also { result ->
-            distinctSharedLags.values.forEach { count ->
-                result[count] = distinctSharedLags.filter { it.value == count }.keys.flatMap { listOf(it) }
+            distinctSharedLegs.values.forEach { count ->
+                result[count] = distinctSharedLegs.filter { it.value == count }.keys.flatMap { listOf(it) }
             }
         }
 
@@ -89,7 +89,7 @@ class RoutePartitioningService {
         return onceUsedRideLegs
     }
 
-    private fun findDistinctLags(sharedCoordinates: Map<Int, List<Pair<Point, Point>>>): Map<List<Point>, Int> {
+    private fun findDistinctLegs(sharedCoordinates: Map<Int, List<Pair<Point, Point>>>): Map<List<Point>, Int> {
 
         val result = mutableMapOf<List<Point>, Int>()
 
@@ -98,7 +98,7 @@ class RoutePartitioningService {
             for (i in it.value.indices) {
                 leg.add(it.value[i].first)
                 leg.add(it.value[i].second)
-                if (i + 1 < it.value.size && it.value[i].second != it.value[i + 1].first || i + 1 == it.value.size) {
+                if ((i + 1 < it.value.size && it.value[i].second != it.value[i + 1].first) || i + 1 == it.value.size) {
                     result[leg.distinct().toList()] = it.key
                     leg = mutableListOf()
                 }
