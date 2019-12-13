@@ -26,7 +26,7 @@ public class LegEntity {
     private LegPropertyEntity properties;
 
     @JsonIgnore
-    private Boolean remove = false;
+    private Boolean markForRemoval = false;
 
     //Lombock and Kotlin seem to have difficulties interacting. Looking for a nicer fix
     public void setGeometryForKotlin(GeoJsonLineString geometry) {
@@ -45,12 +45,12 @@ public class LegEntity {
         return properties;
     }
 
-    public void setRemoveForKotlin(Boolean remove) {
-        this.remove = remove;
+    public void setMarkForRemovalForKotlin(Boolean remove) {
+        this.markForRemoval = remove;
     }
 
-    public Boolean getRemoveForKotlin() {
-        return this.remove;
+    public Boolean getMarkForRemovalForKotlin() {
+        return this.markForRemoval;
     }
 
     @Override

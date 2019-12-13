@@ -176,7 +176,7 @@ public class RideParserThreaded implements Runnable {
 //            legEntity.setGeometry(new GeoJsonLineString(legEntity.getGeometry().getCoordinates().subList(2,10)));
 
 
-            List<LegEntity> result = legPartitioningService.mergeRideIntoLegs(rideEntity);
+            legPartitioningService.mergeRideIntoLegs(rideEntity);
 
             // legRepository.save(legEntity);
             rideRepository.save(rideEntity);

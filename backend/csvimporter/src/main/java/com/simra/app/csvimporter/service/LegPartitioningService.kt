@@ -14,15 +14,18 @@ import org.springframework.stereotype.Component
 @Component
 class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
-    fun mergeRideIntoLegs(ride: RideEntity): List<LegEntity> {
+    fun mergeRideIntoLegs(ride: RideEntity) {
 
         val rideAsLeg = parseRideToLeg(ride)
 
-        val legsOnNewRide = mutableSetOf(rideAsLeg) //todo Einstieg: Der alte ganze ride muss am ende raus!!! Bzw immer der, der zerlegt wurde
+        val legsOnNewRide = mutableSetOf(rideAsLeg)
 
         val legIntersectEntities = legRepository.findByGeometryIntersection(rideAsLeg)
 
-        val result: MutableList<LegEntity> = mutableListOf()
+        if (legIntersectEntities.isEmpty()) {
+            legRepository.save(rideAsLeg)
+            return
+        }
 
         val subLegs: MutableSet<LegEntity> = mutableSetOf()
         for (intersectingLeg in legIntersectEntities) {
@@ -32,14 +35,12 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 subLegs.addAll(findSubLegs(intersectingLeg, legOnNewRide))
             }
 
+            legsOnNewRide.removeAll(legsOnNewRide)
             legsOnNewRide.addAll(subLegs.filter { it.propertiesForKotlin.fileIdSetForKotlin.contains(ride.fileId) })
-
-            val test = subLegs.distinct()
-            val a = 12
         }
 
-
-        return result.toList()
+        legRepository.deleteAll(legIntersectEntities)
+        legRepository.saveAll(subLegs)
     }
 
     public fun parseRideToLeg(ride: RideEntity): LegEntity {
@@ -94,7 +95,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 subLeg.propertiesForKotlin = subLegProperty
                 if (pointList.size == 1) { // intersections can only intersect at one point. Then merge with prev and next
                     pointList.add(Point(0.0, 0.0))
-                    subLeg.removeForKotlin = true
+                    subLeg.markForRemovalForKotlin = true
                 }
                 subLeg.geometryForKotlin = GeoJsonLineString(pointList.distinct())
                 result.add(subLeg)
@@ -104,7 +105,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
         for (j in 0 until result.size) {
             try {
-                if (result[j].removeForKotlin) {
+                if (result[j].markForRemovalForKotlin) {
                     val pointIntersection = result[j]
                     val newGeoJsonPoints = mutableListOf<Point>()
                     newGeoJsonPoints.add(pointIntersection.geometryForKotlin.coordinates.first { it.x != 0.0 && it.y != 0.0 })
