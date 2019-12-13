@@ -69,7 +69,11 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 pointList.add(coordinate)
                 val subLeg = LegEntity()
                 subLeg.propertiesForKotlin = toBeSlicedLeg.propertiesForKotlin
-                subLeg.geometryForKotlin = GeoJsonLineString(pointList.distinct())
+                if (pointList.size == 1) { // intersections can only intersect at one point. Then merge with prev and next
+                    pointList.add(Point(0.0, 0.0))
+                    subLeg.markForRemovalForKotlin = true
+                }
+                subLeg.geometryForKotlin = GeoJsonLineString(pointList)
                 result.add(subLeg)
                 continue
             }
@@ -97,7 +101,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                     pointList.add(Point(0.0, 0.0))
                     subLeg.markForRemovalForKotlin = true
                 }
-                subLeg.geometryForKotlin = GeoJsonLineString(pointList.distinct())
+                subLeg.geometryForKotlin = GeoJsonLineString(pointList)
                 result.add(subLeg)
                 pointList.clear()
             }
