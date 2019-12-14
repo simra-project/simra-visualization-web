@@ -9,15 +9,8 @@
            @click="clickedOnMap($event)">
         <l-tile-layer :url="url"></l-tile-layer>
         <v-geosearch :options="geosearchOptions"></v-geosearch>
-        <l-control position="topright">
+        <l-control position="topright" v-if="false">
             <div class="overlay">
-                <div class="field">
-                    <b-switch v-model="showRides">Show Rides</b-switch>
-                </div>
-                <div class="field">
-                    <b-switch v-model="showIncidents">Show Incidents</b-switch>
-                </div>
-
                 <!-- Sliders to fine tune heatmap settings -->
                 MaxZoom
                 <vue-slider
@@ -50,7 +43,7 @@
                 </vue-slider>
             </div>
         </l-control>
-        <l-control position="bottomright">
+        <l-control position="bottomright" v-if="false">
             <div class="overlay overlay-debug">
                 <div>Zoom: {{ zoom }}</div>
                 <div>Center: {{ center }}</div>
@@ -58,7 +51,14 @@
                 <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-        <l-control position="bottomleft" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
+        <l-control position="bottomleft"> <!-- Using CSS Magic this will appear top-center -->
+            <b-tabs type="is-toggle-rounded" v-model="viewMode">
+                <b-tab-item label="Bike rides" icon="biking"/>
+                <b-tab-item label="Incidents" icon="car-crash"/>
+            </b-tabs>
+        </l-control>
+
+        <l-control position="bottomleft" v-if="rideHighlightContent !== null && false"> <!-- Using CSS Magic this will appear top-center -->
             <div class="overlay" style="display: flex">
                 <div style="flex: 1 0; text-align: center">
                     Showing ride details here... <br> <!-- TODO: Ridedetails hier später einfügen -->
@@ -72,26 +72,26 @@
 
         <!--    Stellt zusammengefasste Rides dar    -->
         <l-geo-json
-            v-if="showRides && aggregatetRides"
+            v-if="viewMode === 0 && aggregatetRides"
             :geojson="rides"
             :options="geoJsonOptions"
         />
 
         <!--    Stellt detaillierte Rides da    -->
         <l-geo-json
-            v-if="showRides && !aggregatetRides"
+            v-if="viewMode === 0 && !aggregatetRides"
             v-for="ride in detailedRides"
             :geojson="ride"
             :options="geoJsonOptionsDetail"
             @click="clickedOnRide($event, ride)"
         />
 
-        <l-circle-marker v-show="showRides && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-        <l-circle-marker v-show="showRides && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
 
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
         <Vue2LeafletHeatmap
-            v-if="zoom <= heatmapMaxZoom && showIncidents"
+            v-if="zoom <= heatmapMaxZoom && viewMode === 1"
             :lat-lng="incidentHeatmap"
             :radius="heatmapRadius"
             :min-opacity="heatmapMinOpacity"
@@ -100,7 +100,7 @@
 
         </Vue2LeafletHeatmap>
         <l-geo-json v-for="incident in incidents"
-                    v-else-if="showIncidents"
+                    v-else-if="viewMode === 1"
                     :geojson="incident"
                     :options="geoJsonOptionsMarker">
             <l-popup :content="incident.description"/>
@@ -140,8 +140,7 @@ export default {
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            showRides: true,
-            showIncidents: false,
+            viewMode: 0, // 0 - rides, 1 - incidents
             rides: [],
             rideHighlightId: null,
             rideHighlightContent: null,
@@ -166,7 +165,7 @@ export default {
                     return {
                         // color: 'hsl(' + (Math.max(200 - feature.properties.weight * 50, 0)) +', 71%, 53%)',
                         color: 'hsl(217, 71%, 53%)',
-                        weight: Math.log(feature.properties.weight) + 1,
+                        weight: (Math.log(feature.properties.weight) + 1.25) * 1.25,
                         opacity: 1
                     };
                 }
@@ -348,9 +347,20 @@ export default {
             right: calc(50% - 150px);
 
             .leaflet-control {
-                background-color: orange;
                 width: 100%;
                 margin: 10px 0 0;
+                display: flex;
+                justify-content: center;
+
+                nav.tabs.is-toggle ul {
+                    li:not(.is-active) a {
+                        background-color: white;
+                    }
+                }
+
+                section {
+                    display: none;
+                }
             }
         }
     }
