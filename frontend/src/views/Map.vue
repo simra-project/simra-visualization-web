@@ -51,11 +51,20 @@
                 <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-        <l-control position="bottomleft"> <!-- Using CSS Magic this will appear top-center -->
+        <l-control position="topright"> <!-- Using CSS Magic this will appear top-center -->
             <b-tabs type="is-toggle-rounded" v-model="viewMode">
                 <b-tab-item label="Bike rides" icon="biking"/>
                 <b-tab-item label="Incidents" icon="car-crash"/>
             </b-tabs>
+        </l-control>
+
+        <l-control position="bottomleft">
+            <div class="overlay overlay-legend">
+                <div class="color-box c1"></div>
+                <div class="color-box c2"></div>
+                <div class="color-box c3"></div>
+                <div class="text-box"> Ridership</div>
+            </div>
         </l-control>
 
         <l-control position="bottomleft" v-if="rideHighlightContent !== null && false"> <!-- Using CSS Magic this will appear top-center -->
@@ -146,6 +155,7 @@ export default {
             rideHighlightContent: null,
             rideHighlightStart: [0, 0],
             rideHighlightEnd: [0, 0],
+            rideMaxWeight: 1,
             incidents: [],
             incidentHeatmap: [],
             heatmapMaxZoom: 15,
@@ -161,12 +171,15 @@ export default {
                 provider: new OpenStreetMapProvider(),
             },
             geoJsonOptions: {
-                style: function style(feature) {
+                style: feature => {
                     return {
-                        // color: 'hsl(' + (Math.max(200 - feature.properties.weight * 50, 0)) +', 71%, 53%)',
-                        color: 'hsl(217, 71%, 53%)',
-                        weight: (Math.log(feature.properties.weight) + 1.25) * 1.25,
-                        opacity: 1
+                        // color: 'hsl(' + (217 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 35) + ', 71%, 53%)',
+                        // color: 'hsl(' + (225 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 43) + ', 71%, 53%)',
+                        color: 'hsl(' + (240 - (1 - ((feature.properties.weight - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
+                        // color: 'hsl(217, 71%, 53%)',
+                        weight: Math.sqrt(feature.properties.weight / this.rideMaxWeight) * 4.5 + 0.5,
+                        // weight: (Math.log(feature.properties.weight) + 1.25) * 1.25,
+                        opacity: 0.75 + Math.sqrt(feature.properties.weight / this.rideMaxWeight) * 0.25,
                     };
                 }
             },
@@ -256,6 +269,11 @@ export default {
             }
         },
         parseRides(response) {
+            for (let ride of response.features) {
+                const weight = ride.properties.weight;
+                if (weight > this.rideMaxWeight) this.rideMaxWeight = weight;
+            }
+
             this.rides = response;
             console.log(`${this.rides.features.length} rides loaded.`);
         },
@@ -339,7 +357,7 @@ export default {
     }
 
     .leaflet-control-container {
-        .leaflet-bottom.leaflet-left {
+        .leaflet-top.leaflet-right {
             top: 0;
             bottom: initial;
             width: 300px;
@@ -385,6 +403,44 @@ export default {
 
             &:hover {
                 opacity: 1;
+            }
+        }
+
+        &.overlay-legend {
+            padding: 6px 8px;
+            border: 1px solid #b5b5b5cc;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+
+            div {
+                display: inline-block;
+
+                & + div {
+                    margin-left: 4px;
+                }
+
+                &.color-box {
+                    width: 15px;
+                    height: 15px;
+                    margin-bottom: -2.5px;
+
+                    &.c1 {
+                        background-color: hsl(190, 71%, 53%);
+                        opacity: 0.8;
+                    }
+                    &.c2 {
+                        background-color: hsl(215, 71%, 53%);
+                        opacity: 0.9;
+                    }
+                    &.c3 {
+                        background-color: hsl(240, 71%, 53%);
+                    }
+                }
+
+                &.text-box {
+                    font-size: 14px;
+                    margin-left: 6px;
+                }
             }
         }
     }
