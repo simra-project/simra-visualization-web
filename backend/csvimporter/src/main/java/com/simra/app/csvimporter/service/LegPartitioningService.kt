@@ -177,7 +177,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
         return newLeg
     }
 
-    public fun parseRideToLeg(ride: RideEntity): LegEntity {
+    private fun parseRideToLeg(ride: RideEntity): LegEntity {
         val leg = LegEntity()
         leg.geometryForKotlin = GeoJsonLineString(ride.locationMapMatched.coordinates.map { GeoJsonPoint(it.values[0], it.values[1]) })
         leg.propertiesForKotlin = LegPropertyEntity()
