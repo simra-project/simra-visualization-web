@@ -185,7 +185,7 @@ public class RecursiveWatcherService implements MonitorService {
         LOG.info("FileName {} ", f.getName());
         if (f.getName().contains("VM")) {
             // Check of Already Parsed.
-            if (true /*csvFileRepository.findByFileId(f.getName() todo change!! ) == null*/) {
+            if (csvFileRepository.findByFileId(f.getName()) == null) {
                 // Differentiates Profile & Ride
                 String type = "";
                 try {
