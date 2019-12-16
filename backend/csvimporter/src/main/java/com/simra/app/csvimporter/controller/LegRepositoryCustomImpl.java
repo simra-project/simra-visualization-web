@@ -17,7 +17,7 @@ public class LegRepositoryCustomImpl implements LegRepositoryCustom {
     public List<LegEntity> findByGeometryIntersection(LegEntity legEntity) {
         Query query = new Query();
 
-        query.addCriteria(Criteria.where("geometry").intersects(legEntity.getGeometry()).and("properties.fileIdSetCount").gte("min"));
+        query.addCriteria(Criteria.where("geometry").intersects(legEntity.getGeometry()));
         return mongotemplate.find(query, LegEntity.class);
 
     }

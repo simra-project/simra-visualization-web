@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component
 import kotlin.math.abs
 
 
+data class LegIntersectionContainer(val leg: LegEntity, val index: Int, val direction: Int);
+
+
 @Component
 class LegPartitioningService(@Autowired val legRepository: LegRepository) {
     /**
@@ -76,12 +79,16 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
                 pointList.clear()
 
-                val matchingLegUntilIntersection = copy(matchingLeg)
-                val firstIntersectingIndex = matchingLegUntilIntersection.geometryForKotlin.coordinates.indexOf(coordinate)
+                val matchingLegUntilIntersection = copy(matchingLeg.leg)
+                val firstIntersectingIndex = matchingLeg.index
                 var lastIntersectingIndex: Int? = null
 
-                if (firstIntersectingIndex > 0) {
-                    matchingLegUntilIntersection.geometryForKotlin = GeoJsonLineString(matchingLegUntilIntersection.geometryForKotlin.coordinates.subList(0, firstIntersectingIndex + 1)) // +1 to include coordinate
+                if ((firstIntersectingIndex > 0 && matchingLeg.direction == 1) || (firstIntersectingIndex < matchingLeg.leg.geometryForKotlin.coordinates.size - 1 && matchingLeg.direction == -1)) {
+                    if (matchingLeg.direction == -1) {
+                        matchingLegUntilIntersection.geometryForKotlin = GeoJsonLineString(matchingLegUntilIntersection.geometryForKotlin.coordinates.subList(firstIntersectingIndex, matchingLeg.leg.geometryForKotlin.coordinates.size))
+                    } else {
+                        matchingLegUntilIntersection.geometryForKotlin = GeoJsonLineString(matchingLegUntilIntersection.geometryForKotlin.coordinates.subList(0, firstIntersectingIndex + 1)) // +1 to include coordinate
+                    }
                     result.add(matchingLegUntilIntersection)
                 }
 
@@ -92,10 +99,10 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                     val coordinateRide = rideAsLeg.geometryForKotlin.coordinates[j]
                     val coordinateMatchingLeg: Point?
                     try {
-                        coordinateMatchingLeg = matchingLeg.geometryForKotlin.coordinates[k]
+                        coordinateMatchingLeg = matchingLeg.leg.geometryForKotlin.coordinates[k]
                     } catch (e: IndexOutOfBoundsException) {
                         i = j - 2 // to add prev point in next leg
-                        val fileIds = mutableSetOf<String>().apply { addAll(matchingLeg.propertiesForKotlin.fileIdSetForKotlin) }
+                        val fileIds = mutableSetOf<String>().apply { addAll(matchingLeg.leg.propertiesForKotlin.fileIdSetForKotlin) }
                         fileIds.add(ride.fileId)
                         result.add(createLeg(pointList, fileIds))
                         pointList.clear()
@@ -105,23 +112,28 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                         pointList.add(rideAsLeg.geometryForKotlin.coordinates[j])
                     } else {
                         i = j - 2 // to add prev point in next Leg
-                        lastIntersectingIndex = k - 1
-                        val fileIds = mutableSetOf<String>().apply { addAll(matchingLeg.propertiesForKotlin.fileIdSetForKotlin) }
+                        lastIntersectingIndex = k - matchingLeg.direction
+                        val fileIds = mutableSetOf<String>().apply { addAll(matchingLeg.leg.propertiesForKotlin.fileIdSetForKotlin) }
                         fileIds.add(ride.fileId)
                         result.add(createLeg(pointList, fileIds))
                         pointList.clear()
                         break
                     }
-                    k++
+                    k += matchingLeg.direction
                 }
                 if (lastIntersectingIndex != null) {
-                    val matchingLegFromIntersection = copy(matchingLeg)
-                    if (matchingLeg.geometryForKotlin.coordinates.size - lastIntersectingIndex > 1) {
-                        matchingLegFromIntersection.geometryForKotlin = GeoJsonLineString(matchingLegFromIntersection.geometryForKotlin.coordinates.subList(lastIntersectingIndex, matchingLeg.geometryForKotlin.coordinates.size))
+                    val matchingLegFromIntersection = copy(matchingLeg.leg)
+                    if ((lastIntersectingIndex > 0 && matchingLeg.direction == -1) || (lastIntersectingIndex < matchingLeg.leg.geometryForKotlin.coordinates.size - 1 && matchingLeg.direction == 1)) {
+                        if (matchingLeg.direction == 1) {
+                            matchingLegFromIntersection.geometryForKotlin = GeoJsonLineString(matchingLegFromIntersection.geometryForKotlin.coordinates.subList(lastIntersectingIndex, matchingLeg.leg.geometryForKotlin.coordinates.size))
+                        } else {
+                            matchingLegFromIntersection.geometryForKotlin = GeoJsonLineString(matchingLegFromIntersection.geometryForKotlin.coordinates.subList(0, lastIntersectingIndex + 1)) // +1 to include coordinate
+                        }
                         result.add(matchingLegFromIntersection)
                     }
+
                 }
-                legRepository.delete(matchingLeg)
+                legRepository.delete(matchingLeg.leg)
             }
             i++
         }
@@ -130,10 +142,21 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
     }
 
-    private fun findLegWithSuccessiveCoordinates(legs: Set<LegEntity>, coordinate: Point, nextCoordinate: Point): LegEntity? {
-        return legs.find {
-            abs(it.geometryForKotlin.coordinates.indexOf(coordinate) - it.geometryForKotlin.coordinates.indexOf(nextCoordinate)) == 1
+    private fun findLegWithSuccessiveCoordinates(legs: Set<LegEntity>, coordinate: Point, nextCoordinate: Point): LegIntersectionContainer? {
+        for (leg in legs) {
+            var nextIndex = -1;
+            var coordIndex = -1;
+            for (index in leg.geometryForKotlin.coordinates.indices) {
+                if (leg.geometryForKotlin.coordinates[index] == coordinate)
+                    coordIndex = index;
+                if (leg.geometryForKotlin.coordinates[index] == nextCoordinate)
+                    nextIndex = index
+                if (abs(nextIndex - coordIndex) == 1 && nextIndex != -1 && coordIndex != -1) {
+                    return LegIntersectionContainer(leg, coordIndex, nextIndex - coordIndex)
+                }
+            }
         }
+        return null
     }
 
     private fun copy(leg: LegEntity): LegEntity {
