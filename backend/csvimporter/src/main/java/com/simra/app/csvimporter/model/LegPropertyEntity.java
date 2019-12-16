@@ -3,8 +3,8 @@ package com.simra.app.csvimporter.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
-import java.util.Objects;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 Representation of a Leg
@@ -17,26 +17,16 @@ Representation of a Leg
 @JsonInclude
 public class LegPropertyEntity {
 
-    private TreeSet<String> fileIdSet = new TreeSet<>();
+    private Set<String> fileIdSet = new HashSet<>();
 
-    public void setFileIdSetForKotlin(TreeSet<String> fileIdSet) {
+    private Integer fileIdSetCount;
+
+    public void setFileIdSetForKotlin(Set<String> fileIdSet) {
         this.fileIdSet = fileIdSet;
+        this.fileIdSetCount = fileIdSet.size();
     }
 
-    public TreeSet<String> getFileIdSetForKotlin() {
+    public Set<String> getFileIdSetForKotlin() {
         return fileIdSet;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LegPropertyEntity that = (LegPropertyEntity) o;
-        return Objects.equals(fileIdSet, that.fileIdSet);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fileIdSet);
     }
 }

@@ -8,13 +8,11 @@ import com.simra.app.csvimporter.controller.LegRepository;
 import com.simra.app.csvimporter.controller.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.filter.RideSmoother;
-import com.simra.app.csvimporter.model.LegEntity;
 import com.simra.app.csvimporter.model.RideCSV;
 import com.simra.app.csvimporter.model.RideEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.geo.Point;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -22,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RideParserThreaded implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(RideParserThreaded.class);
@@ -172,6 +169,7 @@ public class RideParserThreaded implements Runnable {
             rideEntity.setMinuteOfDay(Utils.getMinuteOfDay(rideEntity.getTimeStamp()));
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));
 
+            /*
             List<LegEntity> rideResources = new ArrayList<>();
             //List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
             //rideResources = mapRideEntityToResource(rideEntities, rideResources, true);
@@ -226,16 +224,10 @@ public class RideParserThreaded implements Runnable {
             legPartitioningService.mergeRideIntoLegs(ride1);
             legPartitioningService.mergeRideIntoLegs(ride2);
             legPartitioningService.mergeRideIntoLegs(ride3);
+*/
 
+            legPartitioningService.mergeRideIntoLegs(rideEntity);
 
-            LegEntity legEntity = legPartitioningService.parseRideToLeg(rideEntity);
-
-//            legEntity.setGeometry(new GeoJsonLineString(legEntity.getGeometry().getCoordinates().subList(2,10)));
-
-
-//            legPartitioningService.mergeRideIntoLegs(rideEntity);
-
-            // legRepository.save(legEntity);
             rideRepository.save(rideEntity);
 
         } catch (Exception e) {
