@@ -9,15 +9,8 @@
            @click="clickedOnMap($event)">
         <l-tile-layer :url="url"></l-tile-layer>
         <v-geosearch :options="geosearchOptions"></v-geosearch>
-        <l-control position="topright">
+        <l-control position="topright" v-if="false">
             <div class="overlay">
-                <div class="field">
-                    <b-switch v-model="showRides">Show Rides</b-switch>
-                </div>
-                <div class="field">
-                    <b-switch v-model="showIncidents">Show Incidents</b-switch>
-                </div>
-
                 <!-- Sliders to fine tune heatmap settings -->
                 MaxZoom
                 <vue-slider
@@ -50,7 +43,7 @@
                 </vue-slider>
             </div>
         </l-control>
-        <l-control position="bottomright">
+        <l-control position="bottomright" v-if="false">
             <div class="overlay overlay-debug">
                 <div>Zoom: {{ zoom }}</div>
                 <div>Center: {{ center }}</div>
@@ -58,7 +51,23 @@
                 <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-        <l-control position="bottomleft" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
+        <l-control position="topright"> <!-- Using CSS Magic this will appear top-center -->
+            <b-tabs type="is-toggle-rounded" v-model="viewMode">
+                <b-tab-item label="Bike rides" icon="biking"/>
+                <b-tab-item label="Incidents" icon="car-crash"/>
+            </b-tabs>
+        </l-control>
+
+        <l-control position="bottomleft">
+            <div class="overlay overlay-legend">
+                <div class="color-box c1"></div>
+                <div class="color-box c2"></div>
+                <div class="color-box c3"></div>
+                <div class="text-box"> Ridership</div>
+            </div>
+        </l-control>
+
+        <l-control position="bottomleft" v-if="rideHighlightContent !== null && false"> <!-- Using CSS Magic this will appear top-center -->
             <div class="overlay" style="display: flex">
                 <div style="flex: 1 0; text-align: center">
                     Showing ride details here... <br> <!-- TODO: Ridedetails hier später einfügen -->
@@ -72,26 +81,26 @@
 
         <!--    Stellt zusammengefasste Rides dar    -->
         <l-geo-json
-            v-if="showRides && aggregatetRides"
+            v-if="viewMode === 0 && aggregatetRides"
             :geojson="rides"
             :options="geoJsonOptions"
         />
 
         <!--    Stellt detaillierte Rides da    -->
         <l-geo-json
-            v-if="showRides && !aggregatetRides"
+            v-if="viewMode === 0 && !aggregatetRides"
             v-for="ride in detailedRides"
             :geojson="ride"
             :options="geoJsonOptionsDetail"
             @click="clickedOnRide($event, ride)"
         />
 
-        <l-circle-marker v-show="showRides && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-        <l-circle-marker v-show="showRides && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
 
         <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
         <Vue2LeafletHeatmap
-            v-if="zoom <= heatmapMaxZoom && showIncidents"
+            v-if="zoom <= heatmapMaxZoom && viewMode === 1"
             :lat-lng="incidentHeatmap"
             :radius="heatmapRadius"
             :min-opacity="heatmapMinOpacity"
@@ -100,7 +109,7 @@
 
         </Vue2LeafletHeatmap>
         <l-geo-json v-for="incident in incidents"
-                    v-else-if="showIncidents"
+                    v-else-if="viewMode === 1"
                     :geojson="incident"
                     :options="geoJsonOptionsMarker">
             <l-popup :content="incident.description"/>
@@ -140,13 +149,13 @@ export default {
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            showRides: true,
-            showIncidents: false,
+            viewMode: 0, // 0 - rides, 1 - incidents
             rides: [],
             rideHighlightId: null,
             rideHighlightContent: null,
             rideHighlightStart: [0, 0],
             rideHighlightEnd: [0, 0],
+            rideMaxWeight: 1,
             incidents: [],
             incidentHeatmap: [],
             heatmapMaxZoom: 15,
@@ -162,12 +171,15 @@ export default {
                 provider: new OpenStreetMapProvider(),
             },
             geoJsonOptions: {
-                style: function style(feature) {
+                style: feature => {
                     return {
-                        // color: 'hsl(' + (Math.max(200 - feature.properties.weight * 50, 0)) +', 71%, 53%)',
-                        color: 'hsl(217, 71%, 53%)',
-                        weight: Math.log(feature.properties.weight) + 1,
-                        opacity: 1
+                        // color: 'hsl(' + (217 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 35) + ', 71%, 53%)',
+                        // color: 'hsl(' + (225 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 43) + ', 71%, 53%)',
+                        color: 'hsl(' + (240 - (1 - ((feature.properties.weight - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
+                        // color: 'hsl(217, 71%, 53%)',
+                        weight: Math.sqrt(feature.properties.weight / this.rideMaxWeight) * 4.5 + 0.5,
+                        // weight: (Math.log(feature.properties.weight) + 1.25) * 1.25,
+                        opacity: 0.75 + Math.sqrt(feature.properties.weight / this.rideMaxWeight) * 0.25,
                     };
                 }
             },
@@ -257,6 +269,11 @@ export default {
             }
         },
         parseRides(response) {
+            for (let ride of response.features) {
+                const weight = ride.properties.weight;
+                if (weight > this.rideMaxWeight) this.rideMaxWeight = weight;
+            }
+
             this.rides = response;
             console.log(`${this.rides.features.length} rides loaded.`);
         },
@@ -340,7 +357,7 @@ export default {
     }
 
     .leaflet-control-container {
-        .leaflet-bottom.leaflet-left {
+        .leaflet-top.leaflet-right {
             top: 0;
             bottom: initial;
             width: 300px;
@@ -348,9 +365,20 @@ export default {
             right: calc(50% - 150px);
 
             .leaflet-control {
-                background-color: orange;
                 width: 100%;
                 margin: 10px 0 0;
+                display: flex;
+                justify-content: center;
+
+                nav.tabs.is-toggle ul {
+                    li:not(.is-active) a {
+                        background-color: white;
+                    }
+                }
+
+                section {
+                    display: none;
+                }
             }
         }
     }
@@ -375,6 +403,44 @@ export default {
 
             &:hover {
                 opacity: 1;
+            }
+        }
+
+        &.overlay-legend {
+            padding: 6px 8px;
+            border: 1px solid #b5b5b5cc;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+
+            div {
+                display: inline-block;
+
+                & + div {
+                    margin-left: 4px;
+                }
+
+                &.color-box {
+                    width: 15px;
+                    height: 15px;
+                    margin-bottom: -2.5px;
+
+                    &.c1 {
+                        background-color: hsl(190, 71%, 53%);
+                        opacity: 0.8;
+                    }
+                    &.c2 {
+                        background-color: hsl(215, 71%, 53%);
+                        opacity: 0.9;
+                    }
+                    &.c3 {
+                        background-color: hsl(240, 71%, 53%);
+                    }
+                }
+
+                &.text-box {
+                    font-size: 14px;
+                    margin-left: 6px;
+                }
             }
         }
     }

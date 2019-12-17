@@ -59,12 +59,12 @@ public class StatisticsService {
 
     private void calculateRideStatistics(Statistic statistic, MongoCollection<Document> rides, String region) {
         Bson filter = eq("region", region);
-        DoubleAccumulator accumulatedDistance = new DoubleAccumulator(Double::sum, 0.d);
+        LongAccumulator accumulatedDistance = new LongAccumulator(Long::sum, 0L);
         LongAccumulator accumulatedDuration = new LongAccumulator(Long::sum, 0L);
 
         rides.find(filter).forEach((Block<? super Document>) ride -> {
-            Double distance = ride.getDouble("distance");
-            Long duration = ride.getLong("duration");
+            Long distance = getLongNumber(ride, "distance");
+            Long duration = getLongNumber(ride, "duration");
 
             if (distance != null && duration != null) {
                 accumulatedDistance.accumulate(distance);
@@ -153,8 +153,8 @@ public class StatisticsService {
 
             profiles.find(and(regionFilter, eq("birth", i))).forEach((Block<? super Document>) profile -> {
                 Integer numberOfRides = profile.getInteger("numberOfRides");
-                Double distance = profile.getDouble("distance");
-                Long duration = profile.getLong("duration");
+                Double distance = getDoubleNumber(profile, "distance");
+                Long duration = getLongNumber(profile, "duration");
                 Integer scaryIncidents = profile.getInteger("numberOfScary");
 
                 if (numberOfRides != null && numberOfRides != 0 && distance != null && distance != 0 && duration != null && duration != 0) {
@@ -201,6 +201,28 @@ public class StatisticsService {
 
     private Double getSavedCO2(double distance) {
         return (distance * 0.183) / 1000.0;
+    }
+
+    private Long getLongNumber(Document document, String key) {
+        Object number = document.get(key);
+        if (number == null) return null;
+
+        if (number.getClass() == Integer.class) return ((Integer) number).longValue();
+        if (number.getClass() == Long.class) return (Long) number;
+        if (number.getClass() == Double.class) return ((Double) number).longValue();
+
+        return null;
+    }
+
+    private Double getDoubleNumber(Document document, String key) {
+        Object number = document.get(key);
+        if (number == null) return null;
+
+        if (number.getClass() == Integer.class) return ((Integer) number).doubleValue();
+        if (number.getClass() == Long.class) return ((Long) number).doubleValue();
+        if (number.getClass() == Double.class) return (Double) number;
+
+        return null;
     }
 }
 
