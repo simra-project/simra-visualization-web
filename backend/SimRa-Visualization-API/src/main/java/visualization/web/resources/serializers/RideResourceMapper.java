@@ -23,6 +23,7 @@ public class RideResourceMapper {
             rideResourceProperty.setTs(rideEntity.getTsMapMatched());
             rideResource.setGeometry(rideEntity.getLocationMapMatched());
         }
+
         rideResource.setProperties(rideResourceProperty);
 
         return rideResource;
