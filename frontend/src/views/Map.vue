@@ -79,6 +79,21 @@
             </div>
         </l-control>
 
+        <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
+        <Vue2LeafletHeatmap
+            v-if="zoom <= heatmapMaxZoom && viewMode === 1"
+            :lat-lng="incident_heatmap"
+            :radius="heatmapRadius"
+            :min-opacity="heatmapMinOpacity"
+            :max-zoom="10" :blur="heatmapBlur"
+            :max="heatmapMaxPointIntensity"/>
+        <l-geo-json v-for="incident in incidents"
+                    v-else-if="viewMode === 1"
+                    :geojson="incident"
+                    :options="geoJsonOptionsMarker">
+            <l-popup :content="incident.description"/>
+        </l-geo-json>
+
         <!--    Stellt zusammengefasste Rides dar    -->
         <l-geo-json
             v-if="viewMode === 0 && aggregatetRides"
@@ -97,23 +112,6 @@
 
         <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
         <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
-
-        <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
-        <Vue2LeafletHeatmap
-            v-if="zoom <= heatmapMaxZoom && viewMode === 1"
-            :lat-lng="incidentHeatmap"
-            :radius="heatmapRadius"
-            :min-opacity="heatmapMinOpacity"
-            :max-zoom="10" :blur="heatmapBlur"
-            :max="heatmapMaxPointIntensity">
-
-        </Vue2LeafletHeatmap>
-        <l-geo-json v-for="incident in incidents"
-                    v-else-if="viewMode === 1"
-                    :geojson="incident"
-                    :options="geoJsonOptionsMarker">
-            <l-popup :content="incident.description"/>
-        </l-geo-json>
     </l-map>
 </template>
 
@@ -157,7 +155,7 @@ export default {
             rideHighlightEnd: [0, 0],
             rideMaxWeight: 1,
             incidents: [],
-            incidentHeatmap: [],
+            incident_heatmap: [],
             heatmapMaxZoom: 15,
             heatmapMinOpacity: 0.75,
             heatmapMaxPointIntensity: 1.0,
@@ -282,9 +280,9 @@ export default {
             for (var i = 0; i < response.length; i++) {
                 // console.log(response[i].properties.incidentType);
                 // if (response[i].properties.incidentType != 0)
-                    this.incidentHeatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
+                    this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
             }
-            console.log(this.incidentHeatmap);
+            console.log(this.incident_heatmap);
             console.log("Incident heatmap loaded.");
         },
         loadDetailedRides() {
