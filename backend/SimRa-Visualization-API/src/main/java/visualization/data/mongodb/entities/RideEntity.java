@@ -20,7 +20,11 @@ public class RideEntity {
 
     private GeoJsonLineString location;
 
+    private GeoJsonLineString locationMapMatched;
+
     private ArrayList<Long> ts;
+
+    private ArrayList<Long> tsMapMatched;
 
     private Float distance;
 

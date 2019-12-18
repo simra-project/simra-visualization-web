@@ -1,4 +1,4 @@
-package main.java.com.simra.app.csvimporter.model;
+package com.simra.app.csvimporter.model;
 
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
@@ -9,47 +9,48 @@ import org.apache.commons.collections4.MultiValuedMap;
  */
 public class ProfileCSV extends ApplicationFileVersion {
 
+
     @CsvBindByName(column = "birth")
-    private int birth;
+    public int birth;
 
     @CsvBindByName(column = "gender")
-    private int gender;
+    public int gender;
 
     @CsvBindByName(column = "region")
-    private int region;
+    public int region;
 
     @CsvBindByName(column = "experience")
-    private int experience;
+    public int experience;
 
     @CsvBindByName(column = "numberOfRides")
-    private int numberOfRides;
+    public int numberOfRides;
 
     @CsvBindByName(column = "duration")
-    private long duration;
+    public long duration;
 
     @CsvBindByName(column = "numberOfIncidents")
-    private int numberOfIncidents;
+    public int numberOfIncidents;
 
     @CsvBindByName(column = "waitedTime")
-    private int idle; //waitedTime
+    public int idle; //waitedTime
 
     @CsvBindByName(column = "distance")
-    private float distance; // length
+    public float distance; // length
 
     @CsvBindByName(column = "length")
-    private float length; // old attribute name
+    public float length; // old attribute name
 
     @CsvBindByName(column = "co2")
-    private int co2; //waitedTime
+    public int co2; //waitedTime
 
     @CsvBindAndJoinByName(column = "[0-9]+", elementType = String.class)
-    private MultiValuedMap<String, Float> hours;
+    public MultiValuedMap<String, Float> hours;
 
     @CsvBindByName(column = "behaviour")
-    private int behaviour;
+    public int behaviour;
 
     @CsvBindByName(column = "numberOfScary")
-    private int numberOfScary;
+    public int numberOfScary;
 
     /**
      * Gets hours.

@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import visualization.web.resources.serializers.GeoJsonLineStringSerializer;
 
 /*
-Representation of a Ride
+Representation of a Leg
  */
 @Getter
 @Setter
@@ -16,7 +16,7 @@ Representation of a Ride
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude
-public class RideResource {
+public class LegResource {
 
     @JsonProperty
     private String type = "Feature";
@@ -25,10 +25,14 @@ public class RideResource {
     private GeoJsonLineString geometry;
 
     @JsonProperty
-    private RideResourceProperty properties;
+    private LegResourceProperty properties;
 
     //Lombock and Kotlin seem to have difficulties interacting. Looking for a nicer fix
-    public GeoJsonLineString getGeometryForKotlin() {
-        return geometry;
+    public void setGeometryForKotlin(GeoJsonLineString geometry) {
+        this.geometry = geometry;
+    }
+
+    public void setPropertiesKotlin(LegResourceProperty properties) {
+        this.properties = properties;
     }
 }
