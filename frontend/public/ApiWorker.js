@@ -1,72 +1,64 @@
-let db;
-let objectStore;
 
 self.onmessage = function(event) {
-    switch (event.data) {
-        case "init":
-            {
-                let req = indexedDB.open("simra", 1);
-                req.onupgradeneeded = function (e) {
-                    let db = e.target.result;
-                    objectStore = db.createObjectStore("incidents", {autoIncrement: true});
-                    self.postMessage("Successfully upgraded db");
-                };
-                req.onsuccess = function (e) {
-                    db = req.result;
-                };
-                req.onerror = function (e) {
-                    self.postMessage("error");
-                }
-            }
+    switch (event.data[0]) {
+        case "routes":
+            loadRoutes(event.data[1]);
             break;
-        case "readAll":
-            {
-                readAll();
-            }
+        case "matched":
+            loadLegs(event.data[1], event.data[2]);
             break;
-
-        case "add":
-            {
-                add();
-            }
+        case "incidents":
+            loadIncidents(event.data[1], event.data[2]);
+            break;
+        case "route":
             break;
     }
 };
 
-function readAll() {
-    console.log(db);
-    let objectStore = db.transaction("incidents").objectStore("incidents");
-    let incidents = [];
-
-    objectStore.openCursor().onsuccess = function(event) {
-        let cursor = event.target.result;
-
-        if (cursor) {
-            incidents.push(cursor.value.rideId);
-            cursor.continue();
-        } else {
-            self.postMessage("Every incident: " + incidents.join(", "));
+var routesLoaded = [];
+function loadRoutes(data) {
+    data.forEach(coords => {
+        if (!routesLoaded.hasOwnProperty(coords)) {
+            console.log(coords);
+            console.log(`http://localhost:8080/rides/area?bottomleft=${coords[0]/100},${coords[1]/100}&topright=${(coords[0]+1)/100},${(coords[1]+1)/100}`);
+            fetch(`http://localhost:8080/rides/area?bottomleft=${coords[0]/100},${coords[1]/100}&topright=${(coords[0]+1)/100},${(coords[1]+1)/100}`)
+                .then(r => r.json())
+                .then(result => {
+                    routesLoaded[coords] = true;
+                    self.postMessage(["routes", result]);
+                });
         }
-    };
+    })
 }
 
-function add() {
-    fetch("http://localhost:8080/incidents?lon=" + 1 + "&lat=" + 1 + "&max=" + 100000).then(r => {
-        r.json().then(incidents => {
-            incidents.forEach(incident => {
-                let request = db
-                    .transaction(["incidents"], "readwrite")
-                    .objectStore("incidents")
-                    .add(incident);
+var legsLoaded = [];
+function loadLegs(coords, filter) {
+    if (!legsLoaded.hasOwnProperty(coords)) {
+        console.log(coords);
+        console.log(`http://localhost:8080/legs/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&minWeight=${filter}`);
+        fetch(`http://localhost:8080/legs/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&minWeight=${filter}`)
+            .then(r => r.json())
+            .then(result => {
+                routesLoaded[coords] = result;
+                self.postMessage(["matched", result]);
+            });
+    } else {
+        self.postMessage(["matched", legsLoaded[coords]]);
+    }
+}
 
-                request.onsuccess = function(event) {
-                    self.postMessage("Successfully added Incident in db");
-                };
-
-                request.onerror = function(event) {
-                    self.postMessage("something went wrong here");
-                };
-            })
-        });
-    })
+var incidents = [];
+function loadIncidents(coords, filter) {
+    if (!incidents.hasOwnProperty(coords)) {
+        console.log(coords);
+        console.log(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`);
+        fetch(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`)
+            .then(r => r.json())
+            .then(result => {
+                incidents[coords] = result;
+                self.postMessage(["incidents", result]);
+            });
+    } else {
+        self.postMessage(["incidents", incidents[coords]]);
+    }
 }

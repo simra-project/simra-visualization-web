@@ -76,14 +76,14 @@
             :options="geoJsonOptions"
         />
 
-        <!--    Stellt detaillierte routen da    -->
-        <l-geo-json
-            v-if="showRoutes && !aggregatetRoutes"
-            v-for="route in detailedRoutes"
-            :geojson="route"
-            :options="geoJsonOptionsDetail"
-            @click="clickedOnRoute($event, route)"
-        />
+<!--        &lt;!&ndash;    Stellt detaillierte routen da    &ndash;&gt;-->
+<!--        <l-geo-json-->
+<!--            v-if="showRoutes && !aggregatetRoutes"-->
+<!--            v-for="route in detailedRoutes"-->
+<!--            :geojson="route"-->
+<!--            :options="geoJsonOptionsDetail"-->
+<!--            @click="clickedOnRoute($event, route)"-->
+<!--        />-->
 
         <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightStart"/> <!-- Highlighted Route start point -->
         <l-circle-marker v-show="showRoutes && routeHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="routeHighlightEnd"/>   <!-- Highlighted Route end point -->
@@ -164,10 +164,10 @@ export default {
                     return {
                         // color: 'hsl(' + (Math.max(200 - feature.properties.weight * 50, 0)) +', 71%, 53%)',
                         color: 'hsl(217, 71%, 53%)',
-                        weight: Math.log(feature.properties.weight) + 1,
+                        weight: (Math.log(feature.properties.fileIdSet.length) + 1) * 2,
                         opacity: 1
                     };
-                }
+                },
             },
             geoJsonOptionsDetail: {
                 style: {
@@ -197,17 +197,15 @@ export default {
     methods: {
         zoomUpdated(zoom) {
             this.zoom = zoom;
-            this.aggregatetRoutes = zoom < 17;
-            if (!this.aggregatetRoutes) {
-                this.loadDetailedRoutes();
-            }
+            this.aggregatetRoutes = zoom < 100;
         },
         centerUpdated(center) {
             this.center = center;
             this.updateUrlQuery();
-            if (!this.aggregatetRoutes) {
-                this.loadDetailedRoutes();
-            }
+            if (this.showRoutes)
+                this.loadMatchedRoutes();
+            if (this.showIncidents && this.zoom > this.heatmapMaxZoom)
+                this.loadIncidents();
         },
         boundsUpdated(bounds) {
             this.bounds = bounds;
@@ -224,6 +222,10 @@ export default {
         },
         clickedOnRoute(event, route) {
             // Highlighting this route
+            // console.log(route.properties.rideId);
+            // return;
+            console.log(route);
+            return;
             this.routeHighlightId = route.properties.rideId;
             this.routeHighlightContent = { length: "10.2 km", duration: "37 min" };
 
@@ -253,15 +255,20 @@ export default {
             }
         },
         parseRoutes(response) {
-            this.routes = response;
-            console.log(`${this.routes.features.length} routes loaded.`);
+            this.routes = {
+                type: "FeatureCollection",
+                features: response
+            };
+            console.log(`${this.routes.features.length} route sections loaded.`);
+            console.log(this.routes)
         },
         parseIncidents(response) {
-            this.markers = response;
-            for (var i = 0; i < this.markers.length; i++) {
-                this.incident_heatmap.push([this.markers[i].geometry.coordinates[1], this.markers[i].geometry.coordinates[0], 1]);
+            for (var i = 0; i < response.length; i++) {
+                // console.log(response[i].properties.incidentType);
+                // if (response[i].properties.incidentType != 0)
+                    this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
             }
-            console.log("Incidents loaded.");
+            console.log("Incident heatmap loaded.");
         },
         loadDetailedRoutes() {
             // times 100 to avoid floating point errors
@@ -270,29 +277,69 @@ export default {
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
 
+            let coords = [];
+
             for (let y = min_y; y < max_y; y++ ) {
                 for (let x = min_x; x < max_x; x++) {
-                    this.loadChunk(x, y);
+                    coords.push([x, y]);
                 }
             }
+
+            this.apiWorker.postMessage(["routes", coords]);
 
             console.log(`minx: ${min_x}, maxx: ${max_x}`);
             console.log(`miny: ${min_y}, maxy: ${max_y}`);
         },
-        loadChunk(x, y) {
-            if (this.detailedAreasLoaded[`${x},${y}`] == null) {
-                this.detailedAreasLoaded[`${x},${y}`] = [];
-                console.log("Started loading new chunk.");
-                ApiService.loadRoutes(y/100, x/100, (y+1)/100, (x+1)/100).then(response => {
-                    this.detailedAreasLoaded[`${x},${y}`] = response;
-                    response.forEach(route => {
-                        if (this.detailedRoutesLoaded[route.properties.rideId] == null) {
-                            this.detailedRoutesLoaded[route.properties.rideId] = route;
-                            this.detailedRoutes.push(route);
-                            console.log("added route");
-                        }
-                    })
-                })
+
+        loadMatchedRoutes() {
+            let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
+            let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
+            let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
+            let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
+
+            this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((15 - this.zoom), 1) ]);
+            // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
+
+        },
+
+        loadIncidents() {
+            let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
+            let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
+            let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
+            let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
+
+            this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]]]);
+
+        },
+        // loadChunk(x, y) {
+        //     if (this.detailedAreasLoaded[`${x},${y}`] == null) {
+        //         this.detailedAreasLoaded[`${x},${y}`] = [];
+        //         console.log("Started loading new chunk.");
+        //         ApiService.loadRoutes(y/100, x/100, (y+1)/100, (x+1)/100).then(response => {
+        //             this.detailedAreasLoaded[`${x},${y}`] = response;
+        //             response.forEach(route => {
+        //                 if (this.detailedRoutesLoaded[route.properties.rideId] == null) {
+        //                     this.detailedRoutesLoaded[route.properties.rideId] = route;
+        //                     this.detailedRoutes.push(route);
+        //                     console.log("added route");
+        //                 }
+        //             })
+        //         })
+        //     }
+        // },
+        handleWorkerMessage(message) {
+            switch (message.data[0]) {
+                case "routes":
+                    console.log(message.data[1]);
+                    this.detailedRoutes.push(...message.data[1]);
+                    console.log(this.detailedRoutes.length + " detailed routes loaded.");
+                    break;
+                case "matched":
+                    this.parseRoutes(message.data[1]);
+                    break;
+                case "incidents":
+                    this.markers = message.data[1];
+                    break;
             }
         }
     },
@@ -309,7 +356,8 @@ export default {
         // function sleep(ms) {
         //     return new Promise(resolve => setTimeout(resolve, ms));
         // }
-        // this.apiWorker = new Worker("/ApiWorker.js");
+        this.apiWorker = new Worker("/ApiWorker.js");
+        this.apiWorker.onmessage = this.handleWorkerMessage;
         //
         // this.apiWorker.onmessage = function(event) {
         //     console.log(event.data);
@@ -321,7 +369,7 @@ export default {
         // await sleep(1000);
         // this.apiWorker.postMessage("readAll");
 
-        ApiService.loadRoutesMatched(lat, lon).then(response => (this.parseRoutes(response)));
+        // ApiService.loadRoutesMatched(lat, lon).then(response => (this.parseRoutes(response)));
         ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
     },
 };
