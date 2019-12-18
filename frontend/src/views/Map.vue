@@ -175,11 +175,11 @@ export default {
                     return {
                         // color: 'hsl(' + (217 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 35) + ', 71%, 53%)',
                         // color: 'hsl(' + (225 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 43) + ', 71%, 53%)',
-                        color: 'hsl(' + (240 - (1 - ((feature.properties.weight - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
+                        color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
                         // color: 'hsl(217, 71%, 53%)',
-                        weight: Math.sqrt(feature.properties.weight / this.rideMaxWeight) * 4.5 + 0.5,
+                        weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 4.5 + 1.5,
                         // weight: (Math.log(feature.properties.weight) + 1.25) * 1.25,
-                        opacity: 0.75 + Math.sqrt(feature.properties.weight / this.rideMaxWeight) * 0.25,
+                        opacity: 0.75 + Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 0.25,
                     };
                 },
             },
@@ -216,9 +216,9 @@ export default {
         centerUpdated(center) {
             this.center = center;
             this.updateUrlQuery();
-            if (this.showRides)
+            if (this.viewMode === 0)
                 this.loadMatchedRoutes();
-            if (this.showIncidents && this.zoom > this.heatmapMaxZoom)
+            if (this.viewMode === 1 && this.zoom > this.heatmapMaxZoom)
                 this.loadIncidents();
         },
         boundsUpdated(bounds) {
@@ -272,18 +272,19 @@ export default {
                 features: response
             };
             console.log(`${this.rides.features.length} ride sections loaded.`);
-            console.log(this.rides)
-            for (let ride of response.features) {
-                const weight = ride.properties.weight;
-                if (weight > this.rideMaxWeight) this.rideMaxWeight = weight;
+            for (let ride of this.rides.features) {
+                const weight = ride.properties.fileIdSet.length;
+                if (weight > this.rideMaxWeight)
+                    this.rideMaxWeight = weight;
             }
         },
         parseIncidents(response) {
             for (var i = 0; i < response.length; i++) {
                 // console.log(response[i].properties.incidentType);
                 // if (response[i].properties.incidentType != 0)
-                    this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
+                    this.incidentHeatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
             }
+            console.log(this.incidentHeatmap);
             console.log("Incident heatmap loaded.");
         },
         loadDetailedRides() {
