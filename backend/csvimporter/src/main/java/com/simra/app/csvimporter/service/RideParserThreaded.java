@@ -150,7 +150,7 @@ public class RideParserThreaded implements Runnable {
             // filter rides that user did not stop
             if (isUserForgotToStopRecording(optimisedRideBeans)) {
                 LOG.info(fileName + " filtered due to User forgot to stop recording");
-                //return;
+                return;
             }
 
             /*
@@ -273,18 +273,18 @@ public class RideParserThreaded implements Runnable {
      * 5min in 3sec steps = 100steps
      */
     private boolean isUserForgotToStopRecording(List<RideCSV> rideCSVList) {
-
+        outerLoop:
         for (int i = 0; i < rideCSVList.size(); i++) {
             double cumulatedDistance = 0d;
-            for (int j = 0; j < 100; j++) {
+            for (int j = 0; j < 100; j++) { // 100 steps = 5 min
                 try {
-                    cumulatedDistance += Utils.calcDistance(
+                    cumulatedDistance = cumulatedDistance + Utils.calcDistance(
                             Double.parseDouble(rideCSVList.get(i + j).getLat()),
                             Double.parseDouble(rideCSVList.get(i + j).getLon()),
                             Double.parseDouble(rideCSVList.get(i + j + 1).getLat()),
                             Double.parseDouble(rideCSVList.get(i + j + 1).getLon()));
                 } catch (IndexOutOfBoundsException e) {
-                    break;
+                    break outerLoop;
                 }
             }
             if (cumulatedDistance < minDistanceToCoverByUserIn5Min) {
