@@ -33,12 +33,12 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
      * Und wieder nach oben
      *
      */
-
+    @Synchronized
     fun mergeRideIntoLegs(ride: RideEntity) {
 
         val rideAsLeg = parseRideToLeg(ride)
 
-        val intersectingLegs = legRepository.findByGeometryIntersection(rideAsLeg)
+        var intersectingLegs = legRepository.findByGeometryIntersection(rideAsLeg)
 
         if (intersectingLegs.isEmpty()) {
             legRepository.save(rideAsLeg)
@@ -56,8 +56,10 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 nextCoordinate = rideAsLeg.geometryForKotlin.coordinates[i + 1]
             } catch (e: IndexOutOfBoundsException) {
                 pointList.add(coordinate)
-                val newLeg = createLeg(pointList, mutableSetOf<String>().apply { add(ride.fileId) })
-                result.add(newLeg)
+                if (pointList.size > 1) {
+                    val newLeg = createLeg(pointList, mutableSetOf<String>().apply { add(ride.fileId) })
+                    result.add(newLeg)
+                }
                 break
             }
 
@@ -93,7 +95,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 }
 
                 var k = firstIntersectingIndex
-
+                var breaked = false;
                 for (j in i until rideAsLeg.geometryForKotlin.coordinates.size) {
 
                     val coordinateRide = rideAsLeg.geometryForKotlin.coordinates[j]
@@ -106,6 +108,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                         fileIds.add(ride.fileId)
                         result.add(createLeg(pointList, fileIds))
                         pointList.clear()
+                        breaked = true
                         break
                     }
                     if (coordinateRide == coordinateMatchingLeg) {
@@ -117,9 +120,19 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                         fileIds.add(ride.fileId)
                         result.add(createLeg(pointList, fileIds))
                         pointList.clear()
+                        breaked = true
                         break
                     }
                     k += matchingLeg.direction
+                }
+                if (!breaked) {
+                    if (pointList.size > 1) {
+                        i = rideAsLeg.geometryForKotlin.coordinates.size - 1
+                        val fileIds = mutableSetOf<String>().apply { addAll(matchingLeg.leg.propertiesForKotlin.fileIdSetForKotlin) }
+                        fileIds.add(ride.fileId)
+                        result.add(createLeg(pointList, fileIds))
+                        pointList.clear()
+                    }
                 }
                 if (lastIntersectingIndex != null) {
                     val matchingLegFromIntersection = copy(matchingLeg.leg)
@@ -134,6 +147,9 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
                 }
                 legRepository.delete(matchingLeg.leg)
+                legRepository.saveAll(result)
+                intersectingLegs = legRepository.findByGeometryIntersection(rideAsLeg)
+                result.clear()
             }
             i++
         }
@@ -170,7 +186,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
     private fun createLeg(pointList: MutableList<Point>, fileIds: Set<String>): LegEntity {
         val newLeg = LegEntity()
-        newLeg.geometryForKotlin = GeoJsonLineString(pointList)
+        newLeg.geometryForKotlin = GeoJsonLineString(pointList.toMutableList())
         val props = LegPropertyEntity()
         props.fileIdSetForKotlin = mutableSetOf<String>().apply { addAll(fileIds) }
         newLeg.propertiesForKotlin = props
