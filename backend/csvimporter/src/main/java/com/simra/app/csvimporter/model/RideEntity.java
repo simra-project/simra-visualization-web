@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Max;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -138,7 +140,7 @@ public class RideEntity extends RideCSV {
     public void setMapMatchedRideBeans(List<RideCSV> mapMatchedRideBeans) {
         ArrayList<Position> coordinates = new ArrayList<>();
         mapMatchedRideBeans.forEach(ride -> {
-            List<Double> places = Arrays.asList(Double.parseDouble(ride.getLon()), Double.parseDouble(ride.getLat()));
+            List<Double> places = Arrays.asList(round(Double.parseDouble(ride.getLon()), 5), round(Double.parseDouble(ride.getLat()), 5));
             Position pos = new Position(places);
             coordinates.add(pos);
         });
@@ -147,5 +149,13 @@ public class RideEntity extends RideCSV {
         ArrayList<Long> ts = new ArrayList<>();
         mapMatchedRideBeans.forEach(ride -> ts.add((ride).getTimeStamp()));
         this.setTsMapMatched(ts);
+    }
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
