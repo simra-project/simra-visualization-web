@@ -19,9 +19,8 @@ import java.util.concurrent.atomic.LongAccumulator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.simra.app.csvimporter.model.Statistic.ProfileAgeGroupEntry;
-
 import static com.mongodb.client.model.Filters.*;
+import static com.simra.app.csvimporter.model.Statistic.ProfileAgeGroupEntry;
 
 public class StatisticsService {
     private static final List<String> BIKE_TYPES = Arrays.asList("Not Chosen", "City-/Trekking Bike", "Road Racing Bike", "E-Bike", "Recumbent Bicycle", "Freight Bicycle", "Tandem Bicycle", "Mountainbike", "Other");

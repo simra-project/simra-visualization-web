@@ -1,12 +1,6 @@
 package com.simra.app.csvimporter.model;
 
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.CsvBindByName;
-import org.bson.Document;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * The type Ride csv.

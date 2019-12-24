@@ -154,7 +154,7 @@ public class RecursiveWatcherService implements MonitorService {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         LOG.info(String.format("registering %s in watcher service", dir.toString()));
-                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE});
+                        WatchKey watchKey = dir.register(watcher, ENTRY_CREATE);
                         keys.put(watchKey, dir);
                         return FileVisitResult.CONTINUE;
                     }

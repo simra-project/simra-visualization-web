@@ -28,9 +28,9 @@ public class IncidentParserThreaded implements Runnable {
     public IncidentParserThreaded(String fileName, IncidentRepository incidentRepository, String csvString, String region) {
 
         this.incidentRepository = incidentRepository;
-        this.csvString=csvString;
-        this.fileName=fileName;
-        this.region=region;
+        this.csvString = csvString;
+        this.fileName = fileName;
+        this.region = region;
     }
 
     @Override

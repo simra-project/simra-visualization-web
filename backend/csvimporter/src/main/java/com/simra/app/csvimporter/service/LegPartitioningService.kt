@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 import kotlin.math.abs
 
 
-data class LegIntersectionContainer(val leg: LegEntity, val index: Int, val direction: Int);
+data class LegIntersectionContainer(val leg: LegEntity, val index: Int, val direction: Int)
 
 
 @Component
@@ -95,7 +95,7 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
                 }
 
                 var k = firstIntersectingIndex
-                var breaked = false;
+                var breaked = false
                 for (j in i until rideAsLeg.geometryForKotlin.coordinates.size) {
 
                     val coordinateRide = rideAsLeg.geometryForKotlin.coordinates[j]
@@ -160,11 +160,11 @@ class LegPartitioningService(@Autowired val legRepository: LegRepository) {
 
     private fun findLegWithSuccessiveCoordinates(legs: Set<LegEntity>, coordinate: Point, nextCoordinate: Point): LegIntersectionContainer? {
         for (leg in legs) {
-            var nextIndex = -1;
-            var coordIndex = -1;
+            var nextIndex = -1
+            var coordIndex = -1
             for (index in leg.geometryForKotlin.coordinates.indices) {
                 if (leg.geometryForKotlin.coordinates[index] == coordinate)
-                    coordIndex = index;
+                    coordIndex = index
                 if (leg.geometryForKotlin.coordinates[index] == nextCoordinate)
                     nextIndex = index
                 if (abs(nextIndex - coordIndex) == 1 && nextIndex != -1 && coordIndex != -1) {

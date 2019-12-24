@@ -183,10 +183,10 @@ export default {
             },
             geoJsonOptionsDetail: {
                 style: {
-                        color: 'hsl(217, 71%, 53%)',
-                        weight: 3,
-                        opacity: 0.6
-                    }
+                    color: 'hsl(217, 71%, 53%)',
+                    weight: 3,
+                    opacity: 0.6
+                }
             },
             geoJsonStyleHighlight: {
                 // color: 'hsl(0,100%,50%)',
@@ -201,7 +201,7 @@ export default {
             },
             geoJsonOptionsMarker: {
                 onEachFeature: function onEachFeature(feature, layer) {
-                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${feature.properties.rideId}</td></tr><tr><td>Scary:</td><td>${feature.properties.scary}</td></tr></table><p>${feature.properties.description}</p>`);
+                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${ feature.properties.rideId }</td></tr><tr><td>Scary:</td><td>${ feature.properties.scary }</td></tr></table><p>${ feature.properties.description }</p>`);
                 }
             }
         };
@@ -230,7 +230,8 @@ export default {
                     lng: this.center.lng,
                     zoom: this.zoom,
                 },
-            }).catch(() => {});
+            }).catch(() => {
+            });
         },
         clickedOnRide(event, ride) {
             if (this.rideHighlightId != null) this.unfocusRideHighlight();
@@ -269,7 +270,7 @@ export default {
                 type: "FeatureCollection",
                 features: response
             };
-            console.log(`${this.rides.features.length} ride sections loaded.`);
+            console.log(`${ this.rides.features.length } ride sections loaded.`);
             for (let ride of this.rides.features) {
                 const weight = ride.properties.fileIdSet.length;
                 if (weight > this.rideMaxWeight)
@@ -280,7 +281,7 @@ export default {
             for (var i = 0; i < response.length; i++) {
                 // console.log(response[i].properties.incidentType);
                 // if (response[i].properties.incidentType != 0)
-                    this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
+                this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
             }
             console.log(this.incident_heatmap);
             console.log("Incident heatmap loaded.");
@@ -294,7 +295,7 @@ export default {
 
             let coords = [];
 
-            for (let y = min_y; y < max_y; y++ ) {
+            for (let y = min_y; y < max_y; y++) {
                 for (let x = min_x; x < max_x; x++) {
                     coords.push([x, y]);
                 }
@@ -302,8 +303,8 @@ export default {
 
             this.apiWorker.postMessage(["routes", coords]);
 
-            console.log(`minx: ${min_x}, maxx: ${max_x}`);
-            console.log(`miny: ${min_y}, maxy: ${max_y}`);
+            console.log(`minx: ${ min_x }, maxx: ${ max_x }`);
+            console.log(`miny: ${ min_y }, maxy: ${ max_y }`);
         },
 
         loadMatchedRoutes() {
@@ -312,7 +313,7 @@ export default {
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
 
-            this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1) ]);
+            this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1)]);
             // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
 
         },
@@ -470,10 +471,12 @@ export default {
                         background-color: hsl(190, 71%, 53%);
                         opacity: 0.8;
                     }
+
                     &.c2 {
                         background-color: hsl(215, 71%, 53%);
                         opacity: 0.9;
                     }
+
                     &.c3 {
                         background-color: hsl(240, 71%, 53%);
                     }
