@@ -13,6 +13,7 @@
         "buefy": "^0.8.8",
         "core-js": "^3.6.0",
         "countup.js": "^2.0.4",
+        "epic-spinners": "^1.1.0",
         "leaflet": "^1.6.0",
         "leaflet-defaulticon-compatibility": "^0.1.1",
         "leaflet-geosearch": "^2.7.0",

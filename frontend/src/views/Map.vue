@@ -51,11 +51,31 @@
                 <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-        <l-control position="topright"> <!-- Using CSS Magic this will appear top-center -->
-            <b-tabs type="is-toggle-rounded" v-model="viewMode">
-                <b-tab-item label="Bike rides" icon="biking"/>
-                <b-tab-item label="Incidents" icon="car-crash"/>
-            </b-tabs>
+        <l-control position="topcenter" class="topcenter">
+            <div class="ui-switcher">
+                <b-tabs type="is-toggle-rounded" v-model="viewMode">
+                    <b-tab-item label="Bike rides" icon="biking"/>
+                    <b-tab-item label="Incidents" icon="car-crash"/>
+                </b-tabs>
+            </div>
+        </l-control>
+
+        <l-control position="bottomcenter" class="bottomcenter">
+            <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
+                <div class="overlay overlay-loading">
+                    <div class="spinner-container">
+                        <scaling-squares-spinner
+                            :animation-duration="1750"
+                            :size="30"
+                            color="hsl(217, 71%, 53%)"
+                        />
+
+                        <div class="text">Loading Map Data</div>
+                    </div>
+
+                    <b-progress type="is-primary is-small" :value="loadingProgress"/>
+                </div>
+            </div>
         </l-control>
 
         <l-control position="bottomleft">
@@ -123,8 +143,8 @@ import { OpenStreetMapProvider } from "leaflet-geosearch";
 import VGeosearch from "vue2-leaflet-geosearch";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
+import { ScalingSquaresSpinner } from 'epic-spinners';
 import { ApiService } from "@/services/ApiService";
-
 
 export default {
     components: {
@@ -140,6 +160,7 @@ export default {
         VueSlider,
         VGeosearch,
         LGeoJson,
+        ScalingSquaresSpinner,
     },
     data() {
         return {
@@ -148,6 +169,7 @@ export default {
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
             viewMode: 0, // 0 - rides, 1 - incidents
+            loadingProgress: null,
             rides: [],
             rideHighlightId: null,
             rideHighlightContent: null,
@@ -306,7 +328,6 @@ export default {
             console.log(`minx: ${ min_x }, maxx: ${ max_x }`);
             console.log(`miny: ${ min_y }, maxy: ${ max_y }`);
         },
-
         loadMatchedRoutes() {
             let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
@@ -317,7 +338,6 @@ export default {
             // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
 
         },
-
         loadIncidents() {
             let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
@@ -343,8 +363,22 @@ export default {
         //         })
         //     }
         // },
+        updateLoadingView(progress, expectedTotal) {
+            if (expectedTotal === 0) return;
+            let currentProgress = Math.min(Math.max(progress / expectedTotal, 0.0), 1.0);
+
+            const minOffset = 0.1;
+            this.loadingProgress = Math.min(minOffset + (currentProgress * (1.0 - minOffset)), 1.0) * 100;
+
+            if (progress === expectedTotal) {
+                setTimeout(() => this.loadingProgress = null, 1200);
+            }
+        },
         handleWorkerMessage(message) {
             switch (message.data[0]) {
+                case "progress":
+                    this.updateLoadingView(message.data[1], message.data[2]);
+                    break;
                 case "routes":
                     console.log(message.data[1]);
                     this.detailedRides.push(...message.data[1]);
@@ -399,15 +433,15 @@ export default {
         flex: 1 0;
     }
 
-    .leaflet-control-container {
-        .leaflet-top.leaflet-right {
+    .leaflet-control {
+        &.topcenter {
+            position: absolute;
             top: 0;
-            bottom: initial;
             width: 300px;
             left: calc(50% - 150px);
             right: calc(50% - 150px);
 
-            .leaflet-control {
+            .ui-switcher {
                 width: 100%;
                 margin: 10px 0 0;
                 display: flex;
@@ -424,67 +458,121 @@ export default {
                 }
             }
         }
-    }
 
-    .overlay {
-        padding: 10px;
-        background-color: white;
-        -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-        box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-        color: #4a4a4a;
-        position: relative;
+        &.bottomcenter {
+            position: absolute;
+            bottom: 0;
+            width: 300px;
+            left: calc(50% - 150px);
+            right: calc(50% - 150px);
 
-        .subtitle {
-            color: #4a4a4a;
-            margin-bottom: 8px;
-        }
+            .loading-container {
+                $loadingProgressHeight: 0.4rem;
 
-        &.overlay-debug {
-            opacity: 0.5;
-            transition: opacity 0.5s;
-            max-width: 400px;
+                width: 100%;
+                margin: 0 0 calc(12px + #{$loadingProgressHeight});
+                display: flex;
+                justify-content: center;
+                transition: 1s opacity ease 0.2s;
 
-            &:hover {
-                opacity: 1;
+                &.invisible {
+                    opacity: 0;
+                }
+
+                .overlay {
+                    padding: 0;
+
+                    & > div {
+                        display: flex;
+                        padding: 10px 40px 10px 20px;
+
+                        .scaling-squares-spinner {
+                            flex: 0 1 30px;
+                        }
+
+                        .text {
+                            flex: 1 0;
+                            font-size: 16px;
+                            align-self: center;
+                            padding-left: 20px;
+                        }
+                    }
+
+                    .progress-wrapper {
+                        position: relative;
+                        top: $loadingProgressHeight;
+                        margin-top: -$loadingProgressHeight;
+                        padding: 0;
+
+                        progress {
+                            border-radius: 0 0 6px 6px;
+                            height: $loadingProgressHeight;
+                        }
+                    }
+                }
             }
         }
 
-        &.overlay-legend {
-            padding: 6px 8px;
-            border: 1px solid #b5b5b5cc;
-            -webkit-box-shadow: none;
-            box-shadow: none;
+        .overlay {
+            padding: 10px;
+            background-color: white;
+            -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+            box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+            color: #4a4a4a;
+            position: relative;
 
-            div {
-                display: inline-block;
+            .subtitle {
+                color: #4a4a4a;
+                margin-bottom: 8px;
+            }
 
-                & + div {
-                    margin-left: 4px;
+            &.overlay-debug {
+                opacity: 0.5;
+                transition: opacity 0.5s;
+                max-width: 400px;
+
+                &:hover {
+                    opacity: 1;
                 }
+            }
 
-                &.color-box {
-                    width: 15px;
-                    height: 15px;
-                    margin-bottom: -2.5px;
+            &.overlay-legend {
+                padding: 6px 8px;
+                border: 1px solid #b5b5b5cc;
+                -webkit-box-shadow: none;
+                box-shadow: none;
 
-                    &.c1 {
-                        background-color: hsl(190, 71%, 53%);
-                        opacity: 0.8;
+                div {
+                    display: inline-block;
+
+                    & + div {
+                        margin-left: 4px;
                     }
 
-                    &.c2 {
-                        background-color: hsl(215, 71%, 53%);
-                        opacity: 0.9;
+                    &.color-box {
+                        width: 15px;
+                        height: 15px;
+                        margin-bottom: -2.5px;
+
+                        &.c1 {
+                            background-color: hsl(190, 71%, 53%);
+                            opacity: 0.8;
+                        }
+
+                        &.c2 {
+                            background-color: hsl(215, 71%, 53%);
+                            opacity: 0.9;
+                        }
+
+                        &.c3 {
+                            background-color: hsl(240, 71%, 53%);
+                        }
                     }
 
-                    &.c3 {
-                        background-color: hsl(240, 71%, 53%);
+                    &.text-box {
+                        font-size: 14px;
+                        margin-left: 6px;
                     }
-                }
-
-                &.text-box {
-                    font-size: 14px;
-                    margin-left: 6px;
                 }
             }
         }
