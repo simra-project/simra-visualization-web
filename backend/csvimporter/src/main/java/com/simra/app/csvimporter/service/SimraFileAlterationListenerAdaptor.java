@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -182,11 +183,15 @@ public class SimraFileAlterationListenerAdaptor extends FileAlterationListenerAd
          * Start thread to parse file and save incidents
          * INFO: QUEUE
          */
-        // incidents are parsed parallel to ride
 
-        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(f.getName(), incidentRepository, csvString, this.region);
-        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, legPartitioningService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min);
-        this.rideIncidentExecutor.execute(incidentParserThreaded);
+        HashMap<String, Object> paramsIncidentParser= new HashMap<>();
+        paramsIncidentParser.put("incidentRepository",incidentRepository);
+        paramsIncidentParser.put("executor",this.rideIncidentExecutor);
+
+
+
+
+        RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, legPartitioningService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min, paramsIncidentParser);
         this.rideIncidentExecutor.execute(rideParserThreaded);
 
     }

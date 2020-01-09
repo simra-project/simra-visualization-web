@@ -4,6 +4,7 @@ import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.simra.app.csvimporter.controller.IncidentRepository;
 import com.simra.app.csvimporter.controller.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.filter.RideSmoother;
@@ -15,10 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 public class RideParserThreaded implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(RideParserThreaded.class);
@@ -46,6 +45,8 @@ public class RideParserThreaded implements Runnable {
 
     private Integer minDistanceToCoverByUserIn5Min;
 
+    private HashMap<String, Object> paramsIncidentParser;
+
     public RideParserThreaded(
             String fileName,
             RideRepository rideRepository,
@@ -58,7 +59,8 @@ public class RideParserThreaded implements Runnable {
             Integer minRideDistance,
             Integer minRideDuration,
             Integer maxRideAverageSpeed,
-            Integer minDistanceToCoverByUserIn5Min) {
+            Integer minDistanceToCoverByUserIn5Min,
+            HashMap<String, Object> paramsIncidentParser) {
 
         this.fileName = fileName;
         this.csvString = csvString;
@@ -71,6 +73,7 @@ public class RideParserThreaded implements Runnable {
         this.minRideDuration = minRideDuration * 60 * 1000; // minutes to millis
         this.maxRideAverageSpeed = maxRideAverageSpeed;
         this.minDistanceToCoverByUserIn5Min = minDistanceToCoverByUserIn5Min;
+        this.paramsIncidentParser= paramsIncidentParser;
     }
 
 
@@ -167,6 +170,8 @@ public class RideParserThreaded implements Runnable {
 
             legPartitioningService.mergeRideIntoLegs(rideEntity);
 
+            // parse incident before saving ride.
+            this.runIncidentParserThread();
             rideRepository.save(rideEntity);
 
         } catch (Exception e) {
@@ -175,6 +180,14 @@ public class RideParserThreaded implements Runnable {
         LOG.info("Ride parser complete {} ", this.fileName);
 
 
+    }
+
+    private void runIncidentParserThread(){
+        // incidents are parsed subsequently to ride
+        IncidentRepository incidentRepository = (IncidentRepository)this.paramsIncidentParser.get("incidentRepository");
+        ExecutorService incidentExecutor= (ExecutorService)this.paramsIncidentParser.get("executor");
+        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(this.fileName, incidentRepository, this.csvString, this.region);
+        incidentExecutor.execute(incidentParserThreaded);
     }
 
     @NotNull
