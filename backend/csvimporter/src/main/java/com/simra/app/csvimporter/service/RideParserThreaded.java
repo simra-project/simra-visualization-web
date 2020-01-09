@@ -4,7 +4,7 @@ import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.simra.app.csvimporter.controller.LegRepository;
+import com.simra.app.csvimporter.controller.IncidentRepository;
 import com.simra.app.csvimporter.controller.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.filter.RideSmoother;
@@ -16,10 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 public class RideParserThreaded implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(RideParserThreaded.class);
@@ -30,8 +28,6 @@ public class RideParserThreaded implements Runnable {
     private String csvString;
 
     private RideRepository rideRepository;
-
-    private LegRepository legRepository;
 
     private RideSmoother rideSmoother;
 
@@ -49,10 +45,11 @@ public class RideParserThreaded implements Runnable {
 
     private Integer minDistanceToCoverByUserIn5Min;
 
+    private HashMap<String, Object> paramsIncidentParser;
+
     public RideParserThreaded(
             String fileName,
             RideRepository rideRepository,
-            LegRepository legRepository,
             Float minAccuracy,
             double rdpEpsilon,
             MapMatchingService mapMatchingService,
@@ -62,12 +59,12 @@ public class RideParserThreaded implements Runnable {
             Integer minRideDistance,
             Integer minRideDuration,
             Integer maxRideAverageSpeed,
-            Integer minDistanceToCoverByUserIn5Min) {
+            Integer minDistanceToCoverByUserIn5Min,
+            HashMap<String, Object> paramsIncidentParser) {
 
         this.fileName = fileName;
         this.csvString = csvString;
         this.rideRepository = rideRepository;
-        this.legRepository = legRepository;
         this.rideSmoother = new RideSmoother(minAccuracy, rdpEpsilon);
         this.mapMatchingService = mapMatchingService;
         this.legPartitioningService = legPartitioningService;
@@ -76,6 +73,7 @@ public class RideParserThreaded implements Runnable {
         this.minRideDuration = minRideDuration * 60 * 1000; // minutes to millis
         this.maxRideAverageSpeed = maxRideAverageSpeed;
         this.minDistanceToCoverByUserIn5Min = minDistanceToCoverByUserIn5Min;
+        this.paramsIncidentParser= paramsIncidentParser;
     }
 
 
@@ -169,65 +167,11 @@ public class RideParserThreaded implements Runnable {
             rideEntity.setMinuteOfDay(Utils.getMinuteOfDay(rideEntity.getTimeStamp()));
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));
 
-            /*
-            List<LegEntity> rideResources = new ArrayList<>();
-            //List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
-            //rideResources = mapRideEntityToResource(rideEntities, rideResources, true);
-
-            RideEntity ride1 = new RideEntity();
-            RideEntity ride2 = new RideEntity();
-            RideEntity ride3 = new RideEntity();
-
-            Point[] array1 = {
-                    new Point(0d, 1d),
-                    new Point(1d, 1d),
-                    new Point(2d, 1d),
-                    new Point(3d, 1d),
-                    new Point(4d, 1d),
-                    new Point(5d, 1d),
-                    new Point(6d, 1d)
-            };
-            LineString geoJson1 = new LineString(Arrays.stream(array1).map(it -> new Position(Arrays.asList(it.getX(), it.getY()))).collect(Collectors.toList()));
-
-
-            Point[] array2 = {
-                    new Point(0d, 2d),
-                    new Point(1d, 1d),
-                    new Point(2d, 1d),
-                    new Point(3d, 1d),
-                    new Point(4d, 1d),
-                    new Point(5d, 2d),
-                    new Point(6d, 2d)
-            };
-            LineString geoJson2 = new LineString(Arrays.stream(array2).map(it -> new Position(Arrays.asList(it.getX(), it.getY()))).collect(Collectors.toList()));
-
-
-            Point[] array3 = {
-                    new Point(0d, 0d),
-                    new Point(1d, 0d),
-                    new Point(2d, 1d),
-                    new Point(3d, 1d),
-                    new Point(4d, 1d),
-                    new Point(5d, 1d),
-                    new Point(6d, 0d)
-            };
-            LineString geoJson3 = new LineString(Arrays.stream(array3).map(it -> new Position(Arrays.asList(it.getX(), it.getY()))).collect(Collectors.toList()));
-            ride1.setLocationMapMatched(geoJson1);
-            ride2.setLocationMapMatched(geoJson2);
-            ride3.setLocationMapMatched(geoJson3);
-
-            ride1.setFileId("File1");
-            ride2.setFileId("File2");
-            ride3.setFileId("File3");
-
-
-            legPartitioningService.mergeRideIntoLegs(ride1);
-            legPartitioningService.mergeRideIntoLegs(ride2);
-            legPartitioningService.mergeRideIntoLegs(ride3);
-*/
 
             legPartitioningService.mergeRideIntoLegs(rideEntity);
 
+            // parse incident before saving ride.
+            this.runIncidentParserThread();
             rideRepository.save(rideEntity);
 
         } catch (Exception e) {
@@ -236,6 +180,14 @@ public class RideParserThreaded implements Runnable {
         LOG.info("Ride parser complete {} ", this.fileName);
 
 
+    }
+
+    private void runIncidentParserThread(){
+        // incidents are parsed subsequently to ride
+        IncidentRepository incidentRepository = (IncidentRepository)this.paramsIncidentParser.get("incidentRepository");
+        ExecutorService incidentExecutor= (ExecutorService)this.paramsIncidentParser.get("executor");
+        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(this.fileName, incidentRepository, this.csvString, this.region);
+        incidentExecutor.execute(incidentParserThreaded);
     }
 
     @NotNull
