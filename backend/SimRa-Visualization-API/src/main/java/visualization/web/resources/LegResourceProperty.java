@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.Set;
+
 /*
 Representation of a Leg
  */
@@ -16,10 +18,10 @@ Representation of a Leg
 public class LegResourceProperty {
 
     @JsonProperty
-    private Integer weight;
+    private Set<String> fileIdSet;
 
     //Lombock and Kotlin seem to have difficulties interacting. Looking for a nicer fix
-    public void setWeightForKotlin(Integer weight) {
-        this.weight = weight;
+    public void setFileIdSetForKotlin(Set<String> fileIdSet) {
+        this.fileIdSet = fileIdSet;
     }
 }

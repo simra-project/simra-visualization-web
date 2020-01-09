@@ -5,8 +5,6 @@ import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
 import visualization.web.resources.IncidentResourceProperty;
 
-import java.util.Optional;
-
 @Component
 public class IncidentResourceMapper {
 
@@ -33,6 +31,7 @@ public class IncidentResourceMapper {
         incidentResourceProperty.setI8Taxi(incidentEntity.getI8());
         incidentResourceProperty.setI9Other(incidentEntity.getI9());
         incidentResourceProperty.setI10EScooter(incidentEntity.getI10());
+        incidentResourceProperty.setIncidentType(incidentEntity.getIncident());
 
         incidentResource.setGeometry(incidentEntity.getLocation());
         incidentResource.setProperties(incidentResourceProperty);
