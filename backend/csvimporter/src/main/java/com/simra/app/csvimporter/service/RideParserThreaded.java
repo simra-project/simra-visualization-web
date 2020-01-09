@@ -73,7 +73,7 @@ public class RideParserThreaded implements Runnable {
         this.minRideDuration = minRideDuration * 60 * 1000; // minutes to millis
         this.maxRideAverageSpeed = maxRideAverageSpeed;
         this.minDistanceToCoverByUserIn5Min = minDistanceToCoverByUserIn5Min;
-        this.paramsIncidentParser= paramsIncidentParser;
+        this.paramsIncidentParser = paramsIncidentParser;
     }
 
 
@@ -171,7 +171,7 @@ public class RideParserThreaded implements Runnable {
             legPartitioningService.mergeRideIntoLegs(rideEntity);
 
             // parse incident before saving ride.
-            this.runIncidentParserThread();
+            this.runIncidentParserThread(rideEntity);
             rideRepository.save(rideEntity);
 
         } catch (Exception e) {
@@ -182,11 +182,11 @@ public class RideParserThreaded implements Runnable {
 
     }
 
-    private void runIncidentParserThread(){
+    private void runIncidentParserThread(RideEntity rideEntity) {
         // incidents are parsed subsequently to ride
-        IncidentRepository incidentRepository = (IncidentRepository)this.paramsIncidentParser.get("incidentRepository");
-        ExecutorService incidentExecutor= (ExecutorService)this.paramsIncidentParser.get("executor");
-        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(this.fileName, incidentRepository, this.csvString, this.region);
+        IncidentRepository incidentRepository = (IncidentRepository) this.paramsIncidentParser.get("incidentRepository");
+        ExecutorService incidentExecutor = (ExecutorService) this.paramsIncidentParser.get("executor");
+        IncidentParserThreaded incidentParserThreaded = new IncidentParserThreaded(this.fileName, incidentRepository, this.csvString, this.region, rideEntity);
         incidentExecutor.execute(incidentParserThreaded);
     }
 

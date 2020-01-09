@@ -5,8 +5,6 @@ import com.mongodb.client.model.geojson.Point;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.*;
-
 import java.util.Date;
 import java.util.HashMap;
 
@@ -40,6 +38,8 @@ public class IncidentEntity extends IncidentCSV {
      */
     public Point location;
 
+    public Point locationMapMatched;
+
     public IncidentEntity() {
     }
 
@@ -53,6 +53,14 @@ public class IncidentEntity extends IncidentCSV {
 
     public void setLocation(Point location) {
         this.location = location;
+    }
+
+    public Point getLocationMapMatched() {
+        return locationMapMatched;
+    }
+
+    public void setLocationMapMatched(Point locationMapMatched) {
+        this.locationMapMatched = locationMapMatched;
     }
 
     public Date getAddedAt() {
