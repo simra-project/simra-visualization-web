@@ -74,6 +74,7 @@ public class IncidentParserThreaded implements Runnable {
                 Point geoPoint = new Point(new Position(places));
                 item.setLocation(geoPoint);
                 item.setAddedAt(new Date());
+                item.cleanDesc();
 
                 item.setMinuteOfDay(Utils.getMinuteOfDay(item.getTs()));
                 item.setWeekday(Utils.getWeekday(item.getTs()));
