@@ -238,7 +238,7 @@ export default {
                     return L.marker(latlng, {
                         icon: ExtraMarkers.icon({
                             icon: icon,
-                            markerColor: feature.properties.scary ? "orange-dark" : "cyan",
+                            markerColor: feature.properties.scary ? "orange-dark" : "blue",
                             prefix: "fa",
                         }),
                     });
@@ -497,6 +497,7 @@ export default {
                 nav.tabs.is-toggle ul {
                     li:not(.is-active) a {
                         background-color: white;
+                        color: #3273dc;
                     }
                 }
 
@@ -639,4 +640,24 @@ export default {
 
 <style lang="less">
     @import "~leaflet-extra-markers/src/assets/less/leaflet.extra-markers";
+
+    .extra-marker {
+        background-image: url("../assets/markers_custom.png");
+    }
+
+    .extra-marker-shadow {
+        background-image: url("../assets/markers_shadow.png");
+        opacity: 0.75;
+    }
+
+    @media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),
+    (-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {
+        .extra-marker {
+            background-image: url("../assets/markers_custom@2x.png");
+        }
+
+        .extra-marker-shadow {
+            background-image: url("../assets/markers_shadow@2x.png");
+        }
+    }
 </style>
