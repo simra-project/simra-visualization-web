@@ -137,13 +137,15 @@
 
 <script>
 import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
+import * as L from "leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
+import { ExtraMarkers } from "leaflet-extra-markers";
 import VGeosearch from "vue2-leaflet-geosearch";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
-import { ScalingSquaresSpinner } from 'epic-spinners';
+import { ScalingSquaresSpinner } from "epic-spinners";
 import { ApiService } from "@/services/ApiService";
 
 export default {
@@ -211,7 +213,6 @@ export default {
                 }
             },
             geoJsonStyleHighlight: {
-                // color: 'hsl(0,100%,50%)',
                 color: "hsl(171, 100%, 41%)",
                 weight: 4,
                 opacity: 0.8,
@@ -222,10 +223,56 @@ export default {
                 opacity: 0.6,
             },
             geoJsonOptionsMarker: {
-                onEachFeature: function onEachFeature(feature, layer) {
-                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${ feature.properties.rideId }</td></tr><tr><td>Scary:</td><td>${ feature.properties.scary }</td></tr></table><p>${ feature.properties.description }</p>`);
-                }
-            }
+                pointToLayer: function (feature, latlng) {
+                    let icon = "fa-question";
+                    if (feature.properties.i1Bus) icon = "fa-bus";
+                    if (feature.properties.i2Cyclist) icon = "fa-bicycle";
+                    if (feature.properties.i3Pedestrian) icon = "fa-walking";
+                    if (feature.properties.i4DeliveryVan) icon = "fa-shipping-fast";
+                    if (feature.properties.i5Truck) icon = "fa-truck-moving";
+                    if (feature.properties.i6Motorcycle) icon = "fa-motorcycle";
+                    if (feature.properties.i7Car) icon = "fa-car";
+                    if (feature.properties.i8Taxi) icon = "fa-taxi";
+                    if (feature.properties.i10EScooter) icon = "fa-bolt";
+
+                    return L.marker(latlng, {
+                        icon: ExtraMarkers.icon({
+                            icon: icon,
+                            markerColor: feature.properties.scary ? "orange-dark" : "cyan",
+                            prefix: "fa",
+                        }),
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    let details = feature.properties;
+                    let date = new Date(details.ts).toLocaleString("en-DE", { timeZone: "Europe/Berlin" });
+
+                    const incidentTypes = ["Nothing", "Close Pass", "Someone pulling in or out", "Near left or right hook", "Someone approaching head on", "Tailgating", "Near-Dooring", "Dodging an Obstacle", "Other"];
+                    let incidentType = (details.incidentType > 0 && details.incidentType < incidentTypes.length) ? incidentTypes[details.incidentType] : "Unknown";
+
+                    let participant = "Unknown";
+                    if (details.i1Bus) participant = "Bus";
+                    if (details.i2Cyclist) participant = "Cyclist";
+                    if (details.i3Pedestrian) participant = "Pedestrian";
+                    if (details.i4DeliveryVan) participant = "Delivery Van";
+                    if (details.i5Truck) participant = "Truck";
+                    if (details.i6Motorcycle) participant = "Motorcycle";
+                    if (details.i7Car) participant = "Car";
+                    if (details.i8Taxi) participant = "Taxi";
+                    if (details.i9Other) participant = "Other";
+                    if (details.i10EScooter) participant = "E-Scooter";
+
+                    layer.bindPopup(`
+                        ${ feature.properties.scary ? "<strong>Scary</strong>" : "" } Incident on ${ date }.
+                        <br><hr style="margin: 8px -20px 12px;">
+
+                        Type: <strong>${ incidentType }</strong><br>
+                        Participant: <strong>${ participant }</strong><br>
+
+                        ${ details.description !== null ? "<p>" + details.description + "</p>" : "" }
+                    `);
+                },
+            },
         };
     },
     methods: {
@@ -473,10 +520,16 @@ export default {
                 margin: 0 0 calc(12px + #{$loadingProgressHeight});
                 display: flex;
                 justify-content: center;
-                transition: 1s opacity ease 0.2s;
+                transition: opacity 1s ease 0.2s, filter 1s ease 0.2s;
 
                 &.invisible {
                     opacity: 0;
+                    filter: grayscale(.9);
+
+                    .scaling-squares-spinner, .scaling-squares-spinner .square {
+                        opacity: 0.6;
+                        transition: opacity 1s linear;
+                    }
                 }
 
                 .overlay {
@@ -505,7 +558,7 @@ export default {
                         padding: 0;
 
                         progress {
-                            border-radius: 0 0 6px 6px;
+                            border-radius: 0 0 4px 4px;
                             height: $loadingProgressHeight;
                         }
                     }
@@ -582,5 +635,8 @@ export default {
     @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
     @import '~leaflet-geosearch/dist/style.css';
     @import '~leaflet-geosearch/assets/css/leaflet.css';
+</style>
 
+<style lang="less">
+    @import "~leaflet-extra-markers/src/assets/less/leaflet.extra-markers";
 </style>
