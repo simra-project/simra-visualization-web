@@ -94,4 +94,11 @@ public class IncidentEntity extends IncidentCSV {
     public void setRegion(String region) {
         this.region = region;
     }
+
+    public void cleanDesc(){
+        if(!this.getDesc().isEmpty()){
+            this.setDesc(this.getDesc().replace(";linebreak;","\n"));
+            this.setDesc(this.getDesc().replace(";komma;",","));
+        }
+    }
 }
