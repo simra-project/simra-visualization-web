@@ -117,11 +117,12 @@
             :min-opacity="heatmapMinOpacity"
             :max-zoom="10" :blur="heatmapBlur"
             :max="heatmapMaxPointIntensity"/>
-        <l-geo-json v-for="incident in incidents"
-                    v-else-if="viewMode === 1"
+        <l-geo-json v-else-if="viewMode === 1"
+                    v-for="incident in incidents"
+                    :key="incident.key"
                     :geojson="incident"
                     :options="geoJsonOptionsMarker">
-            <l-popup :content="incident.description"/>
+            <l-popup/>
         </l-geo-json>
 
         <!--    Stellt zusammengefasste Rides dar    -->
@@ -273,7 +274,7 @@ export default {
                     if (details.i10EScooter) participant = "E-Scooter";
 
                     layer.bindPopup(`
-                        ${ feature.properties.scary ? "<strong>Scary</strong>" : "" } Incident on ${ date }.
+                        ${ details.scary ? "<strong>Scary</strong>" : "" } Incident on ${ date }.
                         <br><hr style="margin: 8px -20px 12px;">
 
                         Type: <strong>${ incidentType }</strong><br>
