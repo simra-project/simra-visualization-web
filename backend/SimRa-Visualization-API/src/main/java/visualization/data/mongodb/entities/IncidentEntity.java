@@ -66,7 +66,7 @@ public class IncidentEntity {
     @Setter
     @AllArgsConstructor
     public static class CompositeKey implements Serializable {
-        private String rideid;
+        private String rideId;
         private String key;
     }
 

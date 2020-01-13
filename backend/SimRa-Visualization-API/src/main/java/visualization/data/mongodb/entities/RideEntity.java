@@ -18,6 +18,8 @@ public class RideEntity {
     @Id
     private String id;
 
+    private String rideId;
+
     private GeoJsonLineString location;
 
     private ArrayList<Long> ts;

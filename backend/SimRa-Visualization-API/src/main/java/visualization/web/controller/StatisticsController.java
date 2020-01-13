@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import visualization.service.StatisticsService;
 import visualization.web.resources.StatisticsResource;
 
-import static com.mongodb.client.model.Filters.eq;
-
-
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class StatisticsController {

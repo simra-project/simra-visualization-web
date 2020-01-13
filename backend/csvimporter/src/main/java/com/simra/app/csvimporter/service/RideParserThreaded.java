@@ -4,7 +4,7 @@ import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.simra.app.csvimporter.controller.RideRepository;
+import com.simra.app.csvimporter.repository.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.filter.RideSmoother;
 import com.simra.app.csvimporter.model.RideCSV;

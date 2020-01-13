@@ -4,7 +4,7 @@ import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.simra.app.csvimporter.controller.IncidentRepository;
+import com.simra.app.csvimporter.repository.IncidentRepository;
 import com.simra.app.csvimporter.model.IncidentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

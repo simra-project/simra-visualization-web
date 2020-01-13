@@ -15,4 +15,7 @@ public interface RideService {
 
     List<RideResource> getRidesAtTime(Long fromTs, Long untilTs);
 
+    Boolean isRideImported(String rideId);
+
+    Long getImportedRidesCount();
 }

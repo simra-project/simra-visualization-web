@@ -1,6 +1,6 @@
 package com.simra.app.csvimporter;
 
-import com.simra.app.csvimporter.controller.MonitorService;
+import com.simra.app.csvimporter.repository.MonitorService;
 import com.simra.app.csvimporter.service.StatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
