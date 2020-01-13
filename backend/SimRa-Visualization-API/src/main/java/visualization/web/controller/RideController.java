@@ -42,7 +42,7 @@ public class RideController {
     }
 
     //get rides between two timestamps
-    @GetMapping(value = "/rides")
+    @GetMapping(value = "/rides/time")
     public HttpEntity<List<RideResource>> getRidesBetweenTimestamps(@RequestParam(value = "startTs") Long startTs,
                                                                     @RequestParam(value= "endTs") Long endTs){
         return ResponseEntity.ok(rideService.getRidesAtTime(startTs, endTs));
