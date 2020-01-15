@@ -17,8 +17,8 @@ public class RideRepositoryCustomImpl implements RideRepositoryCustom {
     @Override
     public List<RideEntity> findByPolygonIntersects(GeoJsonPolygon polygon) {
         Document geoJsonDbo = new Document();
-        operations.getConverter().write( polygon, geoJsonDbo);
-        BasicQuery basicQuery = new BasicQuery( new Document("location", new Document("$geoIntersects", new Document("$geometry", geoJsonDbo))));
+        operations.getConverter().write(polygon, geoJsonDbo);
+        BasicQuery basicQuery = new BasicQuery(new Document("location", new Document("$geoIntersects", new Document("$geometry", geoJsonDbo))));
         System.out.println(basicQuery);
         return operations.find(basicQuery, RideEntity.class);
     }

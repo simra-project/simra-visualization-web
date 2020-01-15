@@ -8,8 +8,8 @@ class ApiService {
     }
 
     static async loadRoutes(lat1: Number, lon1: Number, lat2: Number, lon2: Number) {
-        console.log(`http://localhost:8080/rides/area?bottomleft=${lon1},${lat1}&topright=${lon2},${lat2}`);
-        return fetch(`http://localhost:8080/rides/area?bottomleft=${lon1},${lat1}&topright=${lon2},${lat2}`).then(r => r.json());
+        console.log(`http://localhost:8080/rides/area?bottomleft=${ lon1 },${ lat1 }&topright=${ lon2 },${ lat2 }`);
+        return fetch(`http://localhost:8080/rides/area?bottomleft=${ lon1 },${ lat1 }&topright=${ lon2 },${ lat2 }`).then(r => r.json());
     }
 
     static async loadIncidents(lat: Number, lon: Number) {

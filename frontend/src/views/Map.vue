@@ -50,19 +50,49 @@
                 <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-        <l-control position="topright"> <!-- Using CSS Magic this will appear top-center -->
-            <b-tabs type="is-toggle-rounded" v-model="viewMode">
-                <b-tab-item label="Bike rides" icon="biking"/>
-                <b-tab-item label="Incidents" icon="car-crash"/>
-            </b-tabs>
+        <l-control position="topcenter" class="topcenter">
+            <div class="ui-switcher">
+                <b-tabs type="is-toggle-rounded" v-model="viewMode">
+                    <b-tab-item label="Bike rides" icon="biking"/>
+                    <b-tab-item label="Incidents" icon="car-crash"/>
+                </b-tabs>
+            </div>
+        </l-control>
+
+        <l-control position="bottomcenter" class="bottomcenter">
+            <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
+                <div class="overlay overlay-loading">
+                    <div class="spinner-container">
+                        <scaling-squares-spinner
+                            :animation-duration="1750"
+                            :size="30"
+                            color="hsl(217, 71%, 53%)"
+                        />
+
+                        <div class="text">Loading Map Data</div>
+                    </div>
+
+                    <b-progress type="is-primary is-small" :value="loadingProgress"/>
+                </div>
+            </div>
         </l-control>
 
         <l-control position="bottomleft">
-            <div class="overlay overlay-legend">
-                <div class="color-box c1"></div>
-                <div class="color-box c2"></div>
-                <div class="color-box c3"></div>
-                <div class="text-box"> Ridership</div>
+            <div class="overlay overlay-legend" :class="{ viewModeRides: viewMode === 0, viewModeIncidents: viewMode === 1}">
+                <template v-if="viewMode === 0">
+                    <div class="color-box c1"></div>
+                    <div class="color-box c2"></div>
+                    <div class="color-box c3"></div>
+                    <div class="text-box"> Bikers per street segment</div>
+                </template>
+
+                <template v-else>
+                    <div class="marker marker-scary"><i class="fa fa-car"/></div>
+                    <div class="text-box" style="break-after: page">Scary Incident</div>
+
+                    <div class="marker marker-regular"><i class="fa fa-car"/></div>
+                    <div class="text-box">Regular Incident</div>
+                </template>
             </div>
         </l-control>
 
@@ -85,14 +115,13 @@
             :radius="heatmapRadius"
             :min-opacity="heatmapMinOpacity"
             :max-zoom="10" :blur="heatmapBlur"
-            :max="heatmapMaxPointIntensity"
-        />
-
-        <l-geo-json v-for="incident in incidents"
-                    v-else-if="viewMode === 1"
+            :max="heatmapMaxPointIntensity"/>
+        <l-geo-json v-else-if="viewMode === 1"
+                    v-for="incident in incidents"
+                    :key="incident.key"
                     :geojson="incident"
                     :options="geoJsonOptionsMarker">
-            <l-popup :content="incident.description"/>
+            <l-popup/>
         </l-geo-json>
 
         <!--    Stellt zusammengefasste Rides dar    -->
@@ -116,14 +145,16 @@
 
 <script>
 import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
+import * as L from "leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
+import { ExtraMarkers } from "leaflet-extra-markers";
 import VGeosearch from "vue2-leaflet-geosearch";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
+import { ScalingSquaresSpinner } from "epic-spinners";
 import { ApiService } from "@/services/ApiService";
-
 
 export default {
     components: {
@@ -139,6 +170,7 @@ export default {
         VueSlider,
         VGeosearch,
         LGeoJson,
+        ScalingSquaresSpinner,
     },
     data() {
         return {
@@ -147,6 +179,7 @@ export default {
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
             viewMode: 0, // 0 - rides, 1 - incidents
+            loadingProgress: null,
             rides: [],
             rideHighlightId: null,
             rideHighlightContent: null,
@@ -183,13 +216,14 @@ export default {
             },
             geoJsonOptionsDetail: {
                 style: {
-                        color: 'hsl(217, 71%, 53%)',
-                        weight: 3,
-                        opacity: 0.6
-                    }
+                    color: 'hsl(217, 71%, 53%)',
+                    weight: 3,
+                    opacity: 0.6
+                }
             },
             geoJsonStyleHighlight: {
                 // color: 'hsl(0,100%,50%)',
+                // color: "hsl(171, 100%, 41%)",
                 color: "hsl(2, 100%, 50%)",
                 weight: 4,
                 opacity: 0.8,
@@ -200,7 +234,54 @@ export default {
                 opacity: 0.6,
             },
             geoJsonOptionsMarker: {
-                onEachFeature: (feature, layer) => {
+                pointToLayer: function (feature, latlng) {
+                    let icon = "fa-question";
+                    if (feature.properties.i1Bus) icon = "fa-bus";
+                    if (feature.properties.i2Cyclist) icon = "fa-bicycle";
+                    if (feature.properties.i3Pedestrian) icon = "fa-walking";
+                    if (feature.properties.i4DeliveryVan) icon = "fa-shipping-fast";
+                    if (feature.properties.i5Truck) icon = "fa-truck-moving";
+                    if (feature.properties.i6Motorcycle) icon = "fa-motorcycle";
+                    if (feature.properties.i7Car) icon = "fa-car";
+                    if (feature.properties.i8Taxi) icon = "fa-taxi";
+                    if (feature.properties.i10EScooter) icon = "fa-bolt";
+
+                    return L.marker(latlng, {
+                        icon: ExtraMarkers.icon({
+                            icon: icon,
+                            markerColor: feature.properties.scary ? "orange-dark" : "blue",
+                            prefix: "fa",
+                        }),
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    let details = feature.properties;
+                    let date = new Date(details.ts).toLocaleString("en-DE", { timeZone: "Europe/Berlin" });
+
+                    const incidentTypes = ["Nothing", "Close Pass", "Someone pulling in or out", "Near left or right hook", "Someone approaching head on", "Tailgating", "Near-Dooring", "Dodging an Obstacle", "Other"];
+                    let incidentType = (details.incidentType > 0 && details.incidentType < incidentTypes.length) ? incidentTypes[details.incidentType] : "Unknown";
+
+                    let participant = "Unknown";
+                    if (details.i1Bus) participant = "Bus";
+                    if (details.i2Cyclist) participant = "Cyclist";
+                    if (details.i3Pedestrian) participant = "Pedestrian";
+                    if (details.i4DeliveryVan) participant = "Delivery Van";
+                    if (details.i5Truck) participant = "Truck";
+                    if (details.i6Motorcycle) participant = "Motorcycle";
+                    if (details.i7Car) participant = "Car";
+                    if (details.i8Taxi) participant = "Taxi";
+                    if (details.i9Other) participant = "Other";
+                    if (details.i10EScooter) participant = "E-Scooter";
+
+                    layer.bindPopup(`
+                        ${ details.scary ? "<strong>Scary</strong>" : "" } Incident on ${ date }.
+                        <br><hr style="margin: 8px -20px 12px;">
+
+                        Type: <strong>${ incidentType }</strong><br>
+                        Participant: <strong>${ participant }</strong><br>
+
+                        ${ details.description !== null ? "<p>" + details.description + "</p>" : "" }
+                    `);
                     layer.bindPopup(
                         () => {
                             let rideId = feature.properties.rideId;
@@ -226,8 +307,8 @@ export default {
                             return `<table><tr><td>RideId:</td><td>${feature.properties.rideId}</td></tr><tr><td>Scary:</td><td>${feature.properties.scary}</td></tr></table><p>${feature.properties.description}</p>`;
                         }
                         );
-                }
-            }
+                },
+            },
         };
     },
     methods: {
@@ -254,7 +335,8 @@ export default {
                     lng: this.center.lng,
                     zoom: this.zoom,
                 },
-            }).catch(() => {});
+            }).catch(() => {
+            });
         },
         clickedOnRide(event, ride) {
             if (this.rideHighlightId != null) this.unfocusRideHighlight();
@@ -294,7 +376,7 @@ export default {
                 type: "FeatureCollection",
                 features: response
             };
-            console.log(`${this.rides.features.length} ride sections loaded.`);
+            console.log(`${ this.rides.features.length } ride sections loaded.`);
             for (let ride of this.rides.features) {
                 const weight = ride.properties.fileIdSet.length;
                 if (weight > this.rideMaxWeight)
@@ -305,7 +387,7 @@ export default {
             for (var i = 0; i < response.length; i++) {
                 // console.log(response[i].properties.incidentType);
                 // if (response[i].properties.incidentType != 0)
-                    this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
+                this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
             }
             console.log(this.incident_heatmap);
             console.log("Incident heatmap loaded.");
@@ -319,7 +401,7 @@ export default {
 
             let coords = [];
 
-            for (let y = min_y; y < max_y; y++ ) {
+            for (let y = min_y; y < max_y; y++) {
                 for (let x = min_x; x < max_x; x++) {
                     coords.push([x, y]);
                 }
@@ -327,21 +409,19 @@ export default {
 
             this.apiWorker.postMessage(["routes", coords]);
 
-            console.log(`minx: ${min_x}, maxx: ${max_x}`);
-            console.log(`miny: ${min_y}, maxy: ${max_y}`);
+            console.log(`minx: ${ min_x }, maxx: ${ max_x }`);
+            console.log(`miny: ${ min_y }, maxy: ${ max_y }`);
         },
-
         loadMatchedRoutes() {
             let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
 
-            this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((15 - this.zoom), 1) ]);
+            this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1)]);
             // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
 
         },
-
         loadIncidents() {
             console.log("loading incidents");
             let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
@@ -369,8 +449,22 @@ export default {
         //         })
         //     }
         // },
+        updateLoadingView(progress, expectedTotal) {
+            if (expectedTotal === 0) return;
+            let currentProgress = Math.min(Math.max(progress / expectedTotal, 0.0), 1.0);
+
+            const minOffset = 0.1;
+            this.loadingProgress = Math.min(minOffset + (currentProgress * (1.0 - minOffset)), 1.0) * 100;
+
+            if (progress === expectedTotal) {
+                setTimeout(() => this.loadingProgress = null, 1200);
+            }
+        },
         handleWorkerMessage(message) {
             switch (message.data[0]) {
+                case "progress":
+                    this.updateLoadingView(message.data[1], message.data[2]);
+                    break;
                 case "routes":
                     console.log(message.data[1]);
                     this.detailedRides.push(...message.data[1]);
@@ -425,15 +519,15 @@ export default {
         flex: 1 0;
     }
 
-    .leaflet-control-container {
-        .leaflet-top.leaflet-right {
+    .leaflet-control {
+        &.topcenter {
+            position: absolute;
             top: 0;
-            bottom: initial;
             width: 300px;
             left: calc(50% - 150px);
             right: calc(50% - 150px);
 
-            .leaflet-control {
+            .ui-switcher {
                 width: 100%;
                 margin: 10px 0 0;
                 display: flex;
@@ -442,6 +536,7 @@ export default {
                 nav.tabs.is-toggle ul {
                     li:not(.is-active) a {
                         background-color: white;
+                        color: #3273dc;
                     }
                 }
 
@@ -450,65 +545,164 @@ export default {
                 }
             }
         }
-    }
 
-    .overlay {
-        padding: 10px;
-        background-color: white;
-        -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-        box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-        color: #4a4a4a;
-        position: relative;
+        &.bottomcenter {
+            position: absolute;
+            bottom: 0;
+            width: 300px;
+            left: calc(50% - 150px);
+            right: calc(50% - 150px);
 
-        .subtitle {
-            color: #4a4a4a;
-            margin-bottom: 8px;
-        }
+            .loading-container {
+                $loadingProgressHeight: 0.4rem;
 
-        &.overlay-debug {
-            opacity: 0.5;
-            transition: opacity 0.5s;
-            max-width: 400px;
+                width: 100%;
+                margin: 0 0 calc(12px + #{$loadingProgressHeight});
+                display: flex;
+                justify-content: center;
+                transition: opacity 1s ease 0.2s, filter 1s ease 0.2s;
 
-            &:hover {
-                opacity: 1;
+                &.invisible {
+                    opacity: 0;
+                    filter: grayscale(.9);
+
+                    .scaling-squares-spinner, .scaling-squares-spinner .square {
+                        opacity: 0.6;
+                        transition: opacity 1s linear;
+                    }
+                }
+
+                .overlay {
+                    padding: 0;
+
+                    & > div {
+                        display: flex;
+                        padding: 10px 40px 10px 20px;
+
+                        .scaling-squares-spinner {
+                            flex: 0 1 30px;
+                        }
+
+                        .text {
+                            flex: 1 0;
+                            font-size: 16px;
+                            align-self: center;
+                            padding-left: 20px;
+                        }
+                    }
+
+                    .progress-wrapper {
+                        position: relative;
+                        top: $loadingProgressHeight;
+                        margin-top: -$loadingProgressHeight;
+                        padding: 0;
+
+                        progress {
+                            border-radius: 0 0 4px 4px;
+                            height: $loadingProgressHeight;
+                        }
+                    }
+                }
             }
         }
 
-        &.overlay-legend {
-            padding: 6px 8px;
-            border: 1px solid #b5b5b5cc;
-            -webkit-box-shadow: none;
-            box-shadow: none;
+        .overlay {
+            padding: 10px;
+            background-color: white;
+            -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+            box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+            color: #4a4a4a;
+            position: relative;
 
-            div {
-                display: inline-block;
+            .subtitle {
+                color: #4a4a4a;
+                margin-bottom: 8px;
+            }
 
-                & + div {
+            &.overlay-debug {
+                opacity: 0.5;
+                transition: opacity 0.5s;
+                max-width: 400px;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+
+            &.overlay-legend {
+                display: flex;
+                padding: 6px 8px;
+                border: 1px solid #b5b5b5cc;
+                -webkit-box-shadow: none;
+                box-shadow: none;
+
+                div + div {
                     margin-left: 4px;
                 }
 
-                &.color-box {
-                    width: 15px;
-                    height: 15px;
-                    margin-bottom: -2.5px;
+                .text-box {
+                    font-size: 14px;
+                    margin-left: 6px;
+                    align-self: center;
+                }
 
-                    &.c1 {
-                        background-color: hsl(190, 71%, 53%);
-                        opacity: 0.8;
-                    }
-                    &.c2 {
-                        background-color: hsl(215, 71%, 53%);
-                        opacity: 0.9;
-                    }
-                    &.c3 {
-                        background-color: hsl(240, 71%, 53%);
+                &.viewModeRides {
+                    align-items: end;
+
+                    .color-box {
+                        width: 15px;
+                        height: 15px;
+                        margin-bottom: 3px;
+
+                        &.c1 {
+                            background-color: hsl(190, 71%, 53%);
+                            opacity: 0.8;
+                            height: 7px;
+                        }
+
+                        &.c2 {
+                            background-color: hsl(215, 71%, 53%);
+                            opacity: 0.9;
+                            height: 11px;
+                        }
+
+                        &.c3 {
+                            background-color: hsl(240, 71%, 53%);
+                        }
                     }
                 }
 
-                &.text-box {
-                    font-size: 14px;
-                    margin-left: 6px;
+                &.viewModeIncidents {
+                    flex-wrap: wrap;
+                    width: 60%;
+
+                    .marker {
+                        $width: 35px;
+                        $height: 46px;
+                        $scale: 0.65;
+
+                        background: url("../assets/markers_custom.png") no-repeat 0 0;
+                        width: $width ;
+                        height: $height ;
+                        transform: scale($scale);
+                        margin: (-$height * (1 - $scale) / 2) (-$width * (1 - $scale) / 2);
+                        text-align: center;
+                        color: white;
+
+                        i.fa {
+                            margin-top: 9px;
+                            margin-left: 2px;
+                            font-size: 16px;
+                        }
+
+                        &.marker-scary {
+                            background-position: -36px 0;
+                        }
+
+                        &.marker-regular {
+                            background-position: -180px 0;
+                        }
+                    }
                 }
             }
         }
@@ -518,5 +712,28 @@ export default {
     @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
     @import '~leaflet-geosearch/dist/style.css';
     @import '~leaflet-geosearch/assets/css/leaflet.css';
+</style>
 
+<style lang="less">
+    @import "~leaflet-extra-markers/src/assets/less/leaflet.extra-markers";
+
+    .extra-marker {
+        background-image: url("../assets/markers_custom.png");
+    }
+
+    .extra-marker-shadow {
+        background-image: url("../assets/markers_shadow.png");
+        opacity: 0.75;
+    }
+
+    @media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),
+    (-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {
+        .extra-marker {
+            background-image: url("../assets/markers_custom@2x.png");
+        }
+
+        .extra-marker-shadow {
+            background-image: url("../assets/markers_shadow@2x.png");
+        }
+    }
 </style>

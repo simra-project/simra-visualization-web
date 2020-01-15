@@ -5,8 +5,6 @@ import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
 import visualization.web.resources.IncidentResourceProperty;
 
-import java.util.Optional;
-
 @Component
 public class IncidentResourceMapper {
 
