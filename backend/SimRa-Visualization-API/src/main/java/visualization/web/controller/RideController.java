@@ -50,7 +50,7 @@ public class RideController {
 
     @GetMapping(value = "/rides/from/{fromTs}/to/{untilTs}")
     public HttpEntity<List<RideResource>> getRidesAtTime(@PathVariable Long fromTs,
-                                                         @PathVariable Long untilTs){
+                                                         @PathVariable Long untilTs) {
         return ResponseEntity.ok(rideService.getRidesAtTime(fromTs, untilTs));
     }
 

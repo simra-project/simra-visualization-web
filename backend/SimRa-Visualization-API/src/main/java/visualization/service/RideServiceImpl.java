@@ -25,15 +25,15 @@ public class RideServiceImpl implements RideService {
     public RideResource getRideById(String rideId) {
         RideEntity rideEntity = rideRepository.findById(rideId).get();
 
-        return rideResourceMapper.mapRideEntityToResource(rideEntity);
+        return rideResourceMapper.mapRideEntityToResource(rideEntity, false);
     }
 
     @Override
     public List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth) {
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
-        List<RideEntity> rideEntities = rideRepository.findByLocationWithin(polygon);
+        List<RideEntity> rideEntities = rideRepository.findByPolygonIntersects(polygon);
 
-        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
 
     @Override
@@ -41,13 +41,13 @@ public class RideServiceImpl implements RideService {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
         List<RideEntity> rideEntities = rideRepository.findByLocationNear(point, maxDistance);
 
-        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
 
     @Override
     public List<RideResource> getRidesAtTime(Long fromTs, Long untilTs) {
         List<RideEntity> rideEntities = rideRepository.findAllByTsBetween(fromTs, untilTs);
 
-        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity)).collect(Collectors.toList());
+        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
 }

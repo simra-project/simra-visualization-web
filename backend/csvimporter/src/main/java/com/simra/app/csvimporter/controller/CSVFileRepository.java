@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface CSVFileRepository extends MongoRepository<CSVFile, String> {
 
-    public CSVFile findByFileId(String fileId);
+    CSVFile findByFileId(String fileId);
 
 }

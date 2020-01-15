@@ -12,7 +12,7 @@ import java.io.Serializable;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection="incidents")
+@Document(collection = "incidents")
 public class IncidentEntity {
 
     @Id

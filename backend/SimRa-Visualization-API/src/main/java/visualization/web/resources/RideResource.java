@@ -7,8 +7,6 @@ import lombok.*;
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString;
 import visualization.web.resources.serializers.GeoJsonLineStringSerializer;
 
-import java.util.ArrayList;
-
 /*
 Representation of a Ride
  */
@@ -28,4 +26,9 @@ public class RideResource {
 
     @JsonProperty
     private RideResourceProperty properties;
+
+    //Lombock and Kotlin seem to have difficulties interacting. Looking for a nicer fix
+    public GeoJsonLineString getGeometryForKotlin() {
+        return geometry;
+    }
 }
