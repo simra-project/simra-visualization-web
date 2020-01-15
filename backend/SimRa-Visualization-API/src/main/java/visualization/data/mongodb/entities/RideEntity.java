@@ -28,6 +28,8 @@ public class RideEntity {
 
     private Float distance;
 
+    private String weekday;
+
     public Long getDuration() {
         return ts.get(ts.size() - 1) - ts.get(0);
     }

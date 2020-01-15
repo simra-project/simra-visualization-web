@@ -14,7 +14,11 @@ public interface RideRepository extends MongoRepository<RideEntity, String>, Rid
 
     List<RideEntity> findByLocationWithin(GeoJsonPolygon polygon);
 
+    List<RideEntity> findByWeekday(String day);
+
     Optional<RideEntity> findById(String id);
+
+    List<RideEntity> findByDistanceBetween(double min, double max);
 
     //@Query(sort = "{'ts': -1}")
     List<RideEntity> findAllByTsBetween(Long fromTs, Long untilTs);
