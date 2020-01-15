@@ -2,7 +2,6 @@
     <l-map ref="map"
            :zoom="zoom"
            :center="center"
-           :min-zoom="9"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
@@ -86,7 +85,9 @@
             :radius="heatmapRadius"
             :min-opacity="heatmapMinOpacity"
             :max-zoom="10" :blur="heatmapBlur"
-            :max="heatmapMaxPointIntensity"/>
+            :max="heatmapMaxPointIntensity"
+        />
+
         <l-geo-json v-for="incident in incidents"
                     v-else-if="viewMode === 1"
                     :geojson="incident"
@@ -202,6 +203,9 @@ export default {
             geoJsonOptionsMarker: {
                 onEachFeature: function onEachFeature(feature, layer) {
                     layer.bindPopup(`<table><tr><td>RideId:</td><td>${feature.properties.rideId}</td></tr><tr><td>Scary:</td><td>${feature.properties.scary}</td></tr></table><p>${feature.properties.description}</p>`);
+                    // layer.onClick(() => {
+                    //     console.log("test");
+                    // })
                 }
             }
         };
@@ -318,11 +322,13 @@ export default {
         },
 
         loadIncidents() {
+            console.log("loading incidents");
             let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
 
+            console.log([[min_x, min_y], [max_x, max_y]]);
             this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]]]);
 
         },

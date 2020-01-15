@@ -24,7 +24,7 @@ function loadRoutes(data) {
             fetch(`http://localhost:8080/rides/area?bottomleft=${coords[0]/100},${coords[1]/100}&topright=${(coords[0]+1)/100},${(coords[1]+1)/100}`)
                 .then(r => r.json())
                 .then(result => {
-                    routesLoaded[coords] = true;
+                    routesLoaded[coords] = result;
                     self.postMessage(["routes", result]);
                 });
         }
@@ -39,10 +39,11 @@ function loadLegs(coords, filter) {
         fetch(`http://localhost:8080/legs/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&minWeight=${filter}`)
             .then(r => r.json())
             .then(result => {
-                routesLoaded[coords] = result;
+                legsLoaded[coords] = result;
                 self.postMessage(["matched", result]);
             });
     } else {
+        console.log("cache hit!");
         self.postMessage(["matched", legsLoaded[coords]]);
     }
 }
@@ -59,6 +60,7 @@ function loadIncidents(coords, filter) {
                 self.postMessage(["incidents", result]);
             });
     } else {
+        console.log("cache hit!");
         self.postMessage(["incidents", incidents[coords]]);
     }
 }
