@@ -19,6 +19,14 @@ class ApiService {
     static async startDataProcessing() {
         return (await axios.get("/api/actions/startDataProcessing")).data;
     }
+
+    static async loadRide(rideId: Number) {
+        return fetch(`http://localhost:8080/rides/${rideId}`).then(r => r.json());
+    }
+
+    static async loadIncidentsOnRide(rideId: Number) {
+        return fetch(`http://localhost:8080/rides/${rideId}/incidents/all`).then(r => r.json());
+    }
 }
 
 export { ApiService };

@@ -66,10 +66,10 @@
             </div>
         </l-control>
 
-        <l-control position="bottomleft" v-if="rideHighlightContent !== null && false"> <!-- Using CSS Magic this will appear top-center -->
+        <l-control position="bottomleft" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
             <div class="overlay" style="display: flex">
                 <div style="flex: 1 0; text-align: center">
-                    Showing ride details here... <br> <!-- TODO: Ridedetails hier später einfügen -->
+                    Placeholder: More ride details? <br> <!-- TODO: Ridedetails hier später einfügen -->
                     Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>
                 </div>
                 <div style="flex: 0 0; align-self: center">
@@ -102,17 +102,15 @@
             :options="geoJsonOptions"
         />
 
-<!--        &lt;!&ndash;    Stellt detaillierte routen da    &ndash;&gt;-->
-<!--        <l-geo-json-->
-<!--            v-if="showRoutes && !aggregatetRoutes"-->
-<!--            v-for="route in detailedRoutes"-->
-<!--            :geojson="route"-->
-<!--            :options="geoJsonOptionsDetail"-->
-<!--            @click="clickedOnRoute($event, route)"-->
-<!--        />-->
+        <!--    Stellt detaillierte route da    -->
+        <l-geo-json
+            v-if="rideHighlighted !== null"
+            :geojson="rideHighlighted"
+            :options="geoJsonStyleHighlight"
+        />
 
-        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
     </l-map>
 </template>
 
@@ -154,6 +152,7 @@ export default {
             rideHighlightContent: null,
             rideHighlightStart: [0, 0],
             rideHighlightEnd: [0, 0],
+            rideHighlighted: null,
             rideMaxWeight: 1,
             incidents: [],
             incident_heatmap: [],
@@ -191,7 +190,7 @@ export default {
             },
             geoJsonStyleHighlight: {
                 // color: 'hsl(0,100%,50%)',
-                color: "hsl(171, 100%, 41%)",
+                color: "hsl(2, 100%, 50%)",
                 weight: 4,
                 opacity: 0.8,
             },
@@ -201,11 +200,32 @@ export default {
                 opacity: 0.6,
             },
             geoJsonOptionsMarker: {
-                onEachFeature: function onEachFeature(feature, layer) {
-                    layer.bindPopup(`<table><tr><td>RideId:</td><td>${feature.properties.rideId}</td></tr><tr><td>Scary:</td><td>${feature.properties.scary}</td></tr></table><p>${feature.properties.description}</p>`);
-                    // layer.onClick(() => {
-                    //     console.log("test");
-                    // })
+                onEachFeature: (feature, layer) => {
+                    layer.bindPopup(
+                        () => {
+                            let rideId = feature.properties.rideId;
+                            ApiService.loadRide(rideId).then(ride => {
+                                if (ride.status !== 500) {
+                                    this.rideHighlightId = rideId;
+                                    console.log(ride);
+                                    this.rideHighlightContent = { length: `${Math.round(ride.properties.distance)}m`, duration: "placeholder" };
+
+                                    this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
+                                    this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
+
+                                    // Fitting ride into view if it's not already
+                                    this.rideHighlighted = ride;
+                                }
+                                else {
+                                    console.log("associated ride is not in db.");
+                                    this.rideHighlightContent = { length: "Problem loading ride", duration: ""};
+                                }
+
+                            });
+
+                            return `<table><tr><td>RideId:</td><td>${feature.properties.rideId}</td></tr><tr><td>Scary:</td><td>${feature.properties.scary}</td></tr></table><p>${feature.properties.description}</p>`;
+                        }
+                        );
                 }
             }
         };
@@ -261,7 +281,8 @@ export default {
             this.rideHighlightContent = null;
             this.rideHighlightStart = [0, 0];
             this.rideHighlightEnd = [0, 0];
-            this.rideHighlighted.setStyle(this.geoJsonStyleNormal);
+            this.rideHighlighted = null;
+            console.log("unfocussing highlighted ride");
         },
         clickedOnMap(event) {
             if (event.originalEvent.target.nodeName !== 'path' && this.rideHighlightId != null) {
