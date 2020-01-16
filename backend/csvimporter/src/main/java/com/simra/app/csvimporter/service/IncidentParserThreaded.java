@@ -79,6 +79,9 @@ public class IncidentParserThreaded implements Runnable {
                 Point geoPoint = new Point(new Position(places));
                 item.setLocation(geoPoint);
                 item.setLocationMapMatched(findNearestPointInRoute(places, rideEntity.getLocationMapMatched().getCoordinates()));
+                
+                item.setAddedAt(new Date());
+                item.cleanDesc();
 
                 item.setAddedAt(new Date());
                 item.setMinuteOfDay(Utils.getMinuteOfDay(item.getTs()));

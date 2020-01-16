@@ -15,10 +15,20 @@ self.onmessage = function(event) {
     }
 };
 
+const updateLoadingProgress = (progress, expectedTotal) => self.postMessage(["progress", progress, expectedTotal]);
+const startLoading = () => updateLoadingProgress(0, 1);
+const finishLoading = () => updateLoadingProgress(1, 1);
+
 var routesLoaded = [];
 function loadRoutes(data) {
+    startLoading();
+    let progress = 0;
+    let expectedTotal = 0;
+
     data.forEach(coords => {
         if (!routesLoaded.hasOwnProperty(coords)) {
+            expectedTotal++;
+
             console.log(coords);
             console.log(`http://localhost:8080/rides/area?bottomleft=${coords[0]/100},${coords[1]/100}&topright=${(coords[0]+1)/100},${(coords[1]+1)/100}`);
             fetch(`http://localhost:8080/rides/area?bottomleft=${coords[0]/100},${coords[1]/100}&topright=${(coords[0]+1)/100},${(coords[1]+1)/100}`)
@@ -26,6 +36,7 @@ function loadRoutes(data) {
                 .then(result => {
                     routesLoaded[coords] = true;
                     self.postMessage(["routes", result]);
+                    updateLoadingProgress(++progress, expectedTotal);
                 });
         }
     })
@@ -34,6 +45,8 @@ function loadRoutes(data) {
 var legsLoaded = [];
 function loadLegs(coords, filter) {
     if (!legsLoaded.hasOwnProperty(coords)) {
+        startLoading();
+
         console.log(coords);
         console.log(`http://localhost:8080/legs/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&minWeight=${filter}`);
         fetch(`http://localhost:8080/legs/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&minWeight=${filter}`)
@@ -41,6 +54,7 @@ function loadLegs(coords, filter) {
             .then(result => {
                 routesLoaded[coords] = result;
                 self.postMessage(["matched", result]);
+                finishLoading();
             });
     } else {
         self.postMessage(["matched", legsLoaded[coords]]);
@@ -50,6 +64,8 @@ function loadLegs(coords, filter) {
 var incidents = [];
 function loadIncidents(coords, filter) {
     if (!incidents.hasOwnProperty(coords)) {
+        startLoading();
+
         console.log(coords);
         console.log(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`);
         fetch(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`)
@@ -57,6 +73,7 @@ function loadIncidents(coords, filter) {
             .then(result => {
                 incidents[coords] = result;
                 self.postMessage(["incidents", result]);
+                finishLoading();
             });
     } else {
         self.postMessage(["incidents", incidents[coords]]);
