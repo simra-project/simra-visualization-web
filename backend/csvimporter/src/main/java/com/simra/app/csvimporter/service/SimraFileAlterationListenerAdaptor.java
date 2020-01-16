@@ -20,10 +20,14 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class SimraFileAlterationListenerAdaptor extends FileAlterationListenerAdaptor {
@@ -107,6 +111,7 @@ public class SimraFileAlterationListenerAdaptor extends FileAlterationListenerAd
                 String type = "";
                 try {
                     String csvString = FileUtils.readFileToString(f, StandardCharsets.UTF_8);
+                    getRegionFromPath(f);
                     // Pass to correct Parser.
                     if (csvString.contains("birth")) {
                         // Handle as Profile
@@ -194,6 +199,33 @@ public class SimraFileAlterationListenerAdaptor extends FileAlterationListenerAd
         RideParserThreaded rideParserThreaded = new RideParserThreaded(f.getName(), rideRepository, minAccuracy, rdpEpsilion, mapMatchingService, legPartitioningService, csvString, this.region, this.minRideDistance, this.minRideDuration, this.maxRideAverageSpeed, this.minDistanceToCoverByUserIn5Min, paramsIncidentParser);
         this.rideIncidentExecutor.execute(rideParserThreaded);
 
+    }
+
+    private void getRegionFromPath(File f){
+        String[] pathSection=this.splitPath(f.getPath());
+        // find index of folder Rides/Profile/Demo and select one before it as region.
+        List<String> list = Arrays.asList(pathSection);
+        int rideIndex =list.indexOf("Rides");
+        int profileIndex =list.indexOf("Profiles");
+
+        // just for test
+        int demoIndex =list.indexOf("Demo");
+
+        if(rideIndex> -1){
+            this.region= list.get(rideIndex-1);
+        }else if(profileIndex > -1){
+            this.region= list.get(profileIndex-1);
+        }
+        else if(demoIndex > -1){
+            this.region= list.get(demoIndex-1);
+        }
+    }
+
+
+    private String[] splitPath(String pathString) {
+        Path path = Paths.get(pathString);
+        return StreamSupport.stream(path.spliterator(), false).map(Path::toString)
+                .toArray(String[]::new);
     }
 
 

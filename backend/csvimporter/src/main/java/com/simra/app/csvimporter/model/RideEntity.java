@@ -4,7 +4,6 @@ import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
@@ -20,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "rides")
-public class RideEntity extends RideCSV {
+public class RideEntity extends ApplicationFileVersion {
 
     @Id
     private String id;
@@ -31,9 +30,9 @@ public class RideEntity extends RideCSV {
 
     private LineString locationMapMatched;
 
-    private ArrayList<Long> tsMapMatched;
+    private List tsMapMatched;
 
-    private ArrayList<Long> ts;
+    private List ts;
 
     private Float distance;
 
@@ -45,7 +44,6 @@ public class RideEntity extends RideCSV {
 
     private int minuteOfDay;
 
-    @Transient
     private long timeStamp;
 
     public Date getAddedAt() {
@@ -64,13 +62,9 @@ public class RideEntity extends RideCSV {
         this.location = location;
     }
 
-    public ArrayList<Long> getTs() {
-        return ts;
-    }
+    public List getTs() { return ts; }
 
-    public void setTs(ArrayList<Long> ts) {
-        this.ts = ts;
-    }
+    public void setTs(List ts) { this.ts = ts; }
 
     public String getId() {
         return id;
@@ -104,11 +98,9 @@ public class RideEntity extends RideCSV {
         this.locationMapMatched = locationMapMatched;
     }
 
-    public ArrayList<Long> getTsMapMatched() {
-        return tsMapMatched;
-    }
+    public List getTsMapMatched() { return tsMapMatched; }
 
-    public void setTsMapMatched(ArrayList<Long> tsMapMatched) {
+    public void setTsMapMatched(List tsMapMatched) {
         this.tsMapMatched = tsMapMatched;
     }
 
@@ -136,6 +128,11 @@ public class RideEntity extends RideCSV {
         this.region = region;
     }
 
+    public long getTimeStamp() { return timeStamp; }
+
+    public void setTimeStamp(long timeStamp) { this.timeStamp = timeStamp; }
+
+
     public void setMapMatchedRideBeans(List<RideCSV> mapMatchedRideBeans) {
         ArrayList<Position> coordinates = new ArrayList<>();
         mapMatchedRideBeans.forEach(ride -> {
@@ -145,7 +142,7 @@ public class RideEntity extends RideCSV {
         });
         LineString coordinatesMulti = new LineString(coordinates);
         this.setLocationMapMatched(coordinatesMulti);
-        ArrayList<Long> ts = new ArrayList<>();
+        ts = new ArrayList<>();
         mapMatchedRideBeans.forEach(ride -> ts.add((ride).getTimeStamp()));
         this.setTsMapMatched(ts);
     }

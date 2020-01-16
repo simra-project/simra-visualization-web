@@ -2,7 +2,6 @@ package com.simra.app.csvimporter.service;
 
 
 import com.simra.app.csvimporter.controller.*;
-import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
@@ -24,34 +23,11 @@ public class RecursiveWatcherService implements MonitorService {
     @Autowired
     private SimraFileAlterationListenerAdaptor simraFileAlterationListenerAdaptor;
 
-    private void addFileAlterationObserver(FileAlterationMonitor monitor, FileAlterationListener listener,
-                                           File rootDir) {
-        // Add a observer for the current root directory
-        FileAlterationObserver observer = new FileAlterationObserver(rootDir);
-        observer.addListener(listener);
-        monitor.addObserver(observer);
-
-        // List subdirectories under the current root directory
-        File[] subDirs = rootDir.listFiles(File::isDirectory);
-
-        if (subDirs == null || subDirs.length == 0) {
-            return;
-        }
-
-        // Recursively add a observer for each subdirectory
-        for (File subDir : subDirs) {
-            LOG.info("Adding listener to folder: {}", subDir.getPath());
-            this.addFileAlterationObserver(monitor, listener, subDir);
-        }
-    }
-
     public void startRecursiveWatcher() throws Exception {
-        LOG.info("Starting Recursive Watcher");
-
+        LOG.info("Starting Recursive Watcher from {}", this.rootFolder);
         FileAlterationObserver observer = new FileAlterationObserver(this.rootFolder);
         observer.addListener(simraFileAlterationListenerAdaptor);
-        FileAlterationMonitor monitor = new FileAlterationMonitor(500, observer);
-        this.addFileAlterationObserver(monitor, simraFileAlterationListenerAdaptor, this.rootFolder);
+        FileAlterationMonitor monitor = new FileAlterationMonitor(1000, observer);
         monitor.start();
     }
 
