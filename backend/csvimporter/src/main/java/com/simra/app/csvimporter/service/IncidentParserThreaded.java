@@ -6,9 +6,12 @@ import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.simra.app.csvimporter.controller.IncidentRepository;
 import com.simra.app.csvimporter.model.IncidentEntity;
+import com.simra.app.csvimporter.model.RideEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,13 +27,15 @@ public class IncidentParserThreaded implements Runnable {
     private IncidentRepository incidentRepository;
     private String csvString;
     private String region;
+    private RideEntity rideEntity;
 
-    public IncidentParserThreaded(String fileName, IncidentRepository incidentRepository, String csvString, String region) {
+    public IncidentParserThreaded(String fileName, IncidentRepository incidentRepository, String csvString, String region, RideEntity rideEntity) {
 
         this.incidentRepository = incidentRepository;
         this.csvString = csvString;
         this.fileName = fileName;
         this.region = region;
+        this.rideEntity = rideEntity;
     }
 
     @Override
@@ -73,9 +78,10 @@ public class IncidentParserThreaded implements Runnable {
                 List<Double> places = Arrays.asList(Double.parseDouble(item.getLon()), Double.parseDouble(item.getLat()));
                 Point geoPoint = new Point(new Position(places));
                 item.setLocation(geoPoint);
-                item.setAddedAt(new Date());
+                item.setLocationMapMatched(findNearestPointInRoute(places, rideEntity.getLocationMapMatched().getCoordinates()));
+                
                 item.cleanDesc();
-
+                item.setAddedAt(new Date());
                 item.setMinuteOfDay(Utils.getMinuteOfDay(item.getTs()));
                 item.setWeekday(Utils.getWeekday(item.getTs()));
 
@@ -92,5 +98,20 @@ public class IncidentParserThreaded implements Runnable {
             LOG.error(String.valueOf(e));
         }
         LOG.info("Incident parser complete {}", this.fileName);
+    }
+
+    private Point findNearestPointInRoute(List<Double> incidentLocation, List<Position> route) {
+
+        double minDistance = Double.MAX_VALUE;
+        Position minDistanceCoordinate = null;
+        for (Position position : route) {
+            double dist = Utils.calcDistance(incidentLocation.get(0), incidentLocation.get(1), position.getValues().get(0), position.getValues().get(1));
+            if (dist < minDistance) {
+                minDistance = dist;
+                minDistanceCoordinate = position;
+            }
+        }
+        assert minDistanceCoordinate != null;
+        return new Point(minDistanceCoordinate);
     }
 }
