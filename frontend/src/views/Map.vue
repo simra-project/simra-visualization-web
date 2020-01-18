@@ -2,7 +2,6 @@
     <l-map ref="map"
            :zoom="zoom"
            :center="center"
-           :min-zoom="9"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
@@ -97,14 +96,14 @@
             </div>
         </l-control>
 
-        <l-control position="bottomleft" v-if="rideHighlightContent !== null && false"> <!-- Using CSS Magic this will appear top-center -->
+        <l-control position="bottomleft" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
             <div class="overlay" style="display: flex">
                 <div style="flex: 1 0; text-align: center">
-                    Showing ride details here... <br> <!-- TODO: Ridedetails hier später einfügen -->
+                    Placeholder: More ride details? <br> <!-- TODO: Ridedetails hier später einfügen -->
                     Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>
                 </div>
                 <div style="flex: 0 0; align-self: center">
-                    <a class="delete" @click="unfocusRideHighlight"></a>
+                    <a class="delete" @click="unfocusRideHighlight"/>
                 </div>
             </div>
         </l-control>
@@ -132,32 +131,32 @@
             :options="geoJsonOptions"
         />
 
-<!--        &lt;!&ndash;    Stellt detaillierte routen da    &ndash;&gt;-->
-<!--        <l-geo-json-->
-<!--            v-if="showRoutes && !aggregatetRoutes"-->
-<!--            v-for="route in detailedRoutes"-->
-<!--            :geojson="route"-->
-<!--            :options="geoJsonOptionsDetail"-->
-<!--            @click="clickedOnRoute($event, route)"-->
-<!--        />-->
+        <!--    Stellt detaillierte route da    -->
+        <l-geo-json
+            v-if="rideHighlighted !== null"
+            :geojson="rideHighlighted"
+            :options="geoJsonStyleHighlight"
+        />
 
-        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(171, 100%, 41%)'" :fill-color="'hsl(171, 100%, 41%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
+        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
     </l-map>
 </template>
 
 <script>
+import Vue from "vue";
 import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
 import * as L from "leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
-import Vue2LeafletHeatmap from "../components/Vue2LeafletHeatmap";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 import { ExtraMarkers } from "leaflet-extra-markers";
 import VGeosearch from "vue2-leaflet-geosearch";
-import VueSlider from "vue-slider-component";
-import "vue-slider-component/theme/default.css";
 import { ScalingSquaresSpinner } from "epic-spinners";
+
+import MapPopup from "@/components/MapPopup";
+import Vue2LeafletHeatmap from "@/components/Vue2LeafletHeatmap";
 import { ApiService } from "@/services/ApiService";
+import { IncidentUtils } from "@/services/IncidentUtils";
 
 export default {
     components: {
@@ -170,7 +169,6 @@ export default {
         LPopup,
         LCircleMarker,
         Vue2LeafletHeatmap,
-        VueSlider,
         VGeosearch,
         LGeoJson,
         ScalingSquaresSpinner,
@@ -188,6 +186,7 @@ export default {
             rideHighlightContent: null,
             rideHighlightStart: [0, 0],
             rideHighlightEnd: [0, 0],
+            rideHighlighted: null,
             rideMaxWeight: 1,
             incidents: [],
             incident_heatmap: [],
@@ -224,7 +223,9 @@ export default {
                 }
             },
             geoJsonStyleHighlight: {
-                color: "hsl(171, 100%, 41%)",
+                // color: 'hsl(0,100%,50%)',
+                // color: "hsl(171, 100%, 41%)",
+                color: "hsl(2, 100%, 50%)",
                 weight: 4,
                 opacity: 0.8,
             },
@@ -234,55 +235,47 @@ export default {
                 opacity: 0.6,
             },
             geoJsonOptionsMarker: {
-                pointToLayer: function (feature, latlng) {
-                    let icon = "fa-question";
-                    if (feature.properties.i1Bus) icon = "fa-bus";
-                    if (feature.properties.i2Cyclist) icon = "fa-bicycle";
-                    if (feature.properties.i3Pedestrian) icon = "fa-walking";
-                    if (feature.properties.i4DeliveryVan) icon = "fa-shipping-fast";
-                    if (feature.properties.i5Truck) icon = "fa-truck-moving";
-                    if (feature.properties.i6Motorcycle) icon = "fa-motorcycle";
-                    if (feature.properties.i7Car) icon = "fa-car";
-                    if (feature.properties.i8Taxi) icon = "fa-taxi";
-                    if (feature.properties.i10EScooter) icon = "fa-bolt";
+                pointToLayer: (feature, latlng) => L.marker(latlng, {
+                    icon: ExtraMarkers.icon({
+                        icon: IncidentUtils.getIcon(feature.properties),
+                        markerColor: feature.properties.scary ? "orange-dark" : "blue",
+                        prefix: "fa",
+                    }),
+                }),
+                onEachFeature: (feature, layer) => layer.bindPopup(() => {
+                    const mapPopup = new (Vue.extend(MapPopup))({
+                        propsData: {
+                            incident: feature.properties,
+                            showRoute: () => {
+                                let rideId = feature.properties.rideId;
+                                ApiService.loadRide(rideId).then(ride => {
+                                    if (ride.status !== 500) {
+                                        this.rideHighlightId = rideId;
+                                        console.log(ride);
+                                        this.rideHighlightContent = {
+                                            length: `${ Math.round(ride.properties.distance) }m`,
+                                            duration: "placeholder",
+                                        };
 
-                    return L.marker(latlng, {
-                        icon: ExtraMarkers.icon({
-                            icon: icon,
-                            markerColor: feature.properties.scary ? "orange-dark" : "blue",
-                            prefix: "fa",
-                        }),
+                                        this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
+                                        this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
+
+                                        // Fitting ride into view if it's not already
+                                        this.rideHighlighted = ride;
+                                    } else {
+                                        console.log("associated ride is not in db.");
+                                        this.rideHighlightContent = {
+                                            length: "Problem loading ride",
+                                            duration: "",
+                                        };
+                                    }
+
+                                });
+                            },
+                        },
                     });
-                },
-                onEachFeature: function (feature, layer) {
-                    let details = feature.properties;
-                    let date = new Date(details.ts).toLocaleString("en-DE", { timeZone: "Europe/Berlin" });
-
-                    const incidentTypes = ["Nothing", "Close Pass", "Someone pulling in or out", "Near left or right hook", "Someone approaching head on", "Tailgating", "Near-Dooring", "Dodging an Obstacle", "Other"];
-                    let incidentType = (details.incidentType > 0 && details.incidentType < incidentTypes.length) ? incidentTypes[details.incidentType] : "Unknown";
-
-                    let participant = "Unknown";
-                    if (details.i1Bus) participant = "Bus";
-                    if (details.i2Cyclist) participant = "Cyclist";
-                    if (details.i3Pedestrian) participant = "Pedestrian";
-                    if (details.i4DeliveryVan) participant = "Delivery Van";
-                    if (details.i5Truck) participant = "Truck";
-                    if (details.i6Motorcycle) participant = "Motorcycle";
-                    if (details.i7Car) participant = "Car";
-                    if (details.i8Taxi) participant = "Taxi";
-                    if (details.i9Other) participant = "Other";
-                    if (details.i10EScooter) participant = "E-Scooter";
-
-                    layer.bindPopup(`
-                        ${ details.scary ? "<strong>Scary</strong>" : "" } Incident on ${ date }.
-                        <br><hr style="margin: 8px -20px 12px;">
-
-                        Type: <strong>${ incidentType }</strong><br>
-                        Participant: <strong>${ participant }</strong><br>
-
-                        ${ details.description !== null ? "<p>" + details.description + "</p>" : "" }
-                    `);
-                },
+                    return mapPopup.$mount().$el;
+                }),
             },
         };
     },
@@ -338,7 +331,8 @@ export default {
             this.rideHighlightContent = null;
             this.rideHighlightStart = [0, 0];
             this.rideHighlightEnd = [0, 0];
-            this.rideHighlighted.setStyle(this.geoJsonStyleNormal);
+            this.rideHighlighted = null;
+            console.log("unfocussing highlighted ride");
         },
         clickedOnMap(event) {
             if (event.originalEvent.target.nodeName !== 'path' && this.rideHighlightId != null) {
@@ -397,11 +391,13 @@ export default {
 
         },
         loadIncidents() {
+            console.log("loading incidents");
             let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
 
+            console.log([[min_x, min_y], [max_x, max_y]]);
             this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]]]);
 
         },
