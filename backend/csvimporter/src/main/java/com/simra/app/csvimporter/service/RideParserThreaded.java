@@ -45,7 +45,7 @@ public class RideParserThreaded implements Runnable {
 
     private Integer minDistanceToCoverByUserIn5Min;
 
-    private HashMap<String, Object> paramsIncidentParser;
+    private Map<String, Object> paramsIncidentParser;
 
     public RideParserThreaded(
             String fileName,
@@ -60,7 +60,7 @@ public class RideParserThreaded implements Runnable {
             Integer minRideDuration,
             Integer maxRideAverageSpeed,
             Integer minDistanceToCoverByUserIn5Min,
-            HashMap<String, Object> paramsIncidentParser) {
+            Map<String, Object> paramsIncidentParser) {
 
         this.fileName = fileName;
         this.csvString = csvString;
@@ -104,8 +104,8 @@ public class RideParserThreaded implements Runnable {
                     rideCSVwithHeader.append(currentLine.trim()).append("\r\n");
                 }
             }
-            ColumnPositionMappingStrategy<RideEntity> strategy = new ColumnPositionMappingStrategy<>();
-            strategy.setType(RideEntity.class);
+            ColumnPositionMappingStrategy<RideCSV> strategy = new ColumnPositionMappingStrategy<>();
+            strategy.setType(RideCSV.class);
             String[] memberFieldsToBindTo = {"lat", "lon", "X", "Y", "Z", "timeStamp", "acc", "a", "b", "c"};
             strategy.setColumnMapping(memberFieldsToBindTo);
 
@@ -126,28 +126,30 @@ public class RideParserThreaded implements Runnable {
             Float routeDistance = mapMatchingService.getCurrentRouteDistance();
             Long routeDuration = mapMatchingService.getCurrentRouteDuration();
 
+            long startTimeStamp= rideBeans.get(0).getTimeStamp();
+
             // filter short Distance Rides
             if (routeDistance < minRideDistance) {
-                LOG.info(fileName + " filtered due to routeDistance = " + routeDistance + "m");
+                LOG.info("{} filtered due to routeDistance = {} m",fileName, routeDistance );
                 return;
             }
 
             // filter short Duration Rides
             if (routeDuration < minRideDuration) {
-                LOG.info(fileName + " filtered due to routeDuration = " + (routeDuration / 60000) + "min");
+                LOG.info("{} filtered due to routeDuration = {} min", fileName, (routeDuration / 60000));
                 return;
             }
 
             // filter high average speed
             double averageSpeed = Utils.calcAverageSpeed(routeDistance, routeDuration);
             if (averageSpeed > maxRideAverageSpeed) {
-                LOG.info(fileName + " filtered due to averageSpeed = " + averageSpeed + "km/h");
+                LOG.info( "{} filtered due to averageSpeed = {} km/h", fileName, averageSpeed);
                 return;
             }
 
             // filter rides that user did not stop
             if (isUserForgotToStopRecording(optimisedRideBeans)) {
-                LOG.info(fileName + " filtered due to User forgot to stop recording");
+                LOG.info("{} filtered due to User forgot to stop recording", fileName);
                 return;
             }
 
@@ -158,12 +160,12 @@ public class RideParserThreaded implements Runnable {
             RideEntity rideEntity = getRideEntity(arrOfStr, optimisedRideBeans);
             rideEntity.setRegion(region);
             /*
-             * needed modified entity properties must insert here.
+             * needed modified entity properties must start here.
              */
             rideEntity.setMapMatchedRideBeans(mapMatchedRideBeans);
             rideEntity.setDistance(mapMatchingService.getCurrentRouteDistance());
             rideEntity.setDuration(mapMatchingService.getCurrentRouteDuration());
-
+            rideEntity.setTimeStamp(startTimeStamp);
             rideEntity.setMinuteOfDay(Utils.getMinuteOfDay(rideEntity.getTimeStamp()));
             rideEntity.setWeekday(Utils.getWeekday(rideEntity.getTimeStamp()));
 

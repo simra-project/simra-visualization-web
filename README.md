@@ -190,3 +190,23 @@ Info: So far only filtered data is pushed into the database.
     }
 }
 ```
+#Region Import
+Region is imported by parsing Folder path of ride or profile file. 
+Its important to keep Rides and Profiles under City name.
+
+Reference in Android:
+[Link](https://github.com/simra-project/backend/blob/master/src/main/java/tuberlin/mcc/simra/backend/servlets/version10/UploadServlet.java#L114)
+```
+Structure:
+Root Folder Path..\<Region>\(Rides|Profiles)\**.csv
+
+Example:
+C:\Users\spandey\Downloads\SimRa_Sample_11_13_19\Berlin\Rides
+C:\Users\spandey\Downloads\SimRa_Sample_11_13_19\Berlin\profiles
+
+For test:
+C:\Users\spandey\Downloads\SimRa_Sample_11_13_19\Berlin\Demo
+
+All of above will have Berlin as city.
+
+```
