@@ -2,12 +2,13 @@
     <l-map ref="map"
            :zoom="zoom"
            :center="center"
+           :options="{ zoomControl: false }"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
            @click="clickedOnMap($event)">
-        <l-tile-layer :url="url"></l-tile-layer>
-        <v-geosearch :options="geosearchOptions"></v-geosearch>
+        <l-tile-layer :url="url"/>
+<!--        <v-geosearch :options="geosearchOptions"/>-->
         <l-control position="topright" v-if="false">
             <div class="overlay">
                 <!-- Sliders to fine tune heatmap settings -->
@@ -42,6 +43,17 @@
                 </vue-slider>
             </div>
         </l-control>
+        <l-control position="topleft">
+            <div class="overlay overlay-menu">
+                <b-tabs type="is-toggle" v-model="viewMode">
+                    <b-tab-item label="Bike rides" icon="biking"/>
+                    <b-tab-item label="Incidents" icon="car-crash"/>
+                </b-tabs>
+
+                <MapFilters :view-mode="viewMode"/>
+            </div>
+        </l-control>
+
         <l-control position="bottomright" v-if="false">
             <div class="overlay overlay-debug">
                 <div>Zoom: {{ zoom }}</div>
@@ -50,14 +62,14 @@
                 <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-        <l-control position="topcenter" class="topcenter">
-            <div class="ui-switcher">
-                <b-tabs type="is-toggle-rounded" v-model="viewMode">
-                    <b-tab-item label="Bike rides" icon="biking"/>
-                    <b-tab-item label="Incidents" icon="car-crash"/>
-                </b-tabs>
-            </div>
-        </l-control>
+<!--        <l-control position="topcenter" class="topcenter">-->
+<!--            <div class="ui-switcher">-->
+<!--                <b-tabs type="is-toggle-rounded" v-model="viewMode">-->
+<!--                    <b-tab-item label="Bike rides" icon="biking"/>-->
+<!--                    <b-tab-item label="Incidents" icon="car-crash"/>-->
+<!--                </b-tabs>-->
+<!--            </div>-->
+<!--        </l-control>-->
 
         <l-control position="bottomcenter" class="bottomcenter">
             <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
@@ -77,7 +89,7 @@
             </div>
         </l-control>
 
-        <l-control position="bottomleft">
+        <l-control position="bottomright">
             <div class="overlay overlay-legend" :class="{ viewModeRides: viewMode === 0, viewModeIncidents: viewMode === 1}">
                 <template v-if="viewMode === 0">
                     <div class="color-box c1"></div>
@@ -96,7 +108,7 @@
             </div>
         </l-control>
 
-        <l-control position="bottomleft" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
+        <l-control position="bottomright" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
             <div class="overlay" style="display: flex">
                 <div style="flex: 1 0; text-align: center">
                     Placeholder: More ride details? <br> <!-- TODO: Ridedetails hier später einfügen -->
@@ -153,6 +165,7 @@ import { ExtraMarkers } from "leaflet-extra-markers";
 import VGeosearch from "vue2-leaflet-geosearch";
 import { ScalingSquaresSpinner } from "epic-spinners";
 
+import MapFilters from "@/components/MapFilters";
 import MapPopup from "@/components/MapPopup";
 import Vue2LeafletHeatmap from "@/components/Vue2LeafletHeatmap";
 import { ApiService } from "@/services/ApiService";
@@ -172,6 +185,7 @@ export default {
         VGeosearch,
         LGeoJson,
         ScalingSquaresSpinner,
+        MapFilters,
     },
     data() {
         return {
@@ -585,6 +599,23 @@ export default {
             .subtitle {
                 color: #4a4a4a;
                 margin-bottom: 8px;
+            }
+
+            &.overlay-menu {
+                nav.tabs.is-toggle ul {
+                    li {
+                        flex: 1 0;
+
+                        &:not(.is-active) a {
+                            background-color: white;
+                            color: #3273dc;
+                        }
+                    }
+                }
+
+                section {
+                    display: none;
+                }
             }
 
             &.overlay-debug {

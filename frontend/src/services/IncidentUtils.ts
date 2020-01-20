@@ -1,12 +1,12 @@
 class IncidentUtils {
     static getDate(incident: any) {
-        return new Date(incident.ts).toLocaleString("en-DE", { timeZone: "Europe/Berlin" })
+        return new Date(incident.ts).toLocaleString("en-DE", { timeZone: "Europe/Berlin" });
     }
 
     static getType(incident: any) {
-        const incidentTypes = ["Nothing", "Close Pass", "Someone pulling in or out", "Near left or right hook", "Someone approaching head on", "Tailgating", "Near-Dooring", "Dodging an Obstacle", "Other"];
+        const incidentTypes = this.getTypes();
 
-        return (incident.incidentType > 0 && incident.incidentType < incidentTypes.length) ? incidentTypes[incident.incidentType] : "Unknown";
+        return (incident.incidentType > 0 && incident.incidentType < incidentTypes.length) ? incidentTypes[incident.incidentType]["name"] : "Unknown";
     }
 
     static getParticipant(incident: any) {
@@ -36,6 +36,36 @@ class IncidentUtils {
         if (incident.i10EScooter) return "fa-bolt";
 
         return "fa-question";
+    }
+
+    static getTypes() {
+        return [
+            { id: 0, name: "Nothing" },
+            { id: 1, name: "Close Pass" },
+            { id: 2, name: "Someone pulling in or out" },
+            { id: 3, name: "Near left or right hook" },
+            { id: 4, name: "Someone approaching head on" },
+            { id: 5, name: "Tailgating" },
+            { id: 6, name: "Near-Dooring" },
+            { id: 7, name: "Dodging an Obstacle" },
+            { id: 8, name: "Other" },
+        ];
+    }
+
+    static getParticipants() {
+        return [
+            { id: 0, name: "Bus" },
+            { id: 1, name: "Cyclist" },
+            { id: 2, name: "Pedestrian" },
+            { id: 3, name: "Delivery Van" },
+            { id: 4, name: "Truck" },
+            { id: 5, name: "Motorcycle" },
+            { id: 6, name: "Car" },
+            { id: 7, name: "Taxi" },
+            { id: 8, name: "Other" },
+            { id: 9, name: "E-Scooter" },
+            { id: 10, name: "Unknown" },
+        ];
     }
 }
 
