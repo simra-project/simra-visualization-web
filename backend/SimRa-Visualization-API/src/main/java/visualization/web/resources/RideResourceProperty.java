@@ -25,4 +25,7 @@ public class RideResourceProperty {
 
     @JsonProperty
     private Float distance;
+
+    @JsonProperty
+    private Long duration;
 }
