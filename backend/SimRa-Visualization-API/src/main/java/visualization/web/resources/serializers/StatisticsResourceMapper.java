@@ -29,6 +29,12 @@ public class StatisticsResourceMapper {
         statisticsResource.setIncidentTypeData(statisticsEntity.getIncidentTypeData());
         statisticsResource.setIncidentTypeLabels(statisticsEntity.getIncidentTypeLabels());
         statisticsResource.setProfileAgeDistributionLabels(statisticsEntity.getProfileAgeDistributionLabels());
+        statisticsResource.setProfileAgeDistributionData(statisticsEntity.getProfileAgeDistributionData());
+        statisticsResource.setProfileAgeDistributionDataMale(statisticsEntity.getProfileAgeDistributionDataMale());
+        statisticsResource.setProfileAgeDistributionDataFemale(statisticsEntity.getProfileAgeDistributionDataFemale());
+        statisticsResource.setProfileAgeDistributionDataOther(statisticsEntity.getProfileAgeDistributionDataOther());
+        statisticsResource.setProfileAgeGroupCrossData(statisticsEntity.getProfileAgeGroupCrossData());
+        statisticsResource.setProfileAgeGroupCrossTotal(statisticsEntity.getProfileAgeGroupCrossTotal());
         statisticsResource.setProfileBikeTypeData(statisticsEntity.getProfileBikeTypeData());
         statisticsResource.setProfileBikeTypeLabels(statisticsEntity.getProfileBikeTypeLabels());
         statisticsResource.setProfileCount(statisticsEntity.getProfileCount());

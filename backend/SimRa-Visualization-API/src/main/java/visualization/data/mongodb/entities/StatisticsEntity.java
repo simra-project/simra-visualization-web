@@ -19,7 +19,7 @@ public class StatisticsEntity {
 
     private String region;
 
-    private String timestamp;
+    private long timestamp;
 
     private int rideCount;
 
@@ -64,4 +64,16 @@ public class StatisticsEntity {
     private ArrayList<Integer> profileBikeTypeData;
 
     private ArrayList<String> profileAgeDistributionLabels;
+
+    private ArrayList<String> profileAgeDistributionData;
+
+    private ArrayList<String> profileAgeDistributionDataMale;
+
+    private ArrayList<String> profileAgeDistributionDataFemale;
+
+    private ArrayList<String> profileAgeDistributionDataOther;
+
+    private ArrayList<String> profileAgeGroupCrossData;
+
+    private ArrayList<String> profileAgeGroupCrossTotal;
 }
