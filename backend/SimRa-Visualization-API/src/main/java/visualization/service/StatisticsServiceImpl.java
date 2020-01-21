@@ -1,5 +1,6 @@
 package visualization.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.StatisticsRepository;
@@ -17,8 +18,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     private StatisticsResourceMapper statisticsResourceMapper;
 
     @Override
-    public StatisticsResource getStatisticsByRegion(String region) {
+    public StatisticsResource getStatisticsByRegion(String region) throws JsonProcessingException {
         StatisticsEntity statisticsEntity = statisticsRepository.findTop1ByRegionOrderByTimestampDesc(region, 0).get();
-        return statisticsResourceMapper.mapRideEntityToResource(statisticsEntity);
+        return statisticsResourceMapper.mapStatisticsEntityToResource(statisticsEntity);
     }
 }

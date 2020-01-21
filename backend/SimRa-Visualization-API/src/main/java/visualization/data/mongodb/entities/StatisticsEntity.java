@@ -47,7 +47,8 @@ public class StatisticsEntity {
 
     private int incidentCountWithChildrenInvolved;
 
-    private int incidentCountWithTrailersInvolved;
+    //2x Count in DB so lassen?
+    private int incidentCountCountWithTrailersInvolved;
 
     private int incidentCountScary;
 
@@ -65,15 +66,15 @@ public class StatisticsEntity {
 
     private ArrayList<String> profileAgeDistributionLabels;
 
-    private ArrayList<String> profileAgeDistributionData;
+    private ArrayList<Integer> profileAgeDistributionData;
 
-    private ArrayList<String> profileAgeDistributionDataMale;
+    private ArrayList<Integer> profileAgeDistributionDataMale;
 
-    private ArrayList<String> profileAgeDistributionDataFemale;
+    private ArrayList<Integer> profileAgeDistributionDataFemale;
 
-    private ArrayList<String> profileAgeDistributionDataOther;
+    private ArrayList<Integer> profileAgeDistributionDataOther;
 
     private ArrayList<String> profileAgeGroupCrossData;
 
-    private ArrayList<String> profileAgeGroupCrossTotal;
+    private String profileAgeGroupCrossTotal;
 }

@@ -13,18 +13,11 @@ public class RideResourceMapper {
         RideResource rideResource = new RideResource();
         RideResourceProperty rideResourceProperty = new RideResourceProperty();
 
-<<<<<<< HEAD
         rideResourceProperty.setRideId(rideEntity.getId());
         rideResourceProperty.setDistance(rideEntity.getDistance());
 
         if (!mapMatched) {
             rideResourceProperty.setTs(rideEntity.getTs());
-=======
-            rideResourceProperty.setRideId(rideEntity.getId());
-            rideResourceProperty.setTs(rideEntity.getTs());
-            rideResourceProperty.setDistance(rideEntity.getDistance());
-            rideResourceProperty.setDuration(rideEntity.getDuration());
->>>>>>> duration added
             rideResource.setGeometry(rideEntity.getLocation());
         } else {
             rideResourceProperty.setTs(rideEntity.getTsMapMatched());

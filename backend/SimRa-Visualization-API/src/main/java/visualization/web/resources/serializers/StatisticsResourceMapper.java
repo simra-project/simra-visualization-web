@@ -1,12 +1,21 @@
 package visualization.web.resources.serializers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import visualization.data.mongodb.entities.StatisticsEntity;
 import visualization.web.resources.StatisticsResource;
 
 @Component
 public class StatisticsResourceMapper {
-    public StatisticsResource mapRideEntityToResource(StatisticsEntity statisticsEntity) {
+
+    @Autowired
+    StatisticsAgeGroupDataMapper statisticsAgeGroupDataMapper;
+
+    @Autowired
+    StatisticsAgeGroupTotalMapper statisticsAgeGroupTotalMapper;
+
+    public StatisticsResource mapStatisticsEntityToResource(StatisticsEntity statisticsEntity) throws JsonProcessingException {
 
         StatisticsResource statisticsResource = new StatisticsResource();
 
@@ -23,7 +32,7 @@ public class StatisticsResourceMapper {
         statisticsResource.setIncidentCount(statisticsEntity.getIncidentCount());
         statisticsResource.setIncidentCountScary(statisticsEntity.getIncidentCountScary());
         statisticsResource.setIncidentCountWithChildrenInvolved(statisticsEntity.getIncidentCountWithChildrenInvolved());
-        statisticsResource.setIncidentCountWithTrailersInvolved(statisticsEntity.getIncidentCountWithTrailersInvolved());
+        statisticsResource.setIncidentCountWithTrailersInvolved(statisticsEntity.getIncidentCountCountWithTrailersInvolved());
         statisticsResource.setIncidentParticipantTypeData(statisticsEntity.getIncidentParticipantTypeData());
         statisticsResource.setIncidentParticipantTypeLabels(statisticsEntity.getIncidentParticipantTypeLabels());
         statisticsResource.setIncidentTypeData(statisticsEntity.getIncidentTypeData());
@@ -33,8 +42,12 @@ public class StatisticsResourceMapper {
         statisticsResource.setProfileAgeDistributionDataMale(statisticsEntity.getProfileAgeDistributionDataMale());
         statisticsResource.setProfileAgeDistributionDataFemale(statisticsEntity.getProfileAgeDistributionDataFemale());
         statisticsResource.setProfileAgeDistributionDataOther(statisticsEntity.getProfileAgeDistributionDataOther());
-        statisticsResource.setProfileAgeGroupCrossData(statisticsEntity.getProfileAgeGroupCrossData());
-        statisticsResource.setProfileAgeGroupCrossTotal(statisticsEntity.getProfileAgeGroupCrossTotal());
+
+
+        statisticsResource.setProfileAgeGroupCrossData(statisticsAgeGroupDataMapper.mapAgeGroupDataToResource(statisticsEntity.getProfileAgeGroupCrossData()));
+        statisticsResource.setProfileAgeGroupCrossTotal(statisticsAgeGroupTotalMapper.mapAgeGroupTotalToResource(statisticsEntity.getProfileAgeGroupCrossTotal()));
+
+
         statisticsResource.setProfileBikeTypeData(statisticsEntity.getProfileBikeTypeData());
         statisticsResource.setProfileBikeTypeLabels(statisticsEntity.getProfileBikeTypeLabels());
         statisticsResource.setProfileCount(statisticsEntity.getProfileCount());

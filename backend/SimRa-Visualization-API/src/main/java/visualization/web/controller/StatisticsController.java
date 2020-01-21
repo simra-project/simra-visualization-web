@@ -1,5 +1,6 @@
 package visualization.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class StatisticsController {
     private StatisticsService statisticsService;
 
     @GetMapping(value = "/statistics")
-    public HttpEntity<StatisticsResource> getStatisticsByRegion(@RequestParam(value = "region") String region) {
+    public HttpEntity<StatisticsResource> getStatisticsByRegion(@RequestParam(value = "region") String region) throws JsonProcessingException {
         return ResponseEntity.ok(statisticsService.getStatisticsByRegion(region));
     }
 }

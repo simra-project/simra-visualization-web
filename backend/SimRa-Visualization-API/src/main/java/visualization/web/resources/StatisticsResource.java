@@ -63,6 +63,7 @@ public class StatisticsResource {
     @JsonProperty
     private int incidentCountWithChildrenInvolved;
 
+    //TODO: Ggf. 2x Count ans Frontend passen
     @JsonProperty
     private int incidentCountWithTrailersInvolved;
 
@@ -91,20 +92,20 @@ public class StatisticsResource {
     private ArrayList<String> profileAgeDistributionLabels;
 
     @JsonProperty
-    private ArrayList<String> profileAgeDistributionData;
+    private ArrayList<Integer> profileAgeDistributionData;
 
     @JsonProperty
-    private ArrayList<String> profileAgeDistributionDataMale;
+    private ArrayList<Integer> profileAgeDistributionDataMale;
 
     @JsonProperty
-    private ArrayList<String> profileAgeDistributionDataFemale;
+    private ArrayList<Integer> profileAgeDistributionDataFemale;
 
     @JsonProperty
-    private ArrayList<String> profileAgeDistributionDataOther;
+    private ArrayList<Integer> profileAgeDistributionDataOther;
 
     @JsonProperty
-    private ArrayList<String> profileAgeGroupCrossData;
+    private ArrayList<StatisticsAgeGroupDataResource> profileAgeGroupCrossData;
 
     @JsonProperty
-    private ArrayList<String> profileAgeGroupCrossTotal;
+    private StatisticsAgeGroupDataResource profileAgeGroupCrossTotal;
 }
