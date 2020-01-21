@@ -3,7 +3,6 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 
@@ -104,8 +103,8 @@ public class StatisticsResource {
     private ArrayList<Integer> profileAgeDistributionDataOther;
 
     @JsonProperty
-    private ArrayList<StatisticsAgeGroupDataResource> profileAgeGroupCrossData;
+    private ArrayList<StatisticsAgeGroupResource> profileAgeGroupCrossData;
 
     @JsonProperty
-    private StatisticsAgeGroupDataResource profileAgeGroupCrossTotal;
+    private StatisticsAgeGroupResource profileAgeGroupCrossTotal;
 }
