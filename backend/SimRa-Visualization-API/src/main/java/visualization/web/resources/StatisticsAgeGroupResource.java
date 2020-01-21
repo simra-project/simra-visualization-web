@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @ToString
 @JsonInclude
-public class StatisticsAgeGroupDataResource {
+public class StatisticsAgeGroupResource {
 
     @JsonProperty
     private Long accumulatedDistance;
