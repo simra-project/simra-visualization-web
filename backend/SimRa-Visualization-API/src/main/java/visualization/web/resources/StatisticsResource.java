@@ -22,7 +22,7 @@ public class StatisticsResource {
     private String region;
 
     @JsonProperty
-    private String timestamp;
+    private long timestamp;
 
     @JsonProperty
     private int rideCount;
@@ -89,4 +89,22 @@ public class StatisticsResource {
 
     @JsonProperty
     private ArrayList<String> profileAgeDistributionLabels;
+
+    @JsonProperty
+    private ArrayList<String> profileAgeDistributionData;
+
+    @JsonProperty
+    private ArrayList<String> profileAgeDistributionDataMale;
+
+    @JsonProperty
+    private ArrayList<String> profileAgeDistributionDataFemale;
+
+    @JsonProperty
+    private ArrayList<String> profileAgeDistributionDataOther;
+
+    @JsonProperty
+    private ArrayList<String> profileAgeGroupCrossData;
+
+    @JsonProperty
+    private ArrayList<String> profileAgeGroupCrossTotal;
 }
