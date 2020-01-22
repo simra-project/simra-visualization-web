@@ -68,7 +68,7 @@ public class IncidentParserThreaded implements Runnable {
                     .withSkipLines(1)
                     .withIgnoreLeadingWhiteSpace(true)
                     .build().parse();
-            incidentBeans = incidentBeans.stream().filter(item -> item.getTs() != 0).collect(Collectors.toList());
+            incidentBeans = incidentBeans.stream().filter(item -> item.getTs() != 0 ).filter(item -> item.getIncident() != 0).collect(Collectors.toList());
 
             incidentBeans.forEach(item -> {
                 item.setFileId(this.fileName);
