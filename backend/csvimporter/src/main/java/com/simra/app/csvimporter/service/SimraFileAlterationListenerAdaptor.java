@@ -2,10 +2,10 @@ package com.simra.app.csvimporter.service;
 
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.simra.app.csvimporter.controller.CSVFileRepository;
-import com.simra.app.csvimporter.controller.IncidentRepository;
-import com.simra.app.csvimporter.controller.ProfileRepository;
-import com.simra.app.csvimporter.controller.RideRepository;
+import com.simra.app.csvimporter.repository.CSVFileRepository;
+import com.simra.app.csvimporter.repository.IncidentRepository;
+import com.simra.app.csvimporter.repository.ProfileRepository;
+import com.simra.app.csvimporter.repository.RideRepository;
 import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.model.CSVFile;
 import com.simra.app.csvimporter.model.ProfileEntity;

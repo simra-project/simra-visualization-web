@@ -55,4 +55,21 @@ public class IncidentController {
                 new GeoJsonPoint(second[0], first[1])));
     }
 
+    // get all incidents with filter criteria applied
+    @GetMapping(value = "/incidents/filter")
+    public HttpEntity<List<IncidentResource>> getIncidentsFilteredBy(@RequestParam(value = "fromTs", required = false) Long fromTs,
+                                                                     @RequestParam(value = "untilTs", required = false) Long untilTs,
+                                                                     @RequestParam(value = "fromMinutesOfDay", required = false) Integer fromMinutesOfDay,
+                                                                     @RequestParam(value = "untilMinutesOfDay", required = false) Integer untilMinutesOfDay,
+                                                                     @RequestParam(value = "weekdays", required = false) String[] weekdays,
+                                                                     @RequestParam(value = "bike", required = false) Integer[] bikeTypes,
+                                                                     @RequestParam(value = "child", required = false) Boolean child,
+                                                                     @RequestParam(value = "trailer", required = false) Boolean trailer,
+                                                                     @RequestParam(value = "incidents", required = false) Integer[] incidentTypes,
+                                                                     @RequestParam(value = "participants", required = false) Boolean[] participants,
+                                                                     @RequestParam(value = "scary", required = false) Boolean scary) {
+
+        return ResponseEntity.ok(incidentService.getFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, child, trailer, incidentTypes, participants, scary));
+    }
+
 }

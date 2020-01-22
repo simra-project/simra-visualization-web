@@ -9,6 +9,7 @@ import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
 import visualization.web.resources.serializers.IncidentResourceMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,9 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Autowired
     private IncidentRepository incidentRepository;
+
+    @Autowired
+    private IncidentRepository incidentRepositoryCustom;
 
     @Autowired
     private IncidentResourceMapper incidentResourceMapper;
@@ -57,6 +61,47 @@ public class IncidentServiceImpl implements IncidentService {
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
 
         List<IncidentEntity> incidentEntities = incidentRepository.findByLocationWithin(polygon);
+
+        return incidentEntities.stream()
+                .filter(incident -> incident.getIncident() != 0)
+                .map(incident -> incidentResourceMapper.mapEntityToResource(incident))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary) {
+
+        List<String> weekdaysList = new ArrayList<>();
+        List<Integer> bikeTypesList = new ArrayList<>();
+        List<Integer> incidentTypesList = new ArrayList<>();
+        List<Boolean> participantsList = new ArrayList<>();
+
+
+        if(weekdays != null){
+            for(String weekday:weekdays){
+                weekdaysList.add(weekday);
+            }
+        }
+
+        if(bikeTypes != null) {
+            for(Integer bikeType:bikeTypes){
+                bikeTypesList.add(bikeType);
+            }
+        }
+
+        if(incidentTypes != null) {
+            for (Integer incidentType : incidentTypes) {
+                incidentTypesList.add(incidentType);
+            }
+        }
+
+        if(participants != null) {
+            for(Boolean participant:participants){
+                participantsList.add(participant);
+            }
+        }
+
+        List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList);
 
         return incidentEntities.stream()
                 .filter(incident -> incident.getIncident() != 0)

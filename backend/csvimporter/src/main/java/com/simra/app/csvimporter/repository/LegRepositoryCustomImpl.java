@@ -1,4 +1,4 @@
-package com.simra.app.csvimporter.controller;
+package com.simra.app.csvimporter.repository;
 
 import com.simra.app.csvimporter.model.LegEntity;
 import org.springframework.beans.factory.annotation.Autowired;

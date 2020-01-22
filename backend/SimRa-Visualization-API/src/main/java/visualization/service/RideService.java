@@ -14,4 +14,8 @@ public interface RideService {
     List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth);
 
     List<RideResource> getRidesAtTime(Long fromTs, Long untilTs);
+
+    Boolean isRideImported(String rideId);
+
+    Long getImportedRidesCount();
 }

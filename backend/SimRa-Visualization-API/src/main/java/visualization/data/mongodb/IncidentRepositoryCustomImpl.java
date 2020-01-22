@@ -13,7 +13,7 @@ public class IncidentRepositoryCustomImpl implements IncidentRepositoryCustom {
     @Autowired
     private MongoTemplate mongotemplate;
 
-
+//                                                          fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, child, trailer, pLoc, incidentTypes, scary, participants
     @Override
     public List<IncidentEntity> findFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants) {
 

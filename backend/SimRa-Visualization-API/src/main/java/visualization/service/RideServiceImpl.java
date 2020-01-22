@@ -50,4 +50,14 @@ public class RideServiceImpl implements RideService {
 
         return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
     }
+
+    @Override
+    public Boolean isRideImported(String rideId) {
+        return rideRepository.existsById(rideId);
+    }
+
+    @Override
+    public Long getImportedRidesCount() {
+        return rideRepository.count();
+    }
 }
