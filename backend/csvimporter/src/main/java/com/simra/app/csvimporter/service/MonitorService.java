@@ -1,4 +1,4 @@
-package com.simra.app.csvimporter.controller;
+package com.simra.app.csvimporter.service;
 
 
 public interface MonitorService {
