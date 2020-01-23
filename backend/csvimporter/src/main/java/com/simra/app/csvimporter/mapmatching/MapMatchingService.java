@@ -1,8 +1,7 @@
-package com.simra.app.csvimporter.filter;
+package com.simra.app.csvimporter.mapmatching;
 
 import com.graphhopper.GraphHopper;
 import com.graphhopper.PathWrapper;
-import com.graphhopper.matching.MapMatching;
 import com.graphhopper.matching.MatchResult;
 import com.graphhopper.matching.Observation;
 import com.graphhopper.reader.osm.GraphHopperOSM;
@@ -32,11 +31,13 @@ public class MapMatchingService {
     private GraphHopper graphHopper;
 
     public MapMatchingService() {
+
         CmdArgs graphHopperConfiguration = new CmdArgs();
         graphHopperConfiguration.put("graph.flag_encoders", "bike");
         graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf");
-        graphHopper = new GraphHopperOSM().init(graphHopperConfiguration);
-        graphHopper.importOrLoad();
+
+        this.graphHopper = new GraphHopperOSM().init(graphHopperConfiguration);
+        this.graphHopper.importOrLoad();
     }
 
     private Float currentRouteDistance = 0F;
@@ -90,9 +91,12 @@ public class MapMatchingService {
                 // shortest weighting does not apply penalties to unfavored virtual edges.
                 .build();
 
-        MapMatching mapMatching = new MapMatching(graphHopper, new HintsMap(opts.getHints()));
-        mapMatching.setTransitionProbabilityBeta(2.0);
+        CustomMapMatching mapMatching = new CustomMapMatching(graphHopper, new HintsMap(opts.getHints())) {
+
+        };
+        mapMatching.setTransitionProbabilityBeta(0.5);
         mapMatching.setMeasurementErrorSigma(50.0);
+
 
         PathMerger pathMerger = new PathMerger(graphHopper.getGraphHopperStorage(), opts.getWeighting());
 
