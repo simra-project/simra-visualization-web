@@ -3,8 +3,6 @@ package visualization.web.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import net.minidev.json.JSONObject;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
 
 import java.util.ArrayList;
 
@@ -17,33 +15,31 @@ import java.util.ArrayList;
 public class StatisticsAgeGroupResource {
 
     @JsonProperty
-    private Long accumulatedDistance;
-
-    //TODO: Sollte eigentlich als Long aus der DB kommen
-    @JsonProperty
-    private JSONObject accumulatedDuration;
+    private Double accumulatedDistance;
 
     @JsonProperty
-    private Long accumulatedSavedCO2;
+    private Long accumulatedDuration;
+
+    @JsonProperty
+    private Double accumulatedSavedCO2;
 
     @JsonProperty
     private String ageGroup;
 
     @JsonProperty
-    private Long averageDistance;
-
-    //TODO: Sollte eigentlich als Long aus der DB kommen
-    @JsonProperty
-    private JSONObject averageDuration;
+    private Double averageDistance;
 
     @JsonProperty
-    private Long averageSavedCO2;
+    private Double averageDuration;
 
     @JsonProperty
-    private Long averageScaryIncidentCount;
+    private Double averageSavedCO2;
 
     @JsonProperty
-    private Long averageSpeed;
+    private Double averageScaryIncidentCount;
+
+    @JsonProperty
+    private Double averageSpeed;
 
     @JsonProperty
     private Integer bikerCount;

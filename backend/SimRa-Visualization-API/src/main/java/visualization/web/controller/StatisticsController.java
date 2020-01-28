@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import visualization.service.StatisticsService;
 import visualization.web.resources.StatisticsResource;
 
+import java.io.IOException;
+
 import static com.mongodb.client.model.Filters.eq;
 
 
@@ -19,7 +21,7 @@ public class StatisticsController {
     private StatisticsService statisticsService;
 
     @GetMapping(value = "/statistics")
-    public HttpEntity<StatisticsResource> getStatisticsByRegion(@RequestParam(value = "region") String region) throws JsonProcessingException {
+    public HttpEntity<StatisticsResource> getStatisticsByRegion(@RequestParam(value = "region") String region) throws IOException {
         return ResponseEntity.ok(statisticsService.getStatisticsByRegion(region));
     }
 }
