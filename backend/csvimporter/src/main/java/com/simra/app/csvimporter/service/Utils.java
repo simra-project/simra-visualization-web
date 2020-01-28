@@ -5,16 +5,17 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Locale;
 
 public class Utils {
 
-    private static final SimpleDateFormat weekdayPattern = new SimpleDateFormat("E");
+    private static final SimpleDateFormat weekdayPattern = new SimpleDateFormat("E", Locale.US);
 
     private static final double R = 6371d; // Radius of the earth
 
 
     public static int getMinuteOfDay(long ts) {
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts), ZoneId.systemDefault());
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts), ZoneId.of("Europe/Paris"));
         int hours = zdt.getHour();
         int minutes = zdt.getMinute();
         return hours * 60 + minutes;
