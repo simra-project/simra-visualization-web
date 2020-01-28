@@ -67,9 +67,10 @@ public class IncidentController {
                                                                      @RequestParam(value = "trailer", required = false) Boolean trailer,
                                                                      @RequestParam(value = "incidents", required = false) Integer[] incidentTypes,
                                                                      @RequestParam(value = "participants", required = false) Boolean[] participants,
-                                                                     @RequestParam(value = "scary", required = false) Boolean scary) {
+                                                                     @RequestParam(value = "scary", required = false) Boolean scary,
+                                                                     @RequestParam(value = "description", required = false) Boolean description){
 
-        return ResponseEntity.ok(incidentService.getFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, child, trailer, incidentTypes, participants, scary));
+        return ResponseEntity.ok(incidentService.getFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, child, trailer, incidentTypes, participants, scary, description));
     }
 
 }
