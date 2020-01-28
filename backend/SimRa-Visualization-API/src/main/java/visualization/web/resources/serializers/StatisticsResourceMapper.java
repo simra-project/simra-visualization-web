@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import visualization.data.mongodb.entities.StatisticsEntity;
 import visualization.web.resources.StatisticsResource;
 
+import java.io.IOException;
+
 @Component
 public class StatisticsResourceMapper {
 
@@ -15,7 +17,7 @@ public class StatisticsResourceMapper {
     @Autowired
     StatisticsAgeGroupTotalMapper statisticsAgeGroupTotalMapper;
 
-    public StatisticsResource mapStatisticsEntityToResource(StatisticsEntity statisticsEntity) throws JsonProcessingException {
+    public StatisticsResource mapStatisticsEntityToResource(StatisticsEntity statisticsEntity) throws IOException {
 
         StatisticsResource statisticsResource = new StatisticsResource();
 

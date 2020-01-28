@@ -8,6 +8,8 @@ import visualization.data.mongodb.entities.StatisticsEntity;
 import visualization.web.resources.StatisticsResource;
 import visualization.web.resources.serializers.StatisticsResourceMapper;
 
+import java.io.IOException;
+
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
 
@@ -18,7 +20,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private StatisticsResourceMapper statisticsResourceMapper;
 
     @Override
-    public StatisticsResource getStatisticsByRegion(String region) throws JsonProcessingException {
+    public StatisticsResource getStatisticsByRegion(String region) throws IOException {
         StatisticsEntity statisticsEntity = statisticsRepository.findTop1ByRegionOrderByTimestampDesc(region, 0).get();
         return statisticsResourceMapper.mapStatisticsEntityToResource(statisticsEntity);
     }
