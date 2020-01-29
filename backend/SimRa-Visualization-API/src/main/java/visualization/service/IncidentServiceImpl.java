@@ -70,7 +70,7 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary) {
+    public List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary, Boolean description) {
 
         // TODO: add range query thing
         /*

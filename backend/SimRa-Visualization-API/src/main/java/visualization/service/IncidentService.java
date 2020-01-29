@@ -15,5 +15,5 @@ public interface IncidentService {
 
     List<IncidentResource> getIncidentsInWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth);
 
-    List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeType, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary);
+    List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeType, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary, Boolean description);
 }
