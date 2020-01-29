@@ -14,7 +14,7 @@
             <b-field label="Weekday">
                 <b-select v-model="filterRideWeekday">
                     <option :value="null">Any weekday</option>
-                    <option v-for="weekday in weekdays" :value="weekday">{{ weekday }}</option>
+                    <option v-for="weekday in weekdays" :value="weekday[0]">{{ weekday[1] }}</option>
                 </b-select>
             </b-field>
 
@@ -35,12 +35,13 @@
         </template>
 
         <template v-else>
-            <b-field label="Is scary">
-                <b-select v-model="filterIncidentIsScary" @change.native="incidentsChanged">
-                    <option :value="null">All incidents</option>
-                    <option :value="true">Only scary incidents</option>
-                    <option :value="false">Only regular incidents</option>
-                </b-select>
+            <b-field label="Scary / Regular Incidents" style="margin-bottom: 0.5rem;">
+                <b-checkbox v-model="filterIncidentScary" @change.native="incidentsChanged">Scary Incidents</b-checkbox>
+            </b-field>
+
+            <b-field :type="{ 'is-danger': !filterIncidentScary && !filterIncidentRegular }"
+                     :message="{ 'You have to choose at least one of these options': !filterIncidentScary && !filterIncidentRegular }">
+                <b-checkbox v-model="filterIncidentRegular" @change.native="incidentsChanged">Regular Incidents</b-checkbox>
             </b-field>
 
             <b-field label="Incident Type">
@@ -57,19 +58,20 @@
                 </b-select>
             </b-field>
 
-            <b-field grouped>
-                <b-field label="From hour">
-                    <b-select v-model="filterIncidentFromHour" @change.native="incidentsChanged">
-                        <option :value="null">Any</option>
-                        <option v-for="hour in fromHours" :value="hour">{{ hour }}:00</option>
-                    </b-select>
-                </b-field>
-                <b-field label="To hour">
-                    <b-select v-model="filterIncidentToHour" @change.native="incidentsChanged">
-                        <option :value="null">Any</option>
-                        <option v-for="hour in toHours" :value="hour">{{ hour }}:00</option>
-                    </b-select>
-                </b-field>
+            <b-field label="Weekday">
+                <b-select v-model="filterIncidentWeekday" @change.native="incidentsChanged">
+                    <option :value="null">Any weekday</option>
+                    <option v-for="weekday in weekdays" :value="weekday[0]">{{ weekday[1] }}</option>
+                </b-select>
+            </b-field>
+
+            <b-field label="Time of day">
+                <b-slider v-model="filterIncidentHours" @change="incidentsChanged"
+                          :min="0" :max="24" :step="1" lazy rounded :custom-formatter="h => h + ':00'">
+                    <template v-for="h in [4, 8, 12, 16, 20]">
+                        <b-slider-tick :value="h" :key="h">{{ h }}:00</b-slider-tick>
+                    </template>
+                </b-slider>
             </b-field>
         </template>
     </div>
@@ -89,32 +91,45 @@ export default {
             filterRideWeekday: null,
             filterRideFromHour: null,
             filterRideToHour: null,
-            filterIncidentIsScary: null,
+            filterIncidentScary: true,
+            filterIncidentRegular: true,
             filterIncidentType: null,
             filterIncidentParticipant: null,
-            filterIncidentFromHour: null,
-            filterIncidentToHour: null,
-            weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-            fromHours: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-            toHours: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0],
+            filterIncidentWeekday: null,
+            filterIncidentHours: [0, 24],
+            weekdays: [["Mo.", "Monday"], ["Di.", "Tuesday"], ["Mi.", "Wednesday"], ["Do.", "Thursday"], ["Fr.", "Friday"], ["Sa.", "Saturday"], ["So.", "Sunday"]],
         }
     },
     methods: {
         incidentTypes: () => IncidentUtils.getTypes(),
         incidentParticipants: () => IncidentUtils.getParticipants(),
         incidentsChanged() {
+            // Both checkboxes shouldn't be unselected, not applying filters
+            if (!this.filterIncidentScary && !this.filterIncidentRegular) return;
+
             console.log("Filters changed!");
             this.$emit('incidents-changed');
         },
         getIncidentFilters() {
+            // If a filter-value is the default, don't apply that filter
             return {
-                scary: this.filterIncidentIsScary,
+                scary: this.filterIncidentScary && this.filterIncidentRegular ? null : this.filterIncidentScary,
                 incidents: this.filterIncidentType,
                 participants: this.filterIncidentParticipant != null ? IncidentUtils.participantToBoolArray(this.filterIncidentParticipant).join(",") : null,
-                fromMinutesOfDay: this.filterIncidentFromHour != null ? this.filterIncidentFromHour * 60 : null,
-                untilMinutesOfDay: this.filterIncidentToHour != null ? this.filterIncidentToHour * 60 : null,
+                weekdays: this.filterIncidentWeekday != null ? [this.filterIncidentWeekday] : null,
+                fromMinutesOfDay: this.filterIncidentHours[0] !== 0 ? this.filterIncidentHours[0] * 60 : null,
+                untilMinutesOfDay: this.filterIncidentHours[1] !== 24 ? this.filterIncidentHours[1] * 60 : null,
             };
         },
+    },
+    watch: {
+        filterIncidentHours(value, oldValue) {
+            // Don't allow selecting the same hour for the range start and end
+            if (value[0] === value[1]) {
+                if (value[0] < 24) value[1] += 1;
+                else value[0] -=1;
+            }
+        }
     }
 };
 </script>
@@ -122,6 +137,8 @@ export default {
 <style lang="scss">
 
     .map-filters {
+        padding-bottom: 6px;
+
         .hr-text {
             line-height: 1em;
             position: relative;
@@ -157,6 +174,14 @@ export default {
 
         label.label {
             margin-bottom: 4px;
+        }
+
+        .b-checkbox.checkbox {
+            font-size: 16px;
+        }
+
+        .b-slider {
+            padding: 0 8px;
         }
     }
 </style>
