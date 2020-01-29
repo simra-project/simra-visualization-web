@@ -50,7 +50,7 @@
                     <b-tab-item label="Incidents" icon="car-crash"/>
                 </b-tabs>
 
-                <MapFilters :view-mode="viewMode"/>
+                <MapFilters ref="filters" :view-mode="viewMode" @incidents-changed="loadIncidents"/>
             </div>
         </l-control>
 
@@ -397,10 +397,12 @@ export default {
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
-
             console.log([[min_x, min_y], [max_x, max_y]]);
-            this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]]]);
 
+            let filters = this.$refs.filters.getIncidentFilters();
+            console.log(filters);
+
+            this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]], filters]);
         },
         // loadChunk(x, y) {
         //     if (this.detailedAreasLoaded[`${x},${y}`] == null) {

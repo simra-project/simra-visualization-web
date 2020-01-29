@@ -63,13 +63,21 @@ function loadLegs(coords, filter) {
 }
 
 var incidents = [];
+var prevLoadedWithFilters = false;
 function loadIncidents(coords, filter) {
-    if (!incidents.hasOwnProperty(coords)) {
+    let filterElements = Object.entries(filter).filter(x => x[1] != null);
+    prevLoadedWithFilters = filterElements.length > 0;
+
+    if (!incidents.hasOwnProperty(coords) || filterElements.length > 0 || prevLoadedWithFilters) {
         startLoading();
 
+        let filtersQuery = filterElements.map(x => `${ x[0] }=${ x[1] }`).join("&");
+
         console.log(coords);
-        console.log(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`);
-        fetch(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`)
+        // console.log(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`);
+        // fetch(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`)
+        console.log(`http://localhost:8080/incidents/filter?${filtersQuery}`);
+        fetch(`http://localhost:8080/incidents/filter?${filtersQuery}`)
             .then(r => r.json())
             .then(result => {
                 incidents[coords] = result;

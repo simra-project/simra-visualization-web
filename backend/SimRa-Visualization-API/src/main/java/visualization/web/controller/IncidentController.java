@@ -37,7 +37,14 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncidentsByFileId(rideId));
     }
 
-    // get all incidents in range minDistance and maxDistance around a Point (longitude, latitude)
+    /**
+     * Example request: http://localhost:8080/incidents?lon=13.26155&lat=52.4308&max=5000
+     *
+     * @param longitude   Coordinate-Longitude like 13.26155
+     * @param latitude    Coordinate-Latitude like 52.4308
+     * @param maxDistance maximum (distance) radius around the given coordinate point like 5000
+     * @return list of incidents in the circle around the coordinate using maxDistance as the radius
+     */
     @GetMapping(value = "/incidents")
     public HttpEntity<List<IncidentResource>> getIncidentsNear(@RequestParam(value = "lon") double longitude,
                                                                @RequestParam(value = "lat") double latitude,
@@ -45,14 +52,20 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncidentsInRange(longitude, latitude, maxDistance));
     }
 
-    //example: http://localhost:8080/incidents/area?bottomleft=13.297089,52.481744&topright=13.456360,52.547463
+    /**
+     * Example request: http://localhost:8080/incidents/area?bottomleft=13.297089,52.481744&topright=13.456360,52.547463
+     *
+     * @param bottomleft Coordinate-Tuple like 13.297089,52.481744
+     * @param topright   Coordinate-Tuple like 13.456360,52.547463
+     * @return list of incidents in the given area
+     */
     @GetMapping(value = "/incidents/area")
-    public HttpEntity<List<IncidentResource>> getIncidentsWithin(@RequestParam(value = "bottomleft") double[] first,
-                                                                 @RequestParam(value = "topright") double[] second) {
-        return ResponseEntity.ok(incidentService.getIncidentsInWithin(new GeoJsonPoint(first[0], first[1]),
-                new GeoJsonPoint(first[0], second[1]),
-                new GeoJsonPoint(second[0], second[1]),
-                new GeoJsonPoint(second[0], first[1])));
+    public HttpEntity<List<IncidentResource>> getIncidentsWithin(@RequestParam(value = "bottomleft") double[] bottomleft,
+                                                                 @RequestParam(value = "topright") double[] topright) {
+        return ResponseEntity.ok(incidentService.getIncidentsInWithin(new GeoJsonPoint(bottomleft[0], bottomleft[1]),
+                new GeoJsonPoint(bottomleft[0], topright[1]),
+                new GeoJsonPoint(topright[0], topright[1]),
+                new GeoJsonPoint(topright[0], bottomleft[1])));
     }
 
     // get all incidents with filter criteria applied
