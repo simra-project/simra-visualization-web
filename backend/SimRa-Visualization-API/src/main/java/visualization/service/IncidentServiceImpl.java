@@ -100,7 +100,7 @@ public class IncidentServiceImpl implements IncidentService {
             participantsList.addAll(Arrays.asList(participants));
         }
 
-        List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList);
+        List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList, description);
 
         return incidentEntities.stream()
                 .filter(incident -> incident.getIncident() != 0)
