@@ -10,6 +10,7 @@ import visualization.web.resources.IncidentResource;
 import visualization.web.resources.serializers.IncidentResourceMapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,34 +72,32 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     public List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary) {
 
+        // TODO: add range query thing
+        /*
+        GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
+
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
+         */
+
         List<String> weekdaysList = new ArrayList<>();
         List<Integer> bikeTypesList = new ArrayList<>();
         List<Integer> incidentTypesList = new ArrayList<>();
         List<Boolean> participantsList = new ArrayList<>();
 
-
-        if(weekdays != null){
-            for(String weekday:weekdays){
-                weekdaysList.add(weekday);
-            }
+        if (weekdays != null) {
+            weekdaysList.addAll(Arrays.asList(weekdays));
         }
 
-        if(bikeTypes != null) {
-            for(Integer bikeType:bikeTypes){
-                bikeTypesList.add(bikeType);
-            }
+        if (bikeTypes != null) {
+            bikeTypesList.addAll(Arrays.asList(bikeTypes));
         }
 
-        if(incidentTypes != null) {
-            for (Integer incidentType : incidentTypes) {
-                incidentTypesList.add(incidentType);
-            }
+        if (incidentTypes != null) {
+            incidentTypesList.addAll(Arrays.asList(incidentTypes));
         }
 
-        if(participants != null) {
-            for(Boolean participant:participants){
-                participantsList.add(participant);
-            }
+        if (participants != null) {
+            participantsList.addAll(Arrays.asList(participants));
         }
 
         List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList);

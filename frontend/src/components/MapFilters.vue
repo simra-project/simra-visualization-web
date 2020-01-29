@@ -36,7 +36,7 @@
 
         <template v-else>
             <b-field label="Is scary">
-                <b-select v-model="filterIncidentIsScary">
+                <b-select v-model="filterIncidentIsScary" @change.native="incidentsChanged">
                     <option :value="null">All incidents</option>
                     <option :value="true">Only scary incidents</option>
                     <option :value="false">Only regular incidents</option>
@@ -44,14 +44,14 @@
             </b-field>
 
             <b-field label="Incident Type">
-                <b-select v-model="filterIncidentType">
+                <b-select v-model="filterIncidentType" @change.native="incidentsChanged">
                     <option :value="null">Any type</option>
                     <option v-for="type in incidentTypes()" :value="type.id">{{ type.name }}</option>
                 </b-select>
             </b-field>
 
             <b-field label="Incident Participant">
-                <b-select v-model="filterIncidentParticipant">
+                <b-select v-model="filterIncidentParticipant" @change.native="incidentsChanged">
                     <option :value="null">Any participant</option>
                     <option v-for="participant in incidentParticipants()" :value="participant.id">{{ participant.name }}</option>
                 </b-select>
@@ -59,13 +59,13 @@
 
             <b-field grouped>
                 <b-field label="From hour">
-                    <b-select v-model="filterIncidentFromHour">
+                    <b-select v-model="filterIncidentFromHour" @change.native="incidentsChanged">
                         <option :value="null">Any</option>
                         <option v-for="hour in fromHours" :value="hour">{{ hour }}:00</option>
                     </b-select>
                 </b-field>
                 <b-field label="To hour">
-                    <b-select v-model="filterIncidentToHour">
+                    <b-select v-model="filterIncidentToHour" @change.native="incidentsChanged">
                         <option :value="null">Any</option>
                         <option v-for="hour in toHours" :value="hour">{{ hour }}:00</option>
                     </b-select>
@@ -102,6 +102,19 @@ export default {
     methods: {
         incidentTypes: () => IncidentUtils.getTypes(),
         incidentParticipants: () => IncidentUtils.getParticipants(),
+        incidentsChanged() {
+            console.log("Filters changed!");
+            this.$emit('incidents-changed');
+        },
+        getIncidentFilters() {
+            return {
+                scary: this.filterIncidentIsScary,
+                incidents: this.filterIncidentType,
+                participants: this.filterIncidentParticipant != null ? IncidentUtils.participantToBoolArray(this.filterIncidentParticipant).join(",") : null,
+                fromMinutesOfDay: this.filterIncidentFromHour != null ? this.filterIncidentFromHour * 60 : null,
+                untilMinutesOfDay: this.filterIncidentToHour != null ? this.filterIncidentToHour * 60 : null,
+            };
+        },
     }
 };
 </script>
