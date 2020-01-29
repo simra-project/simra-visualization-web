@@ -290,7 +290,7 @@ export default {
             this.updateUrlQuery();
             if (this.viewMode === 0)
                 this.loadMatchedRoutes();
-            if (this.viewMode === 1 && this.zoom > this.heatmapMaxZoom)
+            if (this.viewMode === 1 && (this.zoom > this.heatmapMaxZoom || this.incident_heatmap.length === 0))
                 this.loadIncidents();
         },
         boundsUpdated(bounds) {
@@ -450,34 +450,19 @@ export default {
             }
         }
     },
-    // Laden der Daten aus der API
     async mounted() {
         this.$nextTick(() => {
             this.zoom = this.$refs.map.mapObject.getZoom();
             this.center = this.$refs.map.mapObject.getCenter();
             this.bounds = this.$refs.map.mapObject.getBounds();
+
+            this.zoomUpdated(this.zoom);
+            this.centerUpdated(this.center);
+            this.boundsUpdated(this.bounds);
         });
 
-        let lat = this.center[0];
-        let lon = this.center[1];
-        // function sleep(ms) {
-        //     return new Promise(resolve => setTimeout(resolve, ms));
-        // }
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
-        //
-        // this.apiWorker.onmessage = function(event) {
-        //     console.log(event.data);
-        // };
-        //
-        // this.apiWorker.postMessage("init");
-        // this.apiWorker.postMessage("add");
-        //
-        // await sleep(1000);
-        // this.apiWorker.postMessage("readAll");
-
-        // ApiService.loadRoutesMatched(lat, lon).then(response => (this.parseRoutes(response)));
-        ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
     },
 };
 </script>
