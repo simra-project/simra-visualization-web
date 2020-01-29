@@ -3,34 +3,29 @@
         <hr class="hr-text" data-content="FILTERS">
 
         <template v-if="viewMode === 0">
-            <b-field label="Ride has Incident">
-                <b-select v-model="filterRideHasIncident">
-                    <option :value="null">All rides</option>
-                    <option :value="true">Only rides with incidents</option>
-                    <option :value="false">Only rides without incidents</option>
-                </b-select>
+            <b-field label="Bike rides" style="margin-bottom: 0.5rem;">
+                <b-checkbox v-model="filterRideWithIncident" @change.native="ridesChanged">With Incidents</b-checkbox>
+            </b-field>
+
+            <b-field :type="{ 'is-danger': !filterRideWithIncident && !filterRideWithoutIncident }"
+                     :message="{ 'You have to choose at least one of these options': !filterRideWithIncident && !filterRideWithoutIncident }">
+                <b-checkbox v-model="filterRideWithoutIncident" @change.native="ridesChanged">Without Incidents</b-checkbox>
             </b-field>
 
             <b-field label="Weekday">
-                <b-select v-model="filterRideWeekday">
+                <b-select v-model="filterRideWeekday" @change.native="ridesChanged">
                     <option :value="null">Any weekday</option>
                     <option v-for="weekday in weekdays" :value="weekday[0]">{{ weekday[1] }}</option>
                 </b-select>
             </b-field>
 
-            <b-field grouped>
-                <b-field label="From hour">
-                    <b-select v-model="filterRideFromHour">
-                        <option :value="null">Any</option>
-                        :   <option v-for="hour in fromHours" :value="hour">{{ hour }}:00</option>
-                    </b-select>
-                </b-field>
-                <b-field label="To hour">
-                    <b-select v-model="filterRideToHour">
-                        <option :value="null">Any</option>
-                        <option v-for="hour in toHours" :value="hour">{{ hour }}:00</option>
-                    </b-select>
-                </b-field>
+            <b-field label="Time of day">
+                <b-slider v-model="filterRideHours" @change="ridesChanged"
+                          :min="0" :max="24" :step="1" lazy rounded :custom-formatter="h => h + ':00'">
+                    <template v-for="h in [4, 8, 12, 16, 20]">
+                        <b-slider-tick :value="h" :key="h">{{ h }}:00</b-slider-tick>
+                    </template>
+                </b-slider>
             </b-field>
         </template>
 
@@ -87,10 +82,10 @@ export default {
     },
     data() {
         return {
-            filterRideHasIncident: null,
+            filterRideWithIncident: true,
+            filterRideWithoutIncident: true,
             filterRideWeekday: null,
-            filterRideFromHour: null,
-            filterRideToHour: null,
+            filterRideHours: [0, 24],
             filterIncidentScary: true,
             filterIncidentRegular: true,
             filterIncidentType: null,
@@ -103,12 +98,28 @@ export default {
     methods: {
         incidentTypes: () => IncidentUtils.getTypes(),
         incidentParticipants: () => IncidentUtils.getParticipants(),
+        ridesChanged() {
+            // Both checkboxes shouldn't be unselected, not applying filters
+            if (!(this.filterRideWithIncident || this.filterRideWithoutIncident)) return;
+
+            console.log("Ride-Filters changed!");
+            this.$emit('rides-changed');
+        },
         incidentsChanged() {
             // Both checkboxes shouldn't be unselected, not applying filters
-            if (!this.filterIncidentScary && !this.filterIncidentRegular) return;
+            if (!(this.filterIncidentScary || this.filterIncidentRegular)) return;
 
-            console.log("Filters changed!");
+            console.log("Incident-Filters changed!");
             this.$emit('incidents-changed');
+        },
+        getRideFilters() {
+            // If a filter-value is the default, don't apply that filter
+            return {
+                todo: this.filterRideWithIncident && this.filterRideWithoutIncident ? null : this.filterRideWithIncident, // TODO: wait for real parameter
+                weekdays: this.filterRideWeekday != null ? [this.filterRideWeekday] : null,
+                fromMinutesOfDay: this.filterRideHours[0] !== 0 ? this.filterRideHours[0] * 60 : null,
+                untilMinutesOfDay: this.filterRideHours[1] !== 24 ? this.filterRideHours[1] * 60 : null,
+            };
         },
         getIncidentFilters() {
             // If a filter-value is the default, don't apply that filter
@@ -123,6 +134,13 @@ export default {
         },
     },
     watch: {
+        filterRideHours(value, oldValue) {
+            // Don't allow selecting the same hour for the range start and end
+            if (value[0] === value[1]) {
+                if (value[0] < 24) value[1] += 1;
+                else value[0] -=1;
+            }
+        },
         filterIncidentHours(value, oldValue) {
             // Don't allow selecting the same hour for the range start and end
             if (value[0] === value[1]) {

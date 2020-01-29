@@ -50,7 +50,7 @@
                     <b-tab-item label="Incidents" icon="car-crash"/>
                 </b-tabs>
 
-                <MapFilters ref="filters" :view-mode="viewMode" @incidents-changed="loadIncidents"/>
+                <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents"/>
             </div>
         </l-control>
 
@@ -386,6 +386,9 @@ export default {
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
+
+            let filters = this.$refs.filters.getRideFilters();
+            console.log(filters);
 
             this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1)]);
             // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
