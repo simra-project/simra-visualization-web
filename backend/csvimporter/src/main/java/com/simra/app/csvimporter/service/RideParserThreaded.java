@@ -4,12 +4,12 @@ import com.mongodb.client.model.geojson.LineString;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.simra.app.csvimporter.repository.IncidentRepository;
-import com.simra.app.csvimporter.repository.RideRepository;
-import com.simra.app.csvimporter.filter.MapMatchingService;
 import com.simra.app.csvimporter.filter.RideSmoother;
+import com.simra.app.csvimporter.mapmatching.MapMatchingService;
 import com.simra.app.csvimporter.model.RideCSV;
 import com.simra.app.csvimporter.model.RideEntity;
+import com.simra.app.csvimporter.repository.IncidentRepository;
+import com.simra.app.csvimporter.repository.RideRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,11 +126,11 @@ public class RideParserThreaded implements Runnable {
             Float routeDistance = mapMatchingService.getCurrentRouteDistance();
             Long routeDuration = mapMatchingService.getCurrentRouteDuration();
 
-            long startTimeStamp= rideBeans.get(0).getTimeStamp();
+            long startTimeStamp = rideBeans.get(0).getTimeStamp();
 
             // filter short Distance Rides
             if (routeDistance < minRideDistance) {
-                LOG.info("{} filtered due to routeDistance = {} m",fileName, routeDistance );
+                LOG.info("{} filtered due to routeDistance = {} m", fileName, routeDistance);
                 return;
             }
 
@@ -143,7 +143,7 @@ public class RideParserThreaded implements Runnable {
             // filter high average speed
             double averageSpeed = Utils.calcAverageSpeed(routeDistance, routeDuration);
             if (averageSpeed > maxRideAverageSpeed) {
-                LOG.info( "{} filtered due to averageSpeed = {} km/h", fileName, averageSpeed);
+                LOG.info("{} filtered due to averageSpeed = {} km/h", fileName, averageSpeed);
                 return;
             }
 
