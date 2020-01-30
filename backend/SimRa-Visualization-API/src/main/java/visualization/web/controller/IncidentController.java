@@ -1,6 +1,7 @@
 package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -10,12 +11,6 @@ import visualization.web.resources.IncidentResource;
 
 import java.util.List;
 
-
-/*
-
-This is the place where we communicate with the frontend regarding Incident Queries
-
- */
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -45,6 +40,7 @@ public class IncidentController {
      * @param maxDistance maximum (distance) radius around the given coordinate point like 5000
      * @return list of incidents in the circle around the coordinate using maxDistance as the radius
      */
+    @CachePut(value="radiusIncidents")
     @GetMapping(value = "/incidents")
     public HttpEntity<List<IncidentResource>> getIncidentsNear(@RequestParam(value = "lon") double longitude,
                                                                @RequestParam(value = "lat") double latitude,
@@ -59,6 +55,7 @@ public class IncidentController {
      * @param topright   Coordinate-Tuple like 13.456360,52.547463
      * @return list of incidents in the given area
      */
+    @CachePut(value="areaIncidents")
     @GetMapping(value = "/incidents/area")
     public HttpEntity<List<IncidentResource>> getIncidentsWithin(@RequestParam(value = "bottomleft") double[] bottomleft,
                                                                  @RequestParam(value = "topright") double[] topright) {
@@ -69,6 +66,7 @@ public class IncidentController {
     }
 
     // get all incidents with filter criteria applied
+    @CachePut(value="filteredIncidents")
     @GetMapping(value = "/incidents/filter")
     public HttpEntity<List<IncidentResource>> getIncidentsFilteredBy(@RequestParam(value = "fromTs", required = false) Long fromTs,
                                                                      @RequestParam(value = "untilTs", required = false) Long untilTs,
