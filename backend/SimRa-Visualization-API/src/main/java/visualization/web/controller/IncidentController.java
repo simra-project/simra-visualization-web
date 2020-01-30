@@ -57,7 +57,9 @@ public class IncidentController {
 
     // get all incidents with filter criteria applied
     @GetMapping(value = "/incidents/filter")
-    public HttpEntity<List<IncidentResource>> getIncidentsFilteredBy(@RequestParam(value = "fromTs", required = false) Long fromTs,
+    public HttpEntity<List<IncidentResource>> getIncidentsFilteredBy(@RequestParam(value = "bottomleft") double[] first,
+                                                                     @RequestParam(value = "topright") double[] second,
+                                                                     @RequestParam(value = "fromTs", required = false) Long fromTs,
                                                                      @RequestParam(value = "untilTs", required = false) Long untilTs,
                                                                      @RequestParam(value = "fromMinutesOfDay", required = false) Integer fromMinutesOfDay,
                                                                      @RequestParam(value = "untilMinutesOfDay", required = false) Integer untilMinutesOfDay,
@@ -70,7 +72,10 @@ public class IncidentController {
                                                                      @RequestParam(value = "scary", required = false) Boolean scary,
                                                                      @RequestParam(value = "description", required = false) Boolean description){
 
-        return ResponseEntity.ok(incidentService.getFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, child, trailer, incidentTypes, participants, scary, description));
+        return ResponseEntity.ok(incidentService.getFilteredIncidents(new GeoJsonPoint(first[0], first[1]),
+                new GeoJsonPoint(first[0], second[1]),
+                new GeoJsonPoint(second[0], second[1]),
+                new GeoJsonPoint(second[0], first[1]), fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, child, trailer, incidentTypes, participants, scary, description));
     }
 
 }

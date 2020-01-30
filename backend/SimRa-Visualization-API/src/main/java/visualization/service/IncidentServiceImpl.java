@@ -69,12 +69,13 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary, Boolean description) {
+    public List<IncidentResource> getFilteredIncidents(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth, Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary, Boolean description) {
 
         List<String> weekdaysList = new ArrayList<>();
         List<Integer> bikeTypesList = new ArrayList<>();
         List<Integer> incidentTypesList = new ArrayList<>();
         List<Boolean> participantsList = new ArrayList<>();
+        GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
 
 
         if(weekdays != null){
@@ -101,7 +102,7 @@ public class IncidentServiceImpl implements IncidentService {
             }
         }
 
-        List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList);
+        List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(polygon, fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList, description);
 
         return incidentEntities.stream()
                 .filter(incident -> incident.getIncident() != 0)
