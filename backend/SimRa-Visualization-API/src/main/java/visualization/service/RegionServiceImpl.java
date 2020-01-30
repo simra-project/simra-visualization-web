@@ -31,6 +31,11 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
+    public RegionResource updateRegion(RegionEntity regionEntity) {
+        return regionResourceMapper.mapRegionToResource(regionRepository.save(regionEntity));
+    }
+
+    @Override
     public void deleteRegion(String regionId) {
         regionRepository.deleteById(regionId);
     }

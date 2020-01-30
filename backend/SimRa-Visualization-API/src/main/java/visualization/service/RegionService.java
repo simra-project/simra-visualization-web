@@ -11,5 +11,7 @@ public interface RegionService {
 
     RegionResource createRegion(RegionEntity regionEntity);
 
+    RegionResource updateRegion(RegionEntity regionEntity);
+
     void deleteRegion(String regionId);
 }
