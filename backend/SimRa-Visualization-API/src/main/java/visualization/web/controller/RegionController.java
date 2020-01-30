@@ -25,7 +25,6 @@ public class RegionController {
     @Autowired
     private RegionService regionService;
 
-
     @GetMapping(value = "/regions")
     public HttpEntity<List<RegionResource>> getRegions() {
         return ResponseEntity.ok(regionService.getRegions());
@@ -34,5 +33,11 @@ public class RegionController {
     @PostMapping(value = "/regions")
     public HttpEntity<RegionResource> createRegion(@Valid @RequestBody RegionEntity regionEntity) {
         return ResponseEntity.ok(regionService.createRegion(regionEntity));
+    }
+
+    @DeleteMapping(value = "/regions/{regionId}")
+    public HttpEntity<Void> deleteRegion(@PathVariable String regionId) {
+        regionService.deleteRegion(regionId);
+        return ResponseEntity.ok().build();
     }
 }

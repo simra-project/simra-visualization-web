@@ -21,9 +21,9 @@ public class RegionResourceMapper {
         regionResourceProperty.setTopRightBound(regionEntity.getTopRightBound());
         regionResourceProperty.setDescription(regionEntity.getDescription());
 
-//        regionResource.setGeometry(new GeoJsonPoint(regionEntity.getLocation()[0], regionEntity.getLocation()[1]));
         regionResource.setGeometry(new GeoJsonPoint(regionEntity.getLocation()));
         regionResource.setProperties(regionResourceProperty);
+        regionResource.setId(regionEntity.getId());
 
         return regionResource;
     }

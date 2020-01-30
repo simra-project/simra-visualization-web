@@ -10,4 +10,6 @@ public interface RegionService {
     List<RegionResource> getRegions();
 
     RegionResource createRegion(RegionEntity regionEntity);
+
+    void deleteRegion(String regionId);
 }
