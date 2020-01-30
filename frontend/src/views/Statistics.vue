@@ -24,7 +24,7 @@
                     <ICountUp :delay="700" :endVal="Math.floor(statistics.accumulatedSavedCO2)"/> kg</span>.
             </div>
             <div class="top-subtext">
-                On average, one ride is {{ (statistics.averageDistance / 1000).toFixed(2) }} kilometers long and lasts {{ Math.floor(statistics.averageDuration.$numberLong / (1000 * 60)) }} minutes.
+                On average, one ride is {{ (statistics.averageDistance / 1000).toFixed(2) }} kilometers long and lasts {{ Math.floor(statistics.averageDuration / (1000 * 60)) }} minutes.
                 That's a speed of {{ statistics.averageSpeed.toFixed(1) }} km/h on average.
             </div>
 
@@ -102,11 +102,11 @@
 <!--                    <td>{{ row.rideCount.toLocaleString('en') }}</td>-->
 
 <!--                    <td>{{ Math.floor(row.accumulatedDistance / 1000).toLocaleString('en') }} km</td>-->
-<!--                    <td>{{ Math.floor(row.accumulatedDuration.$numberLong / (1000 * 60 * 60)).toLocaleString('en') }} h</td>-->
+<!--                    <td>{{ Math.floor(row.accumulatedDuration / (1000 * 60 * 60)).toLocaleString('en') }} h</td>-->
 
 <!--                    <template v-if="row.rideCount > 0">-->
 <!--                        <td>{{ (row.averageDistance / 1000).toFixed(2) }} km</td>-->
-<!--                        <td>{{ Math.floor(row.averageDuration.$numberLong / (1000 * 60)) }} min</td>-->
+<!--                        <td>{{ Math.floor(row.averageDuration / (1000 * 60)) }} min</td>-->
 <!--                        <td>{{ row.averageSpeed.toFixed(1) }} km/h</td>-->
 <!--                    </template>-->
 <!--                    <template v-else>-->
@@ -129,10 +129,10 @@
 <!--                    <th>{{ statistics.profileAgeGroupCrossTotal.rideCount.toLocaleString('en') }}</th>-->
 
 <!--                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.accumulatedDistance / 1000).toLocaleString('en') }} km</th>-->
-<!--                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.accumulatedDuration.$numberLong / (1000 * 60 * 60)).toLocaleString('en') }} h</th>-->
+<!--                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.accumulatedDuration / (1000 * 60 * 60)).toLocaleString('en') }} h</th>-->
 
 <!--                    <th>{{ (statistics.profileAgeGroupCrossTotal.averageDistance / 1000).toFixed(2) }} km</th>-->
-<!--                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.averageDuration.$numberLong / (1000 * 60)) }} min</th>-->
+<!--                    <th>{{ Math.floor(statistics.profileAgeGroupCrossTotal.averageDuration / (1000 * 60)) }} min</th>-->
 <!--                    <th>{{ statistics.profileAgeGroupCrossTotal.averageSpeed.toFixed(1) }} km/h</th>-->
 
 <!--                    <th>{{ statistics.profileAgeGroupCrossTotal.scaryIncidentCount.toLocaleString('en') }}</th>-->
@@ -232,7 +232,7 @@ export default {
 
                         this.ageDistributionOptions.xaxis.categories = r.profileAgeDistributionLabels;
                         this.ageDistributionData = [
-                            { name: 'Male', data: r.profileAgeDistributionDataMale },
+                            { name: "Male", data: r.profileAgeDistributionDataMale },
                             { name: "Female", data: r.profileAgeDistributionDataFemale },
                             { name: "Other", data: r.profileAgeDistributionDataOther },
                         ];

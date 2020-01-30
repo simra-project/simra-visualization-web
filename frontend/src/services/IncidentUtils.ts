@@ -40,7 +40,7 @@ class IncidentUtils {
 
     static getTypes() {
         return [
-            { id: 0, name: "Nothing" },
+            // { id: 0, name: "Nothing" },
             { id: 1, name: "Close Pass" },
             { id: 2, name: "Someone pulling in or out" },
             { id: 3, name: "Near left or right hook" },
@@ -66,6 +66,10 @@ class IncidentUtils {
             { id: 9, name: "E-Scooter" },
             { id: 10, name: "Unknown" },
         ];
+    }
+
+    static participantToBoolArray(participant: number | null) {
+        return this.getParticipants().map(x => x.id === participant);
     }
 }
 
