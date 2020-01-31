@@ -70,7 +70,7 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public List<IncidentResource> getFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary, Boolean description) {
+    public List<IncidentResource> getFilteredIncidents(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth, Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary, Boolean description) {
 
         // TODO: add range query thing
         /*
@@ -83,6 +83,7 @@ public class IncidentServiceImpl implements IncidentService {
         List<Integer> bikeTypesList = new ArrayList<>();
         List<Integer> incidentTypesList = new ArrayList<>();
         List<Boolean> participantsList = new ArrayList<>();
+        GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
 
         if (weekdays != null) {
             weekdaysList.addAll(Arrays.asList(weekdays));
@@ -100,7 +101,8 @@ public class IncidentServiceImpl implements IncidentService {
             participantsList.addAll(Arrays.asList(participants));
         }
 
-        List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList, description);
+
+        List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(polygon, fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList, description);
 
         return incidentEntities.stream()
                 .filter(incident -> incident.getIncident() != 0)

@@ -205,6 +205,108 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "getRidesBetweenTimestamp",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rides/time?startTs=1558944044&endTs=1578944044",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rides",
+						"time"
+					],
+					"query": [
+						{
+							"key": "startTs",
+							"value": "1558944044"
+						},
+						{
+							"key": "endTs",
+							"value": "1578944044"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getImportedRidesCount",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rides/status/count",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rides",
+						"status",
+						"count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "isRideImported",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rides/status/{rideId}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rides",
+						"status",
+						"{rideId}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getIncidentsFilteredPolygon",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/incidents/filter?bottomleft=13.297089,52.481744&topright=13.456360,52.547463",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"incidents",
+						"filter"
+					],
+					"query": [
+						{
+							"key": "bottomleft",
+							"value": "13.297089,52.481744"
+						},
+						{
+							"key": "topright",
+							"value": "13.456360,52.547463"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}

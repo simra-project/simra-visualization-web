@@ -31,6 +31,9 @@ public class IncidentResourceProperty {
     private Boolean trailer;
 
     @JsonProperty
+    private int bikeType;
+
+    @JsonProperty
     private int phoneLocation;
 
     @JsonProperty
