@@ -40,17 +40,11 @@
             </b-field>
 
             <b-field label="Incident Type">
-                <b-select v-model="filterIncidentType" @change.native="incidentsChanged">
-                    <option :value="null">Any type</option>
-                    <option v-for="type in incidentTypes()" :value="type.id">{{ type.name }}</option>
-                </b-select>
+                <MapFiltersMultiSelect v-model="filterIncidentTypes" @input="incidentsChanged" :options="incidentTypes()" empty-label="Any type"/>
             </b-field>
 
             <b-field label="Incident Participant">
-                <b-select v-model="filterIncidentParticipant" @change.native="incidentsChanged">
-                    <option :value="null">Any participant</option>
-                    <option v-for="participant in incidentParticipants()" :value="participant.id">{{ participant.name }}</option>
-                </b-select>
+                <MapFiltersMultiSelect v-model="filterIncidentParticipants" @input="incidentsChanged" :options="incidentParticipants()" empty-label="Any participant"/>
             </b-field>
 
             <b-field label="Weekday">
@@ -74,9 +68,11 @@
 
 <script>
 import { IncidentUtils } from "@/services/IncidentUtils";
+import MapFiltersMultiSelect from "@/components/MapFiltersMultiSelect";
 
 export default {
     name: "MapFilters",
+    components: { MapFiltersMultiSelect },
     props: {
         viewMode: Number,
     },
@@ -88,11 +84,13 @@ export default {
             filterRideHours: [0, 24],
             filterIncidentScary: true,
             filterIncidentRegular: true,
-            filterIncidentType: null,
-            filterIncidentParticipant: null,
+            filterIncidentTypes: [],
+            filterIncidentParticipants: [],
             filterIncidentWeekday: null,
             filterIncidentHours: [0, 24],
             weekdays: [["Mo.", "Monday"], ["Di.", "Tuesday"], ["Mi.", "Wednesday"], ["Do.", "Thursday"], ["Fr.", "Friday"], ["Sa.", "Saturday"], ["So.", "Sunday"]],
+            timerRides: null,
+            timerIncidents: null,
         }
     },
     methods: {
@@ -103,14 +101,16 @@ export default {
             if (!(this.filterRideWithIncident || this.filterRideWithoutIncident)) return;
 
             console.log("Ride-Filters changed!");
-            this.$emit('rides-changed');
+            clearTimeout(this.timerRides);
+            this.timerRides = setTimeout(() => this.$emit("rides-changed"), 500);
         },
         incidentsChanged() {
             // Both checkboxes shouldn't be unselected, not applying filters
             if (!(this.filterIncidentScary || this.filterIncidentRegular)) return;
 
             console.log("Incident-Filters changed!");
-            this.$emit('incidents-changed');
+            clearTimeout(this.timerIncidents);
+            this.timerIncidents = setTimeout(() => this.$emit("incidents-changed"), 500);
         },
         getRideFilters() {
             // If a filter-value is the default, don't apply that filter
@@ -125,8 +125,8 @@ export default {
             // If a filter-value is the default, don't apply that filter
             return {
                 scary: this.filterIncidentScary && this.filterIncidentRegular ? null : this.filterIncidentScary,
-                incidents: this.filterIncidentType,
-                participants: this.filterIncidentParticipant != null ? IncidentUtils.participantToBoolArray(this.filterIncidentParticipant).join(",") : null,
+                incidents: this.filterIncidentTypes.length > 0 ? this.filterIncidentTypes : null,
+                participants: this.filterIncidentParticipants.length > 0 ? IncidentUtils.participantsToBoolArray(this.filterIncidentParticipants).join(",") : null,
                 weekdays: this.filterIncidentWeekday != null ? [this.filterIncidentWeekday] : null,
                 fromMinutesOfDay: this.filterIncidentHours[0] !== 0 ? this.filterIncidentHours[0] * 60 : null,
                 untilMinutesOfDay: this.filterIncidentHours[1] !== 24 ? this.filterIncidentHours[1] * 60 : null,
