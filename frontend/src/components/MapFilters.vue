@@ -27,6 +27,10 @@
                     </template>
                 </b-slider>
             </b-field>
+
+            <b-button class="reset-filters" v-if="hasRideFilters()" @click="resetRideFilters">
+                Reset filters
+            </b-button>
         </template>
 
         <template v-else>
@@ -62,6 +66,10 @@
                     </template>
                 </b-slider>
             </b-field>
+
+            <b-button class="reset-filters" v-if="hasIncidentFilters()" @click="resetIncidentFilters">
+                Reset filters
+            </b-button>
         </template>
     </div>
 </template>
@@ -132,6 +140,38 @@ export default {
                 untilMinutesOfDay: this.filterIncidentHours[1] !== 24 ? this.filterIncidentHours[1] * 60 : null,
             };
         },
+        hasRideFilters() {
+            return this.filterRideWithIncident !== true ||
+                   this.filterRideWithoutIncident !== true ||
+                   this.filterRideWeekday !== null ||
+                   this.filterRideHours[0] !== 0 ||
+                   this.filterRideHours[1] !== 24;
+        },
+        hasIncidentFilters() {
+            return this.filterIncidentScary !== true ||
+                   this.filterIncidentRegular !== true ||
+                   this.filterIncidentTypes.length !== 0 ||
+                   this.filterIncidentParticipants.length !== 0 ||
+                   this.filterIncidentWeekday !== null ||
+                   this.filterIncidentHours[0] !== 0 ||
+                   this.filterIncidentHours[1] !== 24;
+        },
+        resetRideFilters() {
+            this.filterRideWithIncident = true;
+            this.filterRideWithoutIncident = true;
+            this.filterRideWeekday = null;
+            this.filterRideHours = [0, 24];
+            this.ridesChanged();
+        },
+        resetIncidentFilters() {
+            this.filterIncidentScary = true;
+            this.filterIncidentRegular = true;
+            this.filterIncidentTypes = [];
+            this.filterIncidentParticipants = [];
+            this.filterIncidentWeekday = null;
+            this.filterIncidentHours = [0, 24];
+            this.incidentsChanged();
+        }
     },
     watch: {
         filterRideHours(value, oldValue) {
@@ -200,6 +240,11 @@ export default {
 
         .b-slider {
             padding: 0 8px;
+        }
+
+        .reset-filters {
+            width: 100%;
+            margin-top: 16px;
         }
     }
 </style>
