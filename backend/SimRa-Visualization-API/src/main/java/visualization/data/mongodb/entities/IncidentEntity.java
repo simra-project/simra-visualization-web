@@ -24,7 +24,8 @@ public class IncidentEntity {
 
     private int bike;
 
-    private GeoJsonPoint location;
+    // not used atm
+    //private GeoJsonPoint location;
 
     private GeoJsonPoint locationMapMatched;
 
