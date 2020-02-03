@@ -21,7 +21,14 @@ class ApiService {
     }
 
     static async loadRide(rideId: Number) {
-        return fetch(`http://localhost:8080/rides/${rideId}`).then(r => r.json());
+        let ride = fetch(`http://localhost:8080/rides/${rideId}`).then(r => r.json());
+        let incidents = fetch(`http://localhost:8080/rides/${rideId}/incidents/all`).then(r => r.json());
+
+        // Waiting for both request simultanously
+        return {
+            ride: (await ride),
+            incidents: (await incidents)
+        };
     }
 
     static async loadIncidentsOnRide(rideId: Number) {
