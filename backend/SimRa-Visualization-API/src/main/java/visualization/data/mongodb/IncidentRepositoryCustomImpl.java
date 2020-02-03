@@ -19,7 +19,7 @@ public class IncidentRepositoryCustomImpl implements IncidentRepositoryCustom {
 
         Query query = new Query();
         if (polygon != null) {
-            query.addCriteria(Criteria.where("location").within(polygon));
+            query.addCriteria(Criteria.where("locationMapMatched").within(polygon));
         }
         if (fromTs != null && untilTs != null) {
             query.addCriteria(Criteria.where("ts").gte(fromTs).lte(untilTs));
