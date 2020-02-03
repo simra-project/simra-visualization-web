@@ -5,6 +5,14 @@
 
         Type: <strong>{{ utils.getType(incident) }}</strong><br>
         Participant: <strong>{{ utils.getParticipant(incident) }}</strong><br>
+        Bike Type: <strong>{{ utils.getBikeType(incident) }}</strong><br>
+
+        <div v-if="incident.child === true">
+            <i class="fa fa-caret-right"></i> Child involved
+        </div>
+        <div v-if="incident.trailer === true">
+            <i class="fa fa-caret-right"></i> Bike with trailer
+        </div>
 
         <p v-if="incident.description !== null">{{ incident.description }}</p>
 

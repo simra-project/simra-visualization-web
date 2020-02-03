@@ -2,6 +2,7 @@ package visualization.data.mongodb;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import visualization.data.mongodb.entities.IncidentEntity;
@@ -14,9 +15,12 @@ public class IncidentRepositoryCustomImpl implements IncidentRepositoryCustom {
     private MongoTemplate mongotemplate;
 
     @Override
-    public List<IncidentEntity> findFilteredIncidents(Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants, Boolean description) {
+    public List<IncidentEntity> findFilteredIncidents(GeoJsonPolygon polygon, Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, List<String> weekdays, List<Integer> bikeTypes, List<Integer> incidentTypes, Boolean childInvolved, Boolean trailerInvolved, Boolean scary, List<Boolean> participants, Boolean description) {
 
         Query query = new Query();
+        if (polygon != null) {
+            query.addCriteria(Criteria.where("location").within(polygon));
+        }
         if (fromTs != null && untilTs != null) {
             query.addCriteria(Criteria.where("ts").gte(fromTs).lte(untilTs));
         }
