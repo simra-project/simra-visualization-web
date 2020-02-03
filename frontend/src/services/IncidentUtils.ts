@@ -1,15 +1,15 @@
 class IncidentUtils {
-    static getDate(incident: any) {
+    static getDate(incident: any): string {
         return new Date(incident.ts).toLocaleString("en-DE", { timeZone: "Europe/Berlin" });
     }
 
-    static getType(incident: any) {
+    static getType(incident: any): string {
         const incidentTypes = this.getTypes();
 
-        return (incident.incidentType > 0 && incident.incidentType < incidentTypes.length) ? incidentTypes[incident.incidentType]["name"] : "Unknown";
+        return (incident.incidentType > 0 && incident.incidentType < incidentTypes.length + 1) ? incidentTypes[incident.incidentType + 1]["name"] : "Unknown";
     }
 
-    static getParticipant(incident: any) {
+    static getParticipant(incident: any): string {
         if (incident.i1Bus) return "Bus";
         if (incident.i2Cyclist) return "Cyclist";
         if (incident.i3Pedestrian) return "Pedestrian";
@@ -30,7 +30,7 @@ class IncidentUtils {
         return (incident.bikeType > 0 && incident.bikeType < bikeTypes.length) ? bikeTypes[incident.bikeType]["name"] : "Unknown";
     }
 
-    static getIcon(incident: any) {
+    static getIcon(incident: any): string {
         if (incident.i1Bus) return "fa-bus";
         if (incident.i2Cyclist) return "fa-bicycle";
         if (incident.i3Pedestrian) return "fa-walking";
@@ -73,7 +73,7 @@ class IncidentUtils {
             { id: 10, name: "Unknown" },
         ];
     }
-
+      
     static getBikeTypes() {
         return [
             { id: 0, name: "Not Chosen" },
@@ -87,9 +87,9 @@ class IncidentUtils {
             { id: 8, name: "Other" },
         ];
     }
-
-    static participantToBoolArray(participant: number | null) {
-        return this.getParticipants().map(x => x.id === participant);
+  
+    static participantsToBoolArray(participants: number[]): boolean[] {
+        return this.getParticipants().map(a => participants.filter(b => b === a.id).length > 0);
     }
 }
 
