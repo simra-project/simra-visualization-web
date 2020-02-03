@@ -14,8 +14,8 @@ public interface IncidentRepository extends MongoRepository<IncidentEntity, Inci
 
     Optional<IncidentEntity> findById(IncidentEntity.CompositeKey id);
 
-    List<IncidentEntity> findByLocationNear(GeoJsonPoint coordinates, int maxDistance);
+    List<IncidentEntity> findByLocationMapMatchedNear(GeoJsonPoint coordinates, int maxDistance);
 
-    List<IncidentEntity> findByLocationWithin(GeoJsonPolygon polygon);
+    List<IncidentEntity> findByLocationMapMatchedWithin(GeoJsonPolygon polygon);
 
 }

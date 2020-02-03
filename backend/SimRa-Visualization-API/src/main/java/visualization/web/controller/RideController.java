@@ -1,6 +1,7 @@
 package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class RideController {
     }
 
     // get all rides in range minDistance and maxDistance around a Point (longitude, latitude)
+    @CachePut(value="radiusRides")
     @GetMapping(value = "/rides")
     public HttpEntity<List<RideResource>> getRidesNear(@RequestParam(value = "lon") double longitude,
                                                        @RequestParam(value = "lat") double latitude,
@@ -39,6 +41,7 @@ public class RideController {
     }
 
     // example: http://localhost:8080/rides/area?bottomleft=13.297089,52.481744&topright=13.456360,52.547463
+    @CachePut(value="areaRides")
     @GetMapping(value = "/rides/area")
     public HttpEntity<List<RideResource>> getRidesWithin(@RequestParam(value = "bottomleft") double[] first,
                                                          @RequestParam(value = "topright") double[] second) {

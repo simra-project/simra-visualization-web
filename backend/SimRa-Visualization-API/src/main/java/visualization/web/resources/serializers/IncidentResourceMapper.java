@@ -34,7 +34,7 @@ public class IncidentResourceMapper {
         incidentResourceProperty.setI10EScooter(incidentEntity.getI10());
         incidentResourceProperty.setIncidentType(incidentEntity.getIncident());
 
-        incidentResource.setGeometry(incidentEntity.getLocation());
+        incidentResource.setGeometry(incidentEntity.getLocationMapMatched());
         incidentResource.setProperties(incidentResourceProperty);
 
         return incidentResource;
