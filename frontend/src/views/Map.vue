@@ -44,7 +44,7 @@
             </div>
         </l-control>
         <l-control position="topleft">
-            <div class="overlay overlay-menu">
+            <div class="overlay overlay-menu" :class="{ disabled: viewMode > 1 }">
                 <b-tabs type="is-toggle" v-model="viewMode">
                     <b-tab-item label="Bike rides" icon="biking"/>
                     <b-tab-item label="Incidents" icon="car-crash"/>
@@ -85,17 +85,17 @@
         </l-control>
 
         <!-- TODO -->
-        <l-control position="bottomright" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
-            <div class="overlay" style="display: flex">
-                <div style="flex: 1 0; text-align: center">
-                    Placeholder: More ride details? <br> <!-- TODO: Ridedetails hier später einfügen -->
-                    Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>
-                </div>
-                <div style="flex: 0 0; align-self: center">
-                    <a class="delete" @click="unfocusRideHighlight"/>
-                </div>
-            </div>
-        </l-control>
+<!--        <l-control position="bottomright" v-if="rideHighlightContent !== null"> &lt;!&ndash; Using CSS Magic this will appear top-center &ndash;&gt;-->
+<!--            <div class="overlay" style="display: flex">-->
+<!--                <div style="flex: 1 0; text-align: center">-->
+<!--                    Placeholder: More ride details? <br> &lt;!&ndash; TODO: Ridedetails hier später einfügen &ndash;&gt;-->
+<!--                    Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>-->
+<!--                </div>-->
+<!--                <div style="flex: 0 0; align-self: center">-->
+<!--                    <a class="delete" @click="unfocusRideHighlight"/>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </l-control>-->
 
         <!-- MapMatched Bike Rides-->
         <template v-if="viewMode === 0">
@@ -129,8 +129,8 @@
         <template v-else-if="viewMode === 2">
             <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"/>
 
-            <l-circle-marker :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-            <l-circle-marker :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
+            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
 
             <l-geo-json v-for="incident in rideHighlightedIncidents"
                         :key="incident.key"
@@ -185,7 +185,7 @@ export default {
             viewMode: 0, // 0 - rides, 1 - incidents, 2 - highlighted ride
             loadingProgress: null,
             rides: [],
-            rideHighlightContent: null,
+            // rideHighlightContent: null,
             rideHighlightStart: [0, 0],
             rideHighlightEnd: [0, 0],
             rideHighlighted: null,
@@ -218,24 +218,9 @@ export default {
                     };
                 },
             },
-            geoJsonOptionsDetail: {
-                style: {
-                    color: 'hsl(217, 71%, 53%)',
-                    weight: 3,
-                    opacity: 0.6
-                }
-            },
             geoJsonStyleHighlight: {
-                // color: 'hsl(0,100%,50%)',
-                // color: "hsl(171, 100%, 41%)",
-                color: "hsl(2, 100%, 50%)",
+                color: "hsl(215, 71%, 53%)",
                 weight: 4,
-                opacity: 0.8,
-            },
-            geoJsonStyleNormal: {
-                color: "hsl(217, 71%, 53%)",
-                weight: 3,
-                opacity: 0.6,
             },
             geoJsonOptionsMarker: {
                 pointToLayer: (feature, latlng) => L.marker(latlng, {
@@ -248,6 +233,7 @@ export default {
                 onEachFeature: (feature, layer) => layer.bindPopup(() => {
                     const mapPopup = new (Vue.extend(MapPopup))({
                         propsData: {
+                            viewMode: this.viewMode,
                             incident: feature.properties,
                             showRoute: () => {
                                 let rideId = feature.properties.rideId;
@@ -478,24 +464,6 @@ export default {
             width: 300px;
             left: calc(50% - 150px);
             right: calc(50% - 150px);
-
-            .ui-switcher {
-                width: 100%;
-                margin: 10px 0 0;
-                display: flex;
-                justify-content: center;
-
-                nav.tabs.is-toggle ul {
-                    li:not(.is-active) a {
-                        background-color: white;
-                        color: #3273dc;
-                    }
-                }
-
-                section {
-                    display: none;
-                }
-            }
         }
 
         &.bottomcenter {
@@ -566,12 +534,12 @@ export default {
             color: #4a4a4a;
             position: relative;
 
-            .subtitle {
-                color: #4a4a4a;
-                margin-bottom: 8px;
-            }
-
             &.overlay-menu {
+                &.disabled {
+                    pointer-events: none;
+                    filter: grayscale(1);
+                }
+
                 nav.tabs.is-toggle ul {
                     li {
                         flex: 1 0;
