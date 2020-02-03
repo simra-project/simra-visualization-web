@@ -24,6 +24,12 @@ class IncidentUtils {
         return "Unknown";
     }
 
+    static getBikeType(incident: any) {
+        const bikeTypes = this.getBikeTypes();
+
+        return (incident.bikeType > 0 && incident.bikeType < bikeTypes.length) ? bikeTypes[incident.bikeType]["name"] : "Unknown";
+    }
+
     static getIcon(incident: any) {
         if (incident.i1Bus) return "fa-bus";
         if (incident.i2Cyclist) return "fa-bicycle";
@@ -65,6 +71,20 @@ class IncidentUtils {
             { id: 8, name: "Other" },
             { id: 9, name: "E-Scooter" },
             { id: 10, name: "Unknown" },
+        ];
+    }
+
+    static getBikeTypes() {
+        return [
+            { id: 0, name: "Not Chosen" },
+            { id: 1, name: "City-/Trekking Bike" },
+            { id: 2, name: "Road Racing Bike" },
+            { id: 3, name: "E-Bike" },
+            { id: 4, name: "Recumbent Bicycle" },
+            { id: 5, name: "Freight Bicycle" },
+            { id: 6, name: "Tandem Bicycle" },
+            { id: 7, name: "Mountainbike" },
+            { id: 8, name: "Other" },
         ];
     }
 

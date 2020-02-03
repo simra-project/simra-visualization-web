@@ -74,10 +74,8 @@ function loadIncidents(coords, filter) {
         let filtersQuery = filterElements.map(x => `${ x[0] }=${ x[1] }`).join("&");
 
         console.log(coords);
-        // console.log(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`);
-        // fetch(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}`)
-        console.log(`http://localhost:8080/incidents/filter?${filtersQuery}`);
-        fetch(`http://localhost:8080/incidents/filter?${filtersQuery}`)
+        console.log(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&${filtersQuery}`);
+        fetch(`http://localhost:8080/incidents/area?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&${filtersQuery}`)
             .then(r => r.json())
             .then(result => {
                 incidents[coords] = result;
