@@ -49,7 +49,7 @@ public class IncidentServiceImpl implements IncidentService {
     public List<IncidentResource> getIncidentsInRange(double longitude, double latitude, int maxDistance) {
         GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
 
-        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationMapMatchedNear(point, maxDistance);
 
         return incidentEntities.stream()
                 .filter(incident -> incident.getIncident() != 0)
@@ -61,7 +61,7 @@ public class IncidentServiceImpl implements IncidentService {
     public List<IncidentResource> getIncidentsInWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth) {
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
 
-        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationWithin(polygon);
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationMapMatchedWithin(polygon);
 
         return incidentEntities.stream()
                 .filter(incident -> incident.getIncident() != 0)
@@ -71,13 +71,6 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public List<IncidentResource> getFilteredIncidents(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth, Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays, Integer[] bikeTypes, Boolean child, Boolean trailer, Integer[] incidentTypes, Boolean[] participants, Boolean scary, Boolean description) {
-
-        // TODO: add range query thing
-        /*
-        GeoJsonPoint point = new GeoJsonPoint(longitude, latitude);
-
-        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationNear(point, maxDistance);
-         */
 
         List<String> weekdaysList = new ArrayList<>();
         List<Integer> bikeTypesList = new ArrayList<>();
