@@ -2,6 +2,7 @@ package visualization.data.mongodb.entities;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 @Getter
@@ -12,5 +13,9 @@ import java.util.Set;
 public class LegPropertyEntity {
 
     private Set<String> fileIdSet;
+
+    private ArrayList<Long> ts;
+
+    private String weekday;
 
 }

@@ -28,4 +28,7 @@ public class RideResourceProperty {
 
     @JsonProperty
     private Long duration;
+
+    @JsonProperty
+    private String weekday;
 }

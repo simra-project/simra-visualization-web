@@ -15,6 +15,7 @@ public class RideResourceMapper {
 
         rideResourceProperty.setRideId(rideEntity.getId());
         rideResourceProperty.setDistance(rideEntity.getDistance());
+        rideResourceProperty.setWeekday(rideEntity.getWeekday());
 
         if (!mapMatched) {
             rideResourceProperty.setTs(rideEntity.getTs());

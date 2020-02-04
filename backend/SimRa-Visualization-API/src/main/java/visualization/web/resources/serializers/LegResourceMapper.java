@@ -14,6 +14,7 @@ public class LegResourceMapper {
         LegResourceProperty legResourceProperty = new LegResourceProperty();
 
         legResourceProperty.setFileIdSet(legEntity.getProperties().getFileIdSet());
+        legResourceProperty.setWeekday(legEntity.getProperties().getWeekday());
 
         legResource.setType(legEntity.getType());
         legResource.setGeometry(legEntity.getGeometry());

@@ -9,6 +9,8 @@ import visualization.data.mongodb.entities.RideEntity;
 import visualization.web.resources.RideResource;
 import visualization.web.resources.serializers.RideResourceMapper;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,9 @@ public class RideServiceImpl implements RideService {
 
     @Autowired
     private RideResourceMapper rideResourceMapper;
+
+    @Autowired
+    private RideRepository rideRepositoryCustom;
 
     @Override
     public RideResource getRideById(String rideId) {
@@ -59,5 +64,22 @@ public class RideServiceImpl implements RideService {
     @Override
     public Long getImportedRidesCount() {
         return rideRepository.count();
+    }
+
+    @Override
+    public List<RideResource> getFilteredRides(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth, Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays) {
+
+        List<String> weekdaysList = new ArrayList<>();
+        GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
+
+        if (weekdays != null) {
+            weekdaysList.addAll(Arrays.asList(weekdays));
+        }
+
+        List<RideEntity> rideEntities = rideRepositoryCustom.findFilteredRides(polygon, fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList);
+
+        return rideEntities.stream()
+                .map(ride -> rideResourceMapper.mapRideEntityToResource(ride, false))
+                .collect(Collectors.toList());
     }
 }

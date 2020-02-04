@@ -20,6 +20,9 @@ public class LegResourceProperty {
     @JsonProperty
     private Set<String> fileIdSet;
 
+    @JsonProperty
+    private String weekday;
+
     //Lombock and Kotlin seem to have difficulties interacting. Looking for a nicer fix
     public void setFileIdSetForKotlin(Set<String> fileIdSet) {
         this.fileIdSet = fileIdSet;

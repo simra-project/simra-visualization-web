@@ -18,4 +18,7 @@ public interface RideService {
     Boolean isRideImported(String rideId);
 
     Long getImportedRidesCount();
+
+    List<RideResource> getFilteredRides(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth, Long fromTs, Long untilTs, Integer fromMinutesOfDay, Integer untilMinutesOfDay, String[] weekdays);
+
 }

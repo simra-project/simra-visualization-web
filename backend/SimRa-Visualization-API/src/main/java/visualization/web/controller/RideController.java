@@ -68,4 +68,20 @@ public class RideController {
     public ResponseEntity<Long> getImportedRidesCount(){
         return ResponseEntity.ok(rideService.getImportedRidesCount());
     }
+
+    @CachePut(value="filteredRides")
+    @GetMapping(value = "/rides/filter")
+    public HttpEntity<List<RideResource>> getRidesFilteredBy(@RequestParam(value = "bottomleft") double[] first,
+                                                                     @RequestParam(value = "topright") double[] second,
+                                                                     @RequestParam(value = "fromTs", required = false) Long fromTs,
+                                                                     @RequestParam(value = "untilTs", required = false) Long untilTs,
+                                                                     @RequestParam(value = "fromMinutesOfDay", required = false) Integer fromMinutesOfDay,
+                                                                     @RequestParam(value = "untilMinutesOfDay", required = false) Integer untilMinutesOfDay,
+                                                                     @RequestParam(value = "weekdays", required = false) String[] weekdays){
+
+        return ResponseEntity.ok(rideService.getFilteredRides(new GeoJsonPoint(first[0], first[1]),
+                new GeoJsonPoint(first[0], second[1]),
+                new GeoJsonPoint(second[0], second[1]),
+                new GeoJsonPoint(second[0], first[1]), fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays));
+    }
 }

@@ -38,7 +38,7 @@ public class LegServiceImpl implements LegService {
             matching.add(ride.getId());
         }
         if (day != null) {
-            List<RideEntity> matchingRides = rideRepository.findByWeekday("Thu");
+            List<RideEntity> matchingRides = rideRepository.findByWeekday(day);
             matching = updateMatchingSet(matching, matchingRides);
         }
 
