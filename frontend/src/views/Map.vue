@@ -44,7 +44,7 @@
             </div>
         </l-control>
         <l-control position="topleft">
-            <div class="overlay overlay-menu">
+            <div class="overlay overlay-menu" :class="{ disabled: viewMode > 1 }">
                 <b-tabs type="is-toggle" v-model="viewMode">
                     <b-tab-item label="Bike rides" icon="biking"/>
                     <b-tab-item label="Incidents" icon="car-crash"/>
@@ -59,17 +59,8 @@
                 <div>Zoom: {{ zoom }}</div>
                 <div>Center: {{ center }}</div>
                 <div>Bounds: {{ bounds }}</div>
-                <div>Ride Highlight: {{ rideHighlightId }}</div>
             </div>
         </l-control>
-<!--        <l-control position="topcenter" class="topcenter">-->
-<!--            <div class="ui-switcher">-->
-<!--                <b-tabs type="is-toggle-rounded" v-model="viewMode">-->
-<!--                    <b-tab-item label="Bike rides" icon="biking"/>-->
-<!--                    <b-tab-item label="Incidents" icon="car-crash"/>-->
-<!--                </b-tabs>-->
-<!--            </div>-->
-<!--        </l-control>-->
 
         <l-control position="bottomcenter" class="bottomcenter">
             <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
@@ -93,50 +84,61 @@
             <MapLegend :view-mode="viewMode"/>
         </l-control>
 
-        <l-control position="bottomright" v-if="rideHighlightContent !== null"> <!-- Using CSS Magic this will appear top-center -->
-            <div class="overlay" style="display: flex">
-                <div style="flex: 1 0; text-align: center">
-                    Placeholder: More ride details? <br> <!-- TODO: Ridedetails hier später einfügen -->
-                    Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>
-                </div>
-                <div style="flex: 0 0; align-self: center">
-                    <a class="delete" @click="unfocusRideHighlight"/>
-                </div>
-            </div>
-        </l-control>
+        <!-- TODO -->
+<!--        <l-control position="bottomright" v-if="rideHighlightContent !== null"> &lt;!&ndash; Using CSS Magic this will appear top-center &ndash;&gt;-->
+<!--            <div class="overlay" style="display: flex">-->
+<!--                <div style="flex: 1 0; text-align: center">-->
+<!--                    Placeholder: More ride details? <br> &lt;!&ndash; TODO: Ridedetails hier später einfügen &ndash;&gt;-->
+<!--                    Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>-->
+<!--                </div>-->
+<!--                <div style="flex: 0 0; align-self: center">-->
+<!--                    <a class="delete" @click="unfocusRideHighlight"/>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </l-control>-->
 
-        <!--    Incident Markers - Stecknadeln, die beim Rauszoomen zusammengefasst werden    -->
-        <Vue2LeafletHeatmap
-            v-if="zoom <= heatmapMaxZoom && viewMode === 1"
-            :lat-lng="incident_heatmap"
-            :radius="heatmapRadius"
-            :min-opacity="heatmapMinOpacity"
-            :max-zoom="10" :blur="heatmapBlur"
-            :max="heatmapMaxPointIntensity"/>
-        <l-geo-json v-else-if="viewMode === 1"
-                    v-for="incident in incidents"
-                    :key="incident.key"
-                    :geojson="incident"
-                    :options="geoJsonOptionsMarker">
-            <l-popup/>
-        </l-geo-json>
+        <!-- MapMatched Bike Rides-->
+        <template v-if="viewMode === 0">
+            <l-geo-json
+                v-if="aggregatetRides"
+                :geojson="rides"
+                :options="geoJsonOptions"
+            />
+        </template>
 
-        <!--    Stellt zusammengefasste Rides dar    -->
-        <l-geo-json
-            v-if="viewMode === 0 && aggregatetRides"
-            :geojson="rides"
-            :options="geoJsonOptions"
-        />
+        <!-- Incident Marker & Incident Heatmap-->
+        <template v-else-if="viewMode === 1">
+            <Vue2LeafletHeatmap
+                v-if="zoom <= heatmapMaxZoom"
+                :lat-lng="incident_heatmap"
+                :radius="heatmapRadius"
+                :min-opacity="heatmapMinOpacity"
+                :max-zoom="10" :blur="heatmapBlur"
+                :max="heatmapMaxPointIntensity"/>
 
-        <!--    Stellt detaillierte route da    -->
-        <l-geo-json
-            v-if="rideHighlighted !== null"
-            :geojson="rideHighlighted"
-            :options="geoJsonStyleHighlight"
-        />
+            <l-geo-json v-else
+                        v-for="incident in incidents"
+                        :key="incident.key"
+                        :geojson="incident"
+                        :options="geoJsonOptionsMarker">
+                <l-popup/>
+            </l-geo-json>
+        </template>
 
-        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-        <l-circle-marker v-show="viewMode === 0 && rideHighlightId !== null" :radius="5" :color="'hsl(2, 100%, 50%)'" :fill-color="'hsl(2, 100%, 50%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+        <!-- Single, highlighted Bike Ride with its Incidents -->
+        <template v-else-if="viewMode === 2">
+            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"/>
+
+            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
+            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+
+            <l-geo-json v-for="incident in rideHighlightedIncidents"
+                        :key="incident.key"
+                        :geojson="incident"
+                        :options="geoJsonOptionsMarker">
+                <l-popup/>
+            </l-geo-json>
+        </template>
     </l-map>
 </template>
 
@@ -180,14 +182,14 @@ export default {
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            viewMode: 0, // 0 - rides, 1 - incidents
+            viewMode: 0, // 0 - rides, 1 - incidents, 2 - highlighted ride
             loadingProgress: null,
             rides: [],
-            rideHighlightId: null,
-            rideHighlightContent: null,
+            // rideHighlightContent: null,
             rideHighlightStart: [0, 0],
             rideHighlightEnd: [0, 0],
             rideHighlighted: null,
+            rideHighlightedIncidents: [],
             rideMaxWeight: 1,
             incidents: [],
             incident_heatmap: [],
@@ -216,24 +218,9 @@ export default {
                     };
                 },
             },
-            geoJsonOptionsDetail: {
-                style: {
-                    color: 'hsl(217, 71%, 53%)',
-                    weight: 3,
-                    opacity: 0.6
-                }
-            },
             geoJsonStyleHighlight: {
-                // color: 'hsl(0,100%,50%)',
-                // color: "hsl(171, 100%, 41%)",
-                color: "hsl(2, 100%, 50%)",
+                color: "hsl(215, 71%, 53%)",
                 weight: 4,
-                opacity: 0.8,
-            },
-            geoJsonStyleNormal: {
-                color: "hsl(217, 71%, 53%)",
-                weight: 3,
-                opacity: 0.6,
             },
             geoJsonOptionsMarker: {
                 pointToLayer: (feature, latlng) => L.marker(latlng, {
@@ -246,13 +233,17 @@ export default {
                 onEachFeature: (feature, layer) => layer.bindPopup(() => {
                     const mapPopup = new (Vue.extend(MapPopup))({
                         propsData: {
+                            viewMode: this.viewMode,
                             incident: feature.properties,
                             showRoute: () => {
                                 let rideId = feature.properties.rideId;
-                                ApiService.loadRide(rideId).then(ride => {
-                                    if (ride.status !== 500) {
-                                        this.rideHighlightId = rideId;
+                                ApiService.loadRide(rideId).then(response => {
+                                    let {ride, incidents} = response;
+
+                                    if (ride.status !== 500 && incidents.status !== 500) {
                                         console.log(ride);
+                                        console.log(incidents);
+
                                         this.rideHighlightContent = {
                                             length: `${ Math.round(ride.properties.distance) }m`,
                                             duration: "placeholder",
@@ -261,8 +252,9 @@ export default {
                                         this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
                                         this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
 
-                                        // Fitting ride into view if it's not already
                                         this.rideHighlighted = ride;
+                                        this.rideHighlightedIncidents = incidents;
+                                        this.viewMode = 2;
                                     } else {
                                         console.log("associated ride is not in db.");
                                         this.rideHighlightContent = {
@@ -270,7 +262,6 @@ export default {
                                             duration: "",
                                         };
                                     }
-
                                 });
                             },
                         },
@@ -307,36 +298,24 @@ export default {
             }).catch(() => {
             });
         },
-        clickedOnRide(event, ride) {
-            if (this.rideHighlightId != null) this.unfocusRideHighlight();
-
-            // Highlighting this ride
-            this.rideHighlightId = ride.properties.rideId;
-            this.rideHighlightContent = { length: "10.2 km", duration: "37 min" };
-
-            // Showing start & end point with circles
-            this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
-            this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
-
+        highlightedRideLoaded(mapObject) {
             // Fitting ride into view if it's not already
-            let rideBounds = event.target.getBounds().pad(0.1);
+            let rideBounds = mapObject.getBounds().pad(0.1);
             if (!this.bounds.contains(rideBounds)) {
                 this.$refs.map.mapObject.flyToBounds(rideBounds);
             }
-
-            event.sourceTarget.setStyle(this.geoJsonStyleHighlight);
-            this.rideHighlighted = event.sourceTarget;
         },
         unfocusRideHighlight() {
-            this.rideHighlightId = null;
             this.rideHighlightContent = null;
+            this.viewMode = 1;
             this.rideHighlightStart = [0, 0];
             this.rideHighlightEnd = [0, 0];
             this.rideHighlighted = null;
+            this.rideHighlightedIncidents = [];
             console.log("unfocussing highlighted ride");
         },
         clickedOnMap(event) {
-            if (event.originalEvent.target.nodeName !== 'path' && this.rideHighlightId != null) {
+            if (event.originalEvent.target.nodeName !== 'path' && this.rideHighlighted != null) {
                 this.unfocusRideHighlight();
             }
         },
@@ -485,24 +464,6 @@ export default {
             width: 300px;
             left: calc(50% - 150px);
             right: calc(50% - 150px);
-
-            .ui-switcher {
-                width: 100%;
-                margin: 10px 0 0;
-                display: flex;
-                justify-content: center;
-
-                nav.tabs.is-toggle ul {
-                    li:not(.is-active) a {
-                        background-color: white;
-                        color: #3273dc;
-                    }
-                }
-
-                section {
-                    display: none;
-                }
-            }
         }
 
         &.bottomcenter {
@@ -573,12 +534,12 @@ export default {
             color: #4a4a4a;
             position: relative;
 
-            .subtitle {
-                color: #4a4a4a;
-                margin-bottom: 8px;
-            }
-
             &.overlay-menu {
+                &.disabled {
+                    pointer-events: none;
+                    filter: grayscale(1);
+                }
+
                 nav.tabs.is-toggle ul {
                     li {
                         flex: 1 0;

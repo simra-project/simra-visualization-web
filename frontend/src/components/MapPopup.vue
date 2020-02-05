@@ -16,7 +16,7 @@
 
         <p v-if="incident.description !== null">{{ incident.description }}</p>
 
-        <button class="button is-primary is-small is-fullwidth" @click="showRoute">Show Bike Ride</button>
+        <button class="button is-primary is-small is-fullwidth" v-if="viewMode !== 2" @click="showRoute">Show Bike Ride</button>
     </div>
 </template>
 
@@ -26,6 +26,7 @@ import { IncidentUtils } from "@/services/IncidentUtils";
 export default {
     name: "MapPopup",
     props: {
+        viewMode: Number,
         incident: Object,
         showRoute: Function,
     },

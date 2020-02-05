@@ -1,5 +1,5 @@
 <template>
-    <div class="overlay legend" :class="{ viewModeRides: viewMode === 0, viewModeIncidents: viewMode === 1}">
+    <div class="overlay legend" :class="{ viewModeRides: viewMode === 0, viewModeIncidents: viewMode >= 1}">
         <template v-if="viewMode === 0">
             <div class="color-box c1"></div>
             <div class="color-box c2"></div>
@@ -74,6 +74,7 @@ export default {
         &.viewModeIncidents {
             flex-wrap: wrap;
             width: 60%;
+            margin-left: auto;
 
             .marker {
                 $width: 35px;
