@@ -1,6 +1,6 @@
 <template>
     <div>
-        <strong v-if="incident.scary">Scary</strong> Incident on {{ utils.getDate(incident) }}<br>
+        <strong v-if="incident.scary">Scary</strong> Incident<template v-if="utils.isRecentDate(incident)"> on {{ utils.getDate(incident) }}</template><br>
         <hr>
 
         Type: <strong>{{ utils.getType(incident) }}</strong><br>
@@ -15,6 +15,10 @@
         </div>
 
         <p v-if="incident.description !== null">{{ incident.description }}</p>
+
+        <template v-if="isDebug">
+            <hr>Debug information: {{ incident }}<hr>
+        </template>
 
         <button class="button is-primary is-small is-fullwidth" v-if="viewMode !== 2" @click="showRoute">Show Bike Ride</button>
     </div>
@@ -35,6 +39,9 @@ export default {
             utils: IncidentUtils, // this is necessary because mixins don't work with dynamically created components
         };
     },
+    methods: {
+        isDebug: () => process.env.VUE_APP_DEBUG === "true",
+    }
 };
 </script>
 
