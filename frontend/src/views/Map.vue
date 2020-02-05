@@ -129,8 +129,8 @@
         <template v-else-if="viewMode === 2">
             <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"/>
 
-            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+            <l-marker :lat-lng="rideHighlightStart" :icon="rideHighlightStartIcon"/>
+            <l-marker :lat-lng="rideHighlightEnd" :icon="rideHighlightEndIcon"/>
 
             <l-geo-json v-for="incident in rideHighlightedIncidents"
                         :key="incident.key"
@@ -185,11 +185,20 @@ export default {
             viewMode: 0, // 0 - rides, 1 - incidents, 2 - highlighted ride
             loadingProgress: null,
             rides: [],
-            // rideHighlightContent: null,
-            rideHighlightStart: [0, 0],
-            rideHighlightEnd: [0, 0],
             rideHighlighted: null,
             rideHighlightedIncidents: [],
+            rideHighlightStart: [0, 0],
+            rideHighlightEnd: [0, 0],
+            rideHighlightStartIcon: ExtraMarkers.icon({
+                icon: 'fa-biking',
+                markerColor: 'white',
+                prefix: 'fa'
+            }),
+            rideHighlightEndIcon: ExtraMarkers.icon({
+                icon: 'fa-flag-checkered',
+                markerColor: 'black',
+                prefix: 'fa'
+            }),
             rideMaxWeight: 1,
             incidents: [],
             incident_heatmap: [],
@@ -636,6 +645,10 @@ export default {
 
     .extra-marker {
         background-image: url("../assets/markers_custom.png");
+
+        &.extra-marker-circle-white i.fa.fa-biking {
+            color: #555 !important;
+        }
     }
 
     .extra-marker-shadow {
