@@ -1,6 +1,6 @@
 package com.simra.app.csvimporter.service
 
-import com.simra.app.csvimporter.controller.LegRepository
+import com.simra.app.csvimporter.repository.LegRepository
 import com.simra.app.csvimporter.model.LegEntity
 import com.simra.app.csvimporter.model.LegPropertyEntity
 import com.simra.app.csvimporter.model.RideEntity

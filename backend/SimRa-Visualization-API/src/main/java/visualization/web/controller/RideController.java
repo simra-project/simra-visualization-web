@@ -1,6 +1,7 @@
 package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class RideController {
     }
 
     // get all rides in range minDistance and maxDistance around a Point (longitude, latitude)
+    @CachePut(value="radiusRides")
     @GetMapping(value = "/rides")
     public HttpEntity<List<RideResource>> getRidesNear(@RequestParam(value = "lon") double longitude,
                                                        @RequestParam(value = "lat") double latitude,
@@ -39,6 +41,7 @@ public class RideController {
     }
 
     // example: http://localhost:8080/rides/area?bottomleft=13.297089,52.481744&topright=13.456360,52.547463
+    @CachePut(value="areaRides")
     @GetMapping(value = "/rides/area")
     public HttpEntity<List<RideResource>> getRidesWithin(@RequestParam(value = "bottomleft") double[] first,
                                                          @RequestParam(value = "topright") double[] second) {
@@ -54,32 +57,15 @@ public class RideController {
         return ResponseEntity.ok(rideService.getRidesAtTime(fromTs, untilTs));
     }
 
-    // this might be useful later...
-//    public HttpEntity<StatisticsResource> getFilteredStatistics(@RequestParam(value = "fromTs") Long fromTs,
-//                                                                @RequestParam(value = "untilTs") Long untilTs,
-//                                                                @RequestParam(value = "fromMinutesOfDay") Integer fromMinutesOfDay,
-//                                                                @RequestParam(value = "untilMinutesOfDay") Integer untilMinutesOfDay,
-//                                                                @RequestParam(value = "weekday") List<String> weekdays,
-//                                                                @RequestParam(value = "bikeTypes") List<Integer> bikeTypes,
-//                                                                @RequestParam(value = "incidentTypes") List<Integer> incidentTypes,
-//                                                                @RequestParam(value = "childInvolved") Boolean childInvolved,
-//                                                                @RequestParam(value = "trailerInvolved") Boolean trailerInvolved,
-//                                                                @RequestParam(value = "scary") Boolean scary,
-//                                                                @RequestParam(value = "participants") List<Integer> participants) {
-//
-//        return ResponseEntity.ok(statisticsService.getFilteredStatistics(fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdays, bikeTypes, incidentTypes, childInvolved, trailerInvolved, scary, parseParticipantsList(participants)));
-//    }
-//    private List<Boolean> parseParticipantsList(List<Integer> participants) {
-//        List<Boolean> boolParticipants = new ArrayList<>();
-//        if (participants.size() > 0) {
-//            for (int i = 0; i < 10; i++) {
-//                if (participants.contains(i)) {
-//                    boolParticipants.add(true);
-//                } else {
-//                    boolParticipants.add(false);
-//                }
-//            }
-//        }
-//        return boolParticipants;
-//    }
+    //checks if a specific ride is already imported
+    @GetMapping(value = "/rides/status/{rideId}")
+    public ResponseEntity<Boolean> isRideImported(@PathVariable String rideId){
+        return ResponseEntity.ok(rideService.isRideImported(rideId));
+    }
+
+    //counts all imported rides
+    @GetMapping(value = "/rides/status/count")
+    public ResponseEntity<Long> getImportedRidesCount(){
+        return ResponseEntity.ok(rideService.getImportedRidesCount());
+    }
 }

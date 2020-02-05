@@ -22,4 +22,8 @@ public interface RideRepository extends MongoRepository<RideEntity, String>, Rid
 
     //@Query(sort = "{'ts': -1}")
     List<RideEntity> findAllByTsBetween(Long fromTs, Long untilTs);
+
+    long count();
+
+    boolean existsById(String id);
 }

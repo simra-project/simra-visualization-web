@@ -10,12 +10,12 @@ import java.util.Optional;
 
 public interface IncidentRepository extends MongoRepository<IncidentEntity, IncidentEntity.CompositeKey>, IncidentRepositoryCustom {
 
-    List<IncidentEntity> findByFileId(String rideid);
+    List<IncidentEntity> findByFileId(String rideId);
 
     Optional<IncidentEntity> findById(IncidentEntity.CompositeKey id);
 
-    List<IncidentEntity> findByLocationNear(GeoJsonPoint coordinates, int maxDistance);
+    List<IncidentEntity> findByLocationMapMatchedNear(GeoJsonPoint coordinates, int maxDistance);
 
-    List<IncidentEntity> findByLocationWithin(GeoJsonPolygon polygon);
+    List<IncidentEntity> findByLocationMapMatchedWithin(GeoJsonPolygon polygon);
 
 }
