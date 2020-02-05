@@ -199,6 +199,9 @@ export default {
             detailedAreasLoaded: {},
             detailedRides: [],
             detailedRidesLoaded: {},
+            incoming_legs_queue: [],
+            loaded_legs: [],
+            loaded_legs_strings: [],
             geosearchOptions: {
                 provider: new OpenStreetMapProvider(),
             },
@@ -287,13 +290,13 @@ export default {
         centerUpdated(center) {
             this.center = center;
             this.updateUrlQuery();
+        },
+        boundsUpdated(bounds) {
+            this.bounds = bounds;
             if (this.viewMode === 0)
                 this.loadMatchedRoutes();
             if (this.viewMode === 1 && this.zoom > this.heatmapMaxZoom)
                 this.loadIncidents();
-        },
-        boundsUpdated(bounds) {
-            this.bounds = bounds;
         },
         updateUrlQuery() {
             this.$router.replace({
@@ -339,16 +342,23 @@ export default {
                 this.unfocusRideHighlight();
             }
         },
-        parseRoutes(response) {
-            this.rides = {
-                type: "FeatureCollection",
-                features: response
-            };
-            console.log(`${ this.rides.features.length } ride sections loaded.`);
-            for (let ride of this.rides.features) {
-                const weight = ride.properties.fileIdSet.length;
-                if (weight > this.rideMaxWeight)
-                    this.rideMaxWeight = weight;
+        parseRoutes(response, coords) {
+            console.log(`testing coords ${coords.toString()}`);
+            if (this.incoming_legs_queue.includes(coords.toString())) {
+                if (!(this.loaded_legs_strings.includes(coords.toString()))) {
+                    this.loaded_legs.push([coords, response]);
+                    this.rides.features.push(...response);
+                    for (let ride of response) {
+                        const weight = ride.properties.fileIdSet.length;
+                        if (weight > this.rideMaxWeight)
+                            this.rideMaxWeight = weight;
+                    }
+                } else {
+                    console.log("Leg is already loaded.");
+                }
+            } else {
+                console.log("Leg is not in queue.");
+                console.log(this.incoming_legs_queue);
             }
         },
         parseIncidents(response) {
@@ -386,7 +396,20 @@ export default {
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
 
-            this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1)]);
+            let zoom_tmp = this.zoom;
+            let sw_lat_tmp = this.bounds._southWest.lat;
+            let sw_lng_tmp = this.bounds._southWest.lng;
+
+            setTimeout(() => {
+                if (this.zoom === zoom_tmp && sw_lat_tmp === this.bounds._southWest.lat && sw_lng_tmp === this.bounds._southWest.lng) {
+                    this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1)]);
+                } else {
+                    console.log(`expected lat ${sw_lat_tmp}, is ${this.bounds._southWest.lat}`);
+                    console.log(`expected lng ${sw_lng_tmp}, is ${this.bounds._southWest.lng}`);
+                    console.log("--> map motion detected, waiting to get new data.");
+                }
+            }, 1000);
+
             // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
 
         },
@@ -428,6 +451,32 @@ export default {
                 setTimeout(() => this.loadingProgress = null, 1200);
             }
         },
+        updateQueue(queue) {
+            console.log("updating queue");
+            let queue_as_string = [];
+            for(let item of queue) {
+                queue_as_string.push(item.toString());
+            }
+            let new_features = [];
+            let new_loaded_legs = [];
+            let new_loaded_legs_strings = [];
+            for(let leg of this.loaded_legs) {
+                console.log("testing new leg");
+                if (queue_as_string.includes(leg[0].toString())) {
+                    console.log("I've seen this leg before!");
+                    new_features.push(...leg[1]);
+                    new_loaded_legs.push(leg);
+                    new_loaded_legs_strings.push(leg[0].toString());
+                }
+            }
+            this.rides = {
+                type: "FeatureCollection",
+                features: new_features
+            };
+            this.loaded_legs = new_loaded_legs;
+            this.loaded_legs_strings = new_loaded_legs_strings;
+            this.incoming_legs_queue = queue_as_string;
+        },
         handleWorkerMessage(message) {
             switch (message.data[0]) {
                 case "progress":
@@ -439,10 +488,15 @@ export default {
                     console.log(this.detailedRides.length + " detailed routes loaded.");
                     break;
                 case "matched":
-                    this.parseRoutes(message.data[1]);
+                    console.log(`message.data[1]`);
+                    console.log(message.data[1]);
+                    this.parseRoutes(message.data[1], message.data[2]);
                     break;
                 case "incidents":
                     this.incidents = message.data[1];
+                    break;
+                case "queue":
+                    this.updateQueue(message.data[1]);
                     break;
             }
         }
