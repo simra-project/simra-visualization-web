@@ -501,8 +501,7 @@ export default {
 
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
-
-        ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
+        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND])
     },
 };
 </script>
