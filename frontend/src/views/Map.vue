@@ -194,6 +194,7 @@ export default {
                 prefix: 'fa'
             }),
             rideMaxWeight: 1,
+            rideMaxIncidentWeight: 0.1,
             incidents: [],
             incident_heatmap: [],
             heatmapMaxZoom: 15,
@@ -216,7 +217,8 @@ export default {
                     return {
                         // color: 'hsl(' + (217 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 35) + ', 71%, 53%)',
                         // color: 'hsl(' + (225 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 43) + ', 71%, 53%)',
-                        color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
+                        // color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
+                        color: 'hsl(' + (15 + (1 - ((feature.properties.incidentCount) / (this.rideMaxIncidentWeight))) * 50) + ', 71%, 53%)',
                         // color: 'hsl(217, 71%, 53%)',
                         weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 4.5 + 1.5,
                         // weight: (Math.log(feature.properties.weight) + 1.25) * 1.25,
@@ -326,6 +328,10 @@ export default {
                         const weight = ride.properties.fileIdSet.length;
                         if (weight > this.rideMaxWeight)
                             this.rideMaxWeight = weight;
+
+                        const weightIncident = ride.properties.incidentCount;
+                        if (weightIncident > this.rideMaxIncidentWeight)
+                            this.rideMaxIncidentWeight = weightIncident;
                     }
                 } else {
                     console.log("Leg is already loaded.");
