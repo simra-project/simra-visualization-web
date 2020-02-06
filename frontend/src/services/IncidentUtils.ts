@@ -3,10 +3,14 @@ class IncidentUtils {
         return new Date(incident.ts).toLocaleString("en-DE", { timeZone: "Europe/Berlin" });
     }
 
+    static isRecentDate(incident: any): boolean {
+        return new Date(incident.ts).getFullYear() >= 2010;
+    }
+
     static getType(incident: any): string {
         const incidentTypes = this.getTypes();
 
-        return (incident.incidentType > 0 && incident.incidentType < incidentTypes.length + 1) ? incidentTypes[incident.incidentType + 1]["name"] : "Unknown";
+        return (incident.incidentType > 0 && incident.incidentType - 1 < incidentTypes.length) ? incidentTypes[incident.incidentType - 1]["name"] : "Unknown";
     }
 
     static getParticipant(incident: any): string {
@@ -73,7 +77,7 @@ class IncidentUtils {
             { id: 10, name: "Unknown" },
         ];
     }
-      
+
     static getBikeTypes() {
         return [
             { id: 0, name: "Not Chosen" },
@@ -87,7 +91,7 @@ class IncidentUtils {
             { id: 8, name: "Other" },
         ];
     }
-  
+
     static participantsToBoolArray(participants: number[]): boolean[] {
         return this.getParticipants().map(a => participants.filter(b => b === a.id).length > 0);
     }

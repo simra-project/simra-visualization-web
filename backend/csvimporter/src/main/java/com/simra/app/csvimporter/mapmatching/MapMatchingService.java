@@ -33,7 +33,8 @@ public class MapMatchingService {
     public MapMatchingService() {
 
         CmdArgs graphHopperConfiguration = new CmdArgs();
-        graphHopperConfiguration.put("graph.flag_encoders", "bike");
+//        graphHopperConfiguration.put("graph.flag_encoders", "bike");
+        graphHopperConfiguration.put("graph.flag_encoders", "bike, car, foot");
         graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf");
 
         this.graphHopper = new GraphHopperOSM().init(graphHopperConfiguration);
@@ -86,7 +87,9 @@ public class MapMatchingService {
                 .weighting(new FastestWeighting(firstEncoder))
                 .maxVisitedNodes(2000)
                 .hints(new HintsMap().put("weighting", "fastest")
-                        .put("vehicle", "bike"))
+                        .put("vehicle", "bike")
+                        .put("vehicle", "foot")
+                        .put("vehicle", "car"))
                 // Penalizing inner-link U-turns only works with fastest weighting, since
                 // shortest weighting does not apply penalties to unfavored virtual edges.
                 .build();
