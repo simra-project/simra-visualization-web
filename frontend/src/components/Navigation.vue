@@ -1,48 +1,38 @@
 <template>
-    <nav class="container navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <router-link to="/" class="navbar-item">
+    <b-navbar class="container">
+        <template slot="brand">
+            <b-navbar-item tag="router-link" :to="{ path: '/' }">
                 <img src="../assets/Logo_MCC.png" height="28">
-            </router-link>
+            </b-navbar-item>
+        </template>
+        <template slot="start">
+            <b-navbar-dropdown :hoverable="true" :class="{'dropdown-active': this.$route.path.startsWith('/map')}" boxed>
+                <template v-slot:label>
+                    <router-link to="/map" tag="span">Map</router-link>
+                </template>
 
-            <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
+                <router-link
+                    v-for="location in locations"
+                    :to="{ name: 'mapQuery', params: { lat:  location.lat, lng: location.lng, zoom: location.zoom } }"
+                    v-slot="{ href }">
+                    <b-navbar-item :href="href"><span class="icon"><i class="fas fa-city"></i></span> {{ location.name }}</b-navbar-item>
+                </router-link>
+            </b-navbar-dropdown>
 
-        <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-start">
+            <router-link to="/statistics" class="navbar-item">Statistics</router-link>
+            <router-link to="/about" class="navbar-item">About</router-link>
+        </template>
 
-                <b-navbar-dropdown :hoverable="true" :class="{'dropdown-active': this.$route.path.startsWith('/map')}" boxed>
-                    <template v-slot:label>
-                        <router-link to="/map" tag="span">Map</router-link>
-                    </template>
-
-                    <router-link
-                        v-for="location in locations"
-                        :to="{ name: 'mapQuery', params: { lat:  location.lat, lng: location.lng, zoom: location.zoom } }"
-                        v-slot="{ href }">
-                        <b-navbar-item :href="href"><span class="icon"><i class="fas fa-city"></i></span> {{ location.name }}</b-navbar-item>
-                    </router-link>
-                </b-navbar-dropdown>
-
-                <router-link to="/statistics" class="navbar-item">Statistics</router-link>
-                <router-link to="/about" class="navbar-item">About</router-link>
-            </div>
-
-            <div class="navbar-end">
-                <div class="navbar-item">
-                    <div class="buttons">
-                        <a class="button is-primary" href="https://www.mcc.tu-berlin.de/menue/forschung/projekte/simra/">
-                            <strong>Download App</strong>
-                        </a>
-                    </div>
+        <template slot="end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary" href="https://www.mcc.tu-berlin.de/menue/forschung/projekte/simra/">
+                        <strong>Download App</strong>
+                    </a>
                 </div>
             </div>
-        </div>
-    </nav>
+        </template>
+    </b-navbar>
 </template>
 
 <script>

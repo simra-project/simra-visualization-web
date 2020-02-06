@@ -46,7 +46,7 @@ export default {
         }
 
         &.viewModeRides {
-            align-items: end;
+            align-items: flex-end;
 
             .color-box {
                 width: 15px;

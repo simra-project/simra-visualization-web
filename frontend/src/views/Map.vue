@@ -8,57 +8,15 @@
            @update:bounds="boundsUpdated"
            @click="clickedOnMap($event)">
         <l-tile-layer :url="url"/>
-<!--        <v-geosearch :options="geosearchOptions"/>-->
-        <l-control position="topright" v-if="false">
-            <div class="overlay">
-                <!-- Sliders to fine tune heatmap settings -->
-                MaxZoom
-                <vue-slider
-                    class="slider"
-                    :min="0"
-                    :max="18"
-                    :interval="1"
-                    tooltip="focus"
-                    v-model="heatmapMaxZoom">
-                </vue-slider>
 
-                Radius
-                <vue-slider
-                    class="slider"
-                    :min="0"
-                    :max="100"
-                    :interval="1"
-                    tooltip="focus"
-                    v-model="heatmapRadius">
-                </vue-slider>
-
-                Blur
-                <vue-slider
-                    class="slider"
-                    :min="0"
-                    :max="100"
-                    :interval="1"
-                    tooltip="focus"
-                    v-model="heatmapBlur">
-                </vue-slider>
-            </div>
-        </l-control>
         <l-control position="topleft">
-            <div class="overlay overlay-menu" :class="{ disabled: viewMode > 1 }">
+            <div class="overlay overlay-menu is-hidden-mobile" :class="{ disabled: viewMode > 1 }">
                 <b-tabs type="is-toggle" v-model="viewMode">
                     <b-tab-item label="Bike rides" icon="biking"/>
                     <b-tab-item label="Incidents" icon="car-crash"/>
                 </b-tabs>
 
                 <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents"/>
-            </div>
-        </l-control>
-
-        <l-control position="bottomright" v-if="false">
-            <div class="overlay overlay-debug">
-                <div>Zoom: {{ zoom }}</div>
-                <div>Center: {{ center }}</div>
-                <div>Bounds: {{ bounds }}</div>
             </div>
         </l-control>
 
@@ -81,7 +39,7 @@
         </div>
 
         <l-control position="bottomright">
-            <MapLegend :view-mode="viewMode"/>
+            <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
         </l-control>
 
         <!-- TODO -->
