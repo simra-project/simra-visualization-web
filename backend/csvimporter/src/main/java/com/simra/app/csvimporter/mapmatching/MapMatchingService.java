@@ -98,7 +98,7 @@ public class MapMatchingService {
 
         };
         mapMatching.setTransitionProbabilityBeta(0.5);
-        mapMatching.setMeasurementErrorSigma(1.0);
+        mapMatching.setMeasurementErrorSigma(50.0);
 
 
         PathMerger pathMerger = new PathMerger(graphHopper.getGraphHopperStorage(), opts.getWeighting());
