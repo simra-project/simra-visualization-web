@@ -2,7 +2,7 @@
     <l-map ref="map"
            :zoom="zoom"
            :center="center"
-           :options="{ zoomControl: false }"
+           :min-zoom="9"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
@@ -62,7 +62,7 @@
             </div>
         </l-control>
 
-        <l-control position="bottomcenter" class="bottomcenter">
+        <div class="leaflet-control bottomcenter">
             <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
                 <div class="overlay overlay-loading">
                     <div class="spinner-container">
@@ -78,7 +78,7 @@
                     <b-progress type="is-primary is-small" :value="loadingProgress"/>
                 </div>
             </div>
-        </l-control>
+        </div>
 
         <l-control position="bottomright">
             <MapLegend :view-mode="viewMode"/>
@@ -622,6 +622,10 @@ export default {
                     opacity: 1;
                 }
             }
+        }
+
+        &.leaflet-control-zoom {
+            display: none;
         }
     }
 
