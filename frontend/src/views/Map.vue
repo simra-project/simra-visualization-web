@@ -84,19 +84,6 @@
             <MapLegend :view-mode="viewMode"/>
         </l-control>
 
-        <!-- TODO -->
-<!--        <l-control position="bottomright" v-if="rideHighlightContent !== null"> &lt;!&ndash; Using CSS Magic this will appear top-center &ndash;&gt;-->
-<!--            <div class="overlay" style="display: flex">-->
-<!--                <div style="flex: 1 0; text-align: center">-->
-<!--                    Placeholder: More ride details? <br> &lt;!&ndash; TODO: Ridedetails hier später einfügen &ndash;&gt;-->
-<!--                    Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>-->
-<!--                </div>-->
-<!--                <div style="flex: 0 0; align-self: center">-->
-<!--                    <a class="delete" @click="unfocusRideHighlight"/>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </l-control>-->
-
         <!-- MapMatched Bike Rides-->
         <template v-if="viewMode === 0">
             <l-geo-json
@@ -127,10 +114,16 @@
 
         <!-- Single, highlighted Bike Ride with its Incidents -->
         <template v-else-if="viewMode === 2">
-            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"/>
+            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"><l-tooltip>Test 123!</l-tooltip></l-geo-json>
 
-            <l-marker :lat-lng="rideHighlightStart" :icon="rideHighlightStartIcon"/>
-            <l-marker :lat-lng="rideHighlightEnd" :icon="rideHighlightEndIcon"/>
+            <l-marker :lat-lng="rideHighlightStart" :icon="rideHighlightStartIcon">
+                <l-tooltip :options="{direction: 'bottom'}"><strong>Start</strong></l-tooltip>
+            </l-marker>
+            <l-marker :lat-lng="rideHighlightEnd" :icon="rideHighlightEndIcon">
+                <l-tooltip :options="{direction: 'bottom'}">
+                    <strong>End - {{ (rideHighlighted.properties.distance / 1000).toFixed(1) }} km in {{ rideHighlighted.properties.duration >= 60 ? Math.floor(rideHighlighted.properties.duration / 60) + " h " : "" }}{{ Math.floor(rideHighlighted.properties.duration % 60) }} min</strong>
+                </l-tooltip>
+            </l-marker>
 
             <l-geo-json v-for="incident in rideHighlightedIncidents"
                         :key="incident.key"
@@ -144,7 +137,7 @@
 
 <script>
 import Vue from "vue";
-import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
+import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer, LTooltip } from "vue2-leaflet";
 import * as L from "leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
@@ -169,6 +162,7 @@ export default {
         LMarker,
         LPopup,
         LCircleMarker,
+        LTooltip,
         Vue2LeafletHeatmap,
         VGeosearch,
         LGeoJson,
@@ -255,24 +249,15 @@ export default {
                                     if (ride.status !== 500 && incidents.status !== 500) {
                                         console.log(ride);
                                         console.log(incidents);
-
-                                        this.rideHighlightContent = {
-                                            length: `${ Math.round(ride.properties.distance) }m`,
-                                            duration: "placeholder",
-                                        };
+                                        ride.properties.duration = Math.floor((ride.properties.ts[ride.properties.ts.length - 1] - ride.properties.ts[0]) / (60 * 1000));
 
                                         this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
                                         this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
-
                                         this.rideHighlighted = ride;
                                         this.rideHighlightedIncidents = incidents;
                                         this.viewMode = 2;
                                     } else {
                                         console.log("associated ride is not in db.");
-                                        this.rideHighlightContent = {
-                                            length: "Problem loading ride",
-                                            duration: "",
-                                        };
                                     }
                                 });
                             },
