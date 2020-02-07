@@ -9,7 +9,9 @@ public interface RideService {
 
     List<RideResource> getRidesInRange(double latitude, double longitude, int maxDistance);
 
-    RideResource getRideById(String rideId);
+    RideResource getRawRideById(String rideId);
+
+    RideResource getMapMatchedRideById(String rideId);
 
     List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth);
 
