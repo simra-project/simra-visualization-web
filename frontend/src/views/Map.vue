@@ -7,7 +7,7 @@
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
            @click="clickedOnMap($event)">
-        <l-tile-layer :url="url"/>
+        <l-tile-layer :url="url" :class="{monochrome: devMonochromeMap}"/>
 <!--        <v-geosearch :options="geosearchOptions"/>-->
         <l-control position="topright" v-if="false">
             <div class="overlay">
@@ -51,6 +51,13 @@
                 </b-tabs>
 
                 <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents"/>
+
+                <div v-if="isDebug()">
+                    <hr>
+                    <strong style="font-size: 16px; margin: -12px 0 4px; display: block;">Debug Settings</strong>
+                    <b-checkbox v-model="devMonochromeMap">Monochrome Map</b-checkbox><br>
+                    <b-checkbox v-model="devLegPartitions">Legs Partitions <span style="color: #999">(Move map)</span></b-checkbox>
+                </div>
             </div>
         </l-control>
 
@@ -211,8 +218,14 @@ export default {
             geosearchOptions: {
                 provider: new OpenStreetMapProvider(),
             },
+            devLegPartitions: false,
+            devMonochromeMap: false,
             geoJsonOptions: {
                 style: feature => {
+                    if (this.devLegPartitions) return {
+                        color: '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6),
+                    };
+
                     return {
                         // color: 'hsl(' + (217 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 35) + ', 71%, 53%)',
                         // color: 'hsl(' + (225 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 43) + ', 71%, 53%)',
@@ -479,7 +492,8 @@ export default {
                     this.updateQueue(message.data[1]);
                     break;
             }
-        }
+        },
+        isDebug: () => process.env.VUE_APP_DEBUG === "true",
     },
     async mounted() {
         this.$nextTick(() => {
@@ -506,6 +520,11 @@ export default {
         height: 100%;
         width: 100%;
         flex: 1 0;
+
+        // The class monochrome can only be set on the element before
+        .monochrome + .leaflet-pane.leaflet-map-pane .leaflet-pane.leaflet-tile-pane {
+            filter: grayscale(1);
+        }
     }
 
     .leaflet-control {
@@ -604,6 +623,10 @@ export default {
 
                 section {
                     display: none;
+                }
+
+                .b-checkbox.checkbox {
+                    font-size: 16px;
                 }
             }
 
