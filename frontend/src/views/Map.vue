@@ -7,7 +7,7 @@
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
            @click="clickedOnMap($event)">
-        <l-tile-layer :url="url"/>
+        <l-tile-layer :url="url" :class="{monochrome: devMonochromeMap}"/>
 
         <l-control position="topleft">
             <div class="overlay overlay-menu is-hidden-mobile" :class="{ disabled: viewMode > 1 }">
@@ -17,6 +17,13 @@
                 </b-tabs>
 
                 <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents"/>
+
+                <div v-if="isDebug()">
+                    <hr>
+                    <strong style="font-size: 16px; margin: -12px 0 4px; display: block;">Debug Settings</strong>
+                    <b-checkbox v-model="devMonochromeMap">Monochrome Map</b-checkbox><br>
+                    <b-checkbox v-model="devLegPartitions">Legs Partitions <span style="color: #999">(Move map)</span></b-checkbox>
+                </div>
             </div>
         </l-control>
 
@@ -41,19 +48,6 @@
         <l-control position="bottomright">
             <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
         </l-control>
-
-        <!-- TODO -->
-<!--        <l-control position="bottomright" v-if="rideHighlightContent !== null"> &lt;!&ndash; Using CSS Magic this will appear top-center &ndash;&gt;-->
-<!--            <div class="overlay" style="display: flex">-->
-<!--                <div style="flex: 1 0; text-align: center">-->
-<!--                    Placeholder: More ride details? <br> &lt;!&ndash; TODO: Ridedetails hier später einfügen &ndash;&gt;-->
-<!--                    Length: <strong>{{ rideHighlightContent.length }}</strong>, &nbsp;&nbsp; Duration: <strong>{{ rideHighlightContent.duration }}</strong>-->
-<!--                </div>-->
-<!--                <div style="flex: 0 0; align-self: center">-->
-<!--                    <a class="delete" @click="unfocusRideHighlight"/>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </l-control>-->
 
         <!-- MapMatched Bike Rides-->
         <template v-if="viewMode === 0">
@@ -85,10 +79,16 @@
 
         <!-- Single, highlighted Bike Ride with its Incidents -->
         <template v-else-if="viewMode === 2">
-            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"/>
+            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"><l-tooltip>Test 123!</l-tooltip></l-geo-json>
 
-            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightStart"/> <!-- Highlighted Ride start point -->
-            <l-circle-marker :radius="5" :color="'hsl(215, 71%, 53%)'" :fill-color="'hsl(215, 71%, 53%)'" :fill-opacity="1" :lat-lng="rideHighlightEnd"/>   <!-- Highlighted Ride end point -->
+            <l-marker :lat-lng="rideHighlightStart" :icon="rideHighlightStartIcon">
+                <l-tooltip :options="{direction: 'bottom'}"><strong>Start</strong></l-tooltip>
+            </l-marker>
+            <l-marker :lat-lng="rideHighlightEnd" :icon="rideHighlightEndIcon">
+                <l-tooltip :options="{direction: 'bottom'}">
+                    <strong>End - {{ (rideHighlighted.properties.distance / 1000).toFixed(1) }} km in {{ rideHighlighted.properties.duration >= 60 ? Math.floor(rideHighlighted.properties.duration / 60) + " h " : "" }}{{ Math.floor(rideHighlighted.properties.duration % 60) }} min</strong>
+                </l-tooltip>
+            </l-marker>
 
             <l-geo-json v-for="incident in rideHighlightedIncidents"
                         :key="incident.key"
@@ -102,7 +102,7 @@
 
 <script>
 import Vue from "vue";
-import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer } from "vue2-leaflet";
+import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer, LTooltip } from "vue2-leaflet";
 import * as L from "leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
@@ -127,6 +127,7 @@ export default {
         LMarker,
         LPopup,
         LCircleMarker,
+        LTooltip,
         Vue2LeafletHeatmap,
         VGeosearch,
         LGeoJson,
@@ -143,11 +144,20 @@ export default {
             viewMode: 0, // 0 - rides, 1 - incidents, 2 - highlighted ride
             loadingProgress: null,
             rides: [],
-            // rideHighlightContent: null,
-            rideHighlightStart: [0, 0],
-            rideHighlightEnd: [0, 0],
             rideHighlighted: null,
             rideHighlightedIncidents: [],
+            rideHighlightStart: [0, 0],
+            rideHighlightEnd: [0, 0],
+            rideHighlightStartIcon: ExtraMarkers.icon({
+                icon: 'fa-biking',
+                markerColor: 'white',
+                prefix: 'fa'
+            }),
+            rideHighlightEndIcon: ExtraMarkers.icon({
+                icon: 'fa-flag-checkered',
+                markerColor: 'black',
+                prefix: 'fa'
+            }),
             rideMaxWeight: 1,
             incidents: [],
             incident_heatmap: [],
@@ -166,8 +176,14 @@ export default {
             geosearchOptions: {
                 provider: new OpenStreetMapProvider(),
             },
+            devLegPartitions: false,
+            devMonochromeMap: false,
             geoJsonOptions: {
                 style: feature => {
+                    if (this.devLegPartitions) return {
+                        color: '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6),
+                    };
+
                     return {
                         // color: 'hsl(' + (217 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 35) + ', 71%, 53%)',
                         // color: 'hsl(' + (225 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 43) + ', 71%, 53%)',
@@ -204,24 +220,15 @@ export default {
                                     if (ride.status !== 500 && incidents.status !== 500) {
                                         console.log(ride);
                                         console.log(incidents);
-
-                                        this.rideHighlightContent = {
-                                            length: `${ Math.round(ride.properties.distance) }m`,
-                                            duration: "placeholder",
-                                        };
+                                        ride.properties.duration = Math.floor((ride.properties.ts[ride.properties.ts.length - 1] - ride.properties.ts[0]) / (60 * 1000));
 
                                         this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
                                         this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
-
                                         this.rideHighlighted = ride;
                                         this.rideHighlightedIncidents = incidents;
                                         this.viewMode = 2;
                                     } else {
                                         console.log("associated ride is not in db.");
-                                        this.rideHighlightContent = {
-                                            length: "Problem loading ride",
-                                            duration: "",
-                                        };
                                     }
                                 });
                             },
@@ -443,7 +450,8 @@ export default {
                     this.updateQueue(message.data[1]);
                     break;
             }
-        }
+        },
+        isDebug: () => process.env.VUE_APP_DEBUG === "true",
     },
     async mounted() {
         this.$nextTick(() => {
@@ -470,6 +478,11 @@ export default {
         height: 100%;
         width: 100%;
         flex: 1 0;
+
+        // The class monochrome can only be set on the element before
+        .monochrome + .leaflet-pane.leaflet-map-pane .leaflet-pane.leaflet-tile-pane {
+            filter: grayscale(1);
+        }
     }
 
     .leaflet-control {
@@ -569,6 +582,10 @@ export default {
                 section {
                     display: none;
                 }
+
+                .b-checkbox.checkbox {
+                    font-size: 16px;
+                }
             }
 
             &.overlay-debug {
@@ -598,6 +615,10 @@ export default {
 
     .extra-marker {
         background-image: url("../assets/markers_custom.png");
+
+        &.extra-marker-circle-white i.fa.fa-biking {
+            color: #555 !important;
+        }
     }
 
     .extra-marker-shadow {

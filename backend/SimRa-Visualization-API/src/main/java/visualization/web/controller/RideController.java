@@ -25,14 +25,21 @@ public class RideController {
     @Autowired
     private RideService rideService;
 
-    // gets ride by rideId
-    @GetMapping(value = "/rides/{rideId}")
-    public HttpEntity<RideResource> getRideByRideId(@PathVariable String rideId) {
-        return ResponseEntity.ok(rideService.getRideById(rideId));
+    // gets raw ride by rideId
+    @GetMapping(value = "/rides/raw/{rideId}")
+    public HttpEntity<RideResource> getRawRideByRideId(@PathVariable String rideId) {
+        return ResponseEntity.ok(rideService.getRawRideById(rideId));
     }
 
+    // gets mapMatched ride by rideId
+    @GetMapping(value = "/rides/mapmatched/{rideId}")
+    public HttpEntity<RideResource> getMapMatchedByRideId(@PathVariable String rideId) {
+        return ResponseEntity.ok(rideService.getMapMatchedRideById(rideId));
+    }
+
+
     // get all rides in range minDistance and maxDistance around a Point (longitude, latitude)
-    @CachePut(value="radiusRides")
+    @CachePut(value = "radiusRides")
     @GetMapping(value = "/rides")
     public HttpEntity<List<RideResource>> getRidesNear(@RequestParam(value = "lon") double longitude,
                                                        @RequestParam(value = "lat") double latitude,
