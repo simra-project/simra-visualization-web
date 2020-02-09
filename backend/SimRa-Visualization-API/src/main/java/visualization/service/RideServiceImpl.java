@@ -22,10 +22,15 @@ public class RideServiceImpl implements RideService {
     private RideResourceMapper rideResourceMapper;
 
     @Override
-    public RideResource getRideById(String rideId) {
+    public RideResource getRawRideById(String rideId) {
         RideEntity rideEntity = rideRepository.findById(rideId).get();
-
         return rideResourceMapper.mapRideEntityToResource(rideEntity, false);
+    }
+
+    @Override
+    public RideResource getMapMatchedRideById(String rideId) {
+        RideEntity rideEntity = rideRepository.findById(rideId).get();
+        return rideResourceMapper.mapRideEntityToResource(rideEntity, true);
     }
 
     @Override
