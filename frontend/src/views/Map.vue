@@ -44,19 +44,23 @@
             </div>
         </l-control>
         <l-control position="topleft">
-            <div class="overlay overlay-menu" :class="{ disabled: viewMode > 1 }">
-                <b-tabs type="is-toggle" v-model="viewMode">
-                    <b-tab-item label="Bike rides" icon="biking"/>
+            <div class="overlay overlay-menu" :class="{ disabled: viewMode === 3 }">
+                <b-tabs type="is-toggle" v-model="viewMode" @change="updateUrlQuery">
+                    <b-tab-item label="Rides" icon="biking"/>
                     <b-tab-item label="Incidents" icon="car-crash"/>
+                    <b-tab-item label="Combined" icon="layer-group"/>
                 </b-tabs>
 
-                <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents"/>
+                <b-checkbox v-model="devMonochromeMap" style="margin-bottom: 10px;">Monochrome Map</b-checkbox>
+
+                <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents" style="margin-top: 12px"/>
 
                 <div v-if="isDebug()">
                     <hr>
                     <strong style="font-size: 16px; margin: -12px 0 4px; display: block;">Debug Settings</strong>
                     <b-checkbox v-model="devMonochromeMap">Monochrome Map</b-checkbox><br>
-                    <b-checkbox v-model="devLegPartitions">Legs Partitions <span style="color: #999">(Move map)</span></b-checkbox>
+                    <b-checkbox v-model="devLegPartitions">Legs Partitions <span style="color: #999">(Move map)</span></b-checkbox><br>
+                    <b-checkbox v-model="devOverlayIncidents">Overlay Incidents</b-checkbox><br>
                 </div>
             </div>
         </l-control>
@@ -91,13 +95,21 @@
             <MapLegend :view-mode="viewMode"/>
         </l-control>
 
-        <!-- MapMatched Bike Rides-->
-        <template v-if="viewMode === 0">
+        <!-- MapMatched Bike Rides (+ combined view) -->
+        <template v-if="viewMode === 0 || viewMode === 2">
             <l-geo-json
                 v-if="aggregatetRides"
                 :geojson="rides"
-                :options="geoJsonOptions"
+                :options="viewMode === 0 ? geoJsonStyleRides : geoJsonStyleCombined"
             />
+
+            <l-geo-json v-if="devOverlayIncidents"
+                        v-for="incident in incidents"
+                        :key="incident.key"
+                        :geojson="incident"
+                        :options="geoJsonOptionsMarker">
+                <l-popup/>
+            </l-geo-json>
         </template>
 
         <!-- Incident Marker & Incident Heatmap-->
@@ -120,8 +132,8 @@
         </template>
 
         <!-- Single, highlighted Bike Ride with its Incidents -->
-        <template v-else-if="viewMode === 2">
-            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"><l-tooltip>Test 123!</l-tooltip></l-geo-json>
+        <template v-else-if="viewMode === 3">
+            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"/>
 
             <l-marker :lat-lng="rideHighlightStart" :icon="rideHighlightStartIcon">
                 <l-tooltip :options="{direction: 'bottom'}"><strong>Start</strong></l-tooltip>
@@ -183,7 +195,7 @@ export default {
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            viewMode: 0, // 0 - rides, 1 - incidents, 2 - highlighted ride
+            viewMode: parseInt(this.$route.query.m) || 0, // 0 - rides, 1 - incidents, 2 - combined, 3 - highlighted ride
             loadingProgress: null,
             rides: [],
             rideHighlighted: null,
@@ -221,21 +233,33 @@ export default {
             },
             devLegPartitions: false,
             devMonochromeMap: false,
-            geoJsonOptions: {
+            devOverlayIncidents: false,
+            geoJsonStyleRides: {
                 style: feature => {
                     if (this.devLegPartitions) return {
                         color: '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6),
                     };
 
                     return {
-                        // color: 'hsl(' + (217 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 35) + ', 71%, 53%)',
-                        // color: 'hsl(' + (225 - (1 - Math.sqrt(feature.properties.weight / this.rideMaxWeight)) * 43) + ', 71%, 53%)',
-                        // color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
-                        color: 'hsl(' + (15 + (1 - ((feature.properties.incidentCount) / (this.rideMaxIncidentWeight))) * 50) + ', 71%, 53%)',
-                        // color: 'hsl(217, 71%, 53%)',
+                        color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
                         weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 4.5 + 1.5,
-                        // weight: (Math.log(feature.properties.weight) + 1.25) * 1.25,
-                        opacity: 0.75 + Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 0.25,
+                        opacity: 1,
+                    };
+                },
+            },
+            geoJsonStyleCombined: {
+                style: feature => {
+                    let weight = feature.properties.incidentCount / this.rideMaxIncidentWeight;
+                    let color = "#84ca50";
+                    if (weight > 0.15) color = "#ede202";
+                    if (weight > 0.35) color = "#f07d02";
+                    if (weight > 0.60) color = "#e60000";
+                    if (weight > 0.85) color = "#9e1313";
+
+                    return {
+                        color: color,
+                        weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 6.5 + 1.5,
+                        opacity: 1,
                     };
                 },
             },
@@ -270,7 +294,7 @@ export default {
                                         this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
                                         this.rideHighlighted = ride;
                                         this.rideHighlightedIncidents = incidents;
-                                        this.viewMode = 2;
+                                        this.viewMode = 3;
                                     } else {
                                         console.log("associated ride is not in db.");
                                     }
@@ -294,7 +318,7 @@ export default {
         },
         boundsUpdated(bounds) {
             this.bounds = bounds;
-            if (this.viewMode === 0)
+            if (this.viewMode === 0 || this.viewMode === 2)
                 this.loadMatchedRoutes();
             if (this.viewMode === 1 && (this.zoom > this.heatmapMaxZoom || this.incident_heatmap.length === 0))
                 this.loadIncidents();
@@ -306,6 +330,7 @@ export default {
                     lat: this.center.lat,
                     lng: this.center.lng,
                     zoom: this.zoom,
+                    viewMode: this.viewMode,
                 },
             }).catch(() => {
             });
@@ -318,7 +343,6 @@ export default {
             }
         },
         unfocusRideHighlight() {
-            this.rideHighlightContent = null;
             this.viewMode = 1;
             this.rideHighlightStart = [0, 0];
             this.rideHighlightEnd = [0, 0];

@@ -20,7 +20,7 @@
             <hr>Debug information: {{ incident }}<hr>
         </template>
 
-        <button class="button is-primary is-small is-fullwidth" v-if="viewMode !== 2" @click="showRoute">Show Bike Ride</button>
+        <button class="button is-primary is-small is-fullwidth" v-if="viewMode !== 3" @click="showRoute">Show Bike Ride</button>
     </div>
 </template>
 

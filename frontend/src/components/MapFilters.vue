@@ -2,7 +2,7 @@
     <div class="map-filters">
         <hr class="hr-text" data-content="FILTERS">
 
-        <template v-if="viewMode === 0">
+        <template v-if="viewMode === 0 || viewMode === 2">
             <b-field label="Bike rides" style="margin-bottom: 0.5rem;">
                 <b-checkbox v-model="filterRideWithIncident" @change.native="ridesChanged">With Incidents</b-checkbox>
             </b-field>
@@ -33,7 +33,7 @@
             </b-button>
         </template>
 
-        <template v-else>
+        <template v-else-if="viewMode === 1 || viewMode === 3">
             <b-field label="Scary / Regular Incidents" style="margin-bottom: 0.5rem;">
                 <b-checkbox v-model="filterIncidentScary" @change.native="incidentsChanged">Scary Incidents</b-checkbox>
             </b-field>
