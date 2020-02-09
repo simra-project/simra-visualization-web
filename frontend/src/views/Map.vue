@@ -2,49 +2,15 @@
     <l-map ref="map"
            :zoom="zoom"
            :center="center"
-           :options="{ zoomControl: false }"
+           :min-zoom="9"
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
            @click="clickedOnMap($event)">
         <l-tile-layer :url="url" :class="{monochrome: devMonochromeMap}"/>
-<!--        <v-geosearch :options="geosearchOptions"/>-->
-        <l-control position="topright" v-if="false">
-            <div class="overlay">
-                <!-- Sliders to fine tune heatmap settings -->
-                MaxZoom
-                <vue-slider
-                    class="slider"
-                    :min="0"
-                    :max="18"
-                    :interval="1"
-                    tooltip="focus"
-                    v-model="heatmapMaxZoom">
-                </vue-slider>
 
-                Radius
-                <vue-slider
-                    class="slider"
-                    :min="0"
-                    :max="100"
-                    :interval="1"
-                    tooltip="focus"
-                    v-model="heatmapRadius">
-                </vue-slider>
-
-                Blur
-                <vue-slider
-                    class="slider"
-                    :min="0"
-                    :max="100"
-                    :interval="1"
-                    tooltip="focus"
-                    v-model="heatmapBlur">
-                </vue-slider>
-            </div>
-        </l-control>
         <l-control position="topleft">
-            <div class="overlay overlay-menu" :class="{ disabled: viewMode > 1 }">
+            <div class="overlay overlay-menu is-hidden-mobile" :class="{ disabled: viewMode > 1 }">
                 <b-tabs type="is-toggle" v-model="viewMode">
                     <b-tab-item label="Bike rides" icon="biking"/>
                     <b-tab-item label="Incidents" icon="car-crash"/>
@@ -61,15 +27,7 @@
             </div>
         </l-control>
 
-        <l-control position="bottomright" v-if="false">
-            <div class="overlay overlay-debug">
-                <div>Zoom: {{ zoom }}</div>
-                <div>Center: {{ center }}</div>
-                <div>Bounds: {{ bounds }}</div>
-            </div>
-        </l-control>
-
-        <l-control position="bottomcenter" class="bottomcenter">
+        <div class="leaflet-control bottomcenter">
             <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
                 <div class="overlay overlay-loading">
                     <div class="spinner-container">
@@ -85,10 +43,10 @@
                     <b-progress type="is-primary is-small" :value="loadingProgress"/>
                 </div>
             </div>
-        </l-control>
+        </div>
 
         <l-control position="bottomright">
-            <MapLegend :view-mode="viewMode"/>
+            <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
         </l-control>
 
         <!-- MapMatched Bike Rides-->
@@ -639,6 +597,10 @@ export default {
                     opacity: 1;
                 }
             }
+        }
+
+        &.leaflet-control-zoom {
+            display: none;
         }
     }
 
