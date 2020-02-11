@@ -517,7 +517,7 @@ export default {
         flex: 1 0;
 
         // The class monochrome can only be set on the element before
-        .monochrome + .leaflet-pane.leaflet-map-pane .leaflet-pane.leaflet-tile-pane {
+        .monochrome ~ .leaflet-pane.leaflet-map-pane .leaflet-pane.leaflet-tile-pane {
             filter: grayscale(1);
         }
     }
@@ -608,6 +608,10 @@ export default {
                 nav.tabs.is-toggle ul {
                     li {
                         flex: 1 0;
+
+                        a {
+                            padding: 0.5em 0.75em;
+                        }
 
                         &:not(.is-active) a {
                             background-color: white;

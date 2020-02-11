@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Component
 public class LegResourceMapper {
 
+    final double MAX_WEIGHT = 5;
     final double MAX_DISTANCE_METERS = 50;
     final double MULTIPLIER_LEG_LENGTH = 1;
     final double MULTIPLIER_SCARY_INCIDENT = 2.5;
@@ -72,6 +73,7 @@ public class LegResourceMapper {
             }
 
             incidentWeights /= Math.log(leg.getLength()) * MULTIPLIER_LEG_LENGTH;
+            incidentWeights = Math.min(incidentWeights, MAX_WEIGHT);
         } catch (TransformException e) {
             e.printStackTrace();
         }

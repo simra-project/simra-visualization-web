@@ -52,9 +52,7 @@ export default {
         box-shadow: none;
         background-color: white;
 
-        div + div {
-            margin-left: 4px;
-        }
+
 
         &.viewModeIncidents {
             width: 60%;
@@ -71,12 +69,16 @@ export default {
             }
 
             &.viewModeRides {
-                align-items: end;
+                align-items: flex-end;
 
                 .color-box {
                     width: 15px;
                     height: 15px;
                     margin-bottom: 3px;
+
+                    & + .color-box {
+                        margin-left: 4px;
+                    }
 
                     &.color-box-rides {
                         &.c1 {
