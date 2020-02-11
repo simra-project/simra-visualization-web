@@ -28,6 +28,63 @@ self.onmessage = function(event) {
     }
 };
 
+
+function spiral(array) {
+
+    // let array = [];
+    // for (let i=0; i<matrix.length; i++) {
+    //     array.push([]);
+    //     for (let j=0; j<matrix[0].length; j++) {
+    //         array[array.length - 1].push(JSON)
+    //     }
+    // }
+    const result = [];
+
+    let size_x = array.length;
+    let size_y = array[0].length;
+
+    let start_row = Math.floor(size_x/2);
+    let end_row = start_row;
+    let start_col = Math.floor(size_y/2);
+    let end_col = start_col - 1;
+
+    let direction = 1;
+    let dimension = 0;
+
+    let row = start_row;
+    let col = start_col;
+
+    while (result.length !== size_x * size_y) {
+        if (row < size_x && col < size_y && row >= 0 && col >= 0) {
+            result.push(array[row][col]);
+        }
+        if (dimension === 0) {
+            if (row === end_row) {
+                dimension = 1;
+                let tmp = start_row;
+                start_row = end_row;
+                end_row = tmp - direction;
+                direction = -direction;
+            }
+        } else {
+            if (col === end_col) {
+                dimension = 0;
+                let tmp = start_col;
+                start_col = end_col;
+                end_col = tmp - direction;
+            }
+        }
+        if (dimension === 0) {
+            row += direction;
+        } else {
+            col += direction;
+        }
+    }
+
+    return result;
+}
+
+
 const updateLoadingProgress = (progress, expectedTotal) => self.postMessage(["progress", progress, expectedTotal]);
 const startLoading = () => updateLoadingProgress(0, 1);
 const finishLoading = () => updateLoadingProgress(1, 1);
@@ -37,7 +94,8 @@ function toTiles(coords) {
     let max_x = Math.max(coords[0][0], coords[1][0]);
     let min_y = Math.min(coords[0][1], coords[1][1]);
     let max_y = Math.max(coords[0][1], coords[1][1]);
-    let step = Math.ceil(Math.max((max_x - min_x) / 4, (max_y - min_y) / 4));
+    let N_STEPS = 3;
+    let step = Math.ceil(Math.max((max_x - min_x) / N_STEPS, (max_y - min_y) / N_STEPS));
     console.log(`step is ${step}`);
     let bounds = 0.05;
     let tiles = [];
@@ -45,12 +103,13 @@ function toTiles(coords) {
     console.log(`min_x: ${min_x}, mod: ${min_x%step}`);
 
     for (let x = min_x-min_x%step; x<=max_x+(1-max_x%step); x+=step) {
+        tiles.push([]);
         for (let y = min_y-min_y%step; y<=max_y+(1-max_y%step); y+=step) {
-            tiles.push([[x-bounds,y-bounds], [x+step+bounds,y+step+bounds]]);
+            tiles[tiles.length-1].push([[x-bounds,y-bounds], [x+step+bounds,y+step+bounds]]);
         }
     }
 
-    return tiles;
+    return spiral(tiles).reverse();
 }
 
 var routesLoaded = [];
