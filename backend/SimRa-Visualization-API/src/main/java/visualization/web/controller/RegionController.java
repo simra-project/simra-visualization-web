@@ -11,13 +11,6 @@ import visualization.web.resources.RegionResource;
 import javax.validation.Valid;
 import java.util.List;
 
-
-/*⁄
-
-This is the place where we communicate with the frontend
-
- */
-
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class RegionController {

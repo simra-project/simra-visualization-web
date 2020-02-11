@@ -1,7 +1,7 @@
 package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,6 @@ import visualization.service.IncidentService;
 import visualization.web.resources.IncidentResource;
 
 import java.util.List;
-
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -40,11 +39,13 @@ public class IncidentController {
      * @param maxDistance maximum (distance) radius around the given coordinate point like 5000
      * @return list of incidents in the circle around the coordinate using maxDistance as the radius
      */
-    @CachePut(value="radiusIncidents")
+    @Cacheable(value = "radiusIncidents")
     @GetMapping(value = "/incidents")
     public HttpEntity<List<IncidentResource>> getIncidentsNear(@RequestParam(value = "lon") double longitude,
                                                                @RequestParam(value = "lat") double latitude,
                                                                @RequestParam(value = "max") int maxDistance) {
+        System.out.println("No cache hit - Executing /incidents");
+
         return ResponseEntity.ok(incidentService.getIncidentsInRange(longitude, latitude, maxDistance));
     }
 
@@ -55,10 +56,12 @@ public class IncidentController {
      * @param topright   Coordinate-Tuple like 13.456360,52.547463
      * @return list of incidents in the given area
      */
-    @CachePut(value="areaIncidents")
+    @Cacheable(value = "areaIncidents")
     @GetMapping(value = "/incidents/area")
     public HttpEntity<List<IncidentResource>> getIncidentsWithin(@RequestParam(value = "bottomleft") double[] bottomleft,
                                                                  @RequestParam(value = "topright") double[] topright) {
+        System.out.println("No cache hit - Executing /incidents/area");
+
         return ResponseEntity.ok(incidentService.getIncidentsInWithin(new GeoJsonPoint(bottomleft[0], bottomleft[1]),
                 new GeoJsonPoint(bottomleft[0], topright[1]),
                 new GeoJsonPoint(topright[0], topright[1]),
@@ -66,7 +69,7 @@ public class IncidentController {
     }
 
     // get all incidents with filter criteria applied
-    @CachePut(value="filteredIncidents")
+    @Cacheable(value = "filteredIncidents")
     @GetMapping(value = "/incidents/filter")
     public HttpEntity<List<IncidentResource>> getIncidentsFilteredBy(@RequestParam(value = "bottomleft") double[] first,
                                                                      @RequestParam(value = "topright") double[] second,
@@ -81,7 +84,8 @@ public class IncidentController {
                                                                      @RequestParam(value = "incidents", required = false) Integer[] incidentTypes,
                                                                      @RequestParam(value = "participants", required = false) Boolean[] participants,
                                                                      @RequestParam(value = "scary", required = false) Boolean scary,
-                                                                     @RequestParam(value = "description", required = false) Boolean description){
+                                                                     @RequestParam(value = "description", required = false) Boolean description) {
+        System.out.println("No cache hit - Executing /incidents/filter");
 
         return ResponseEntity.ok(incidentService.getFilteredIncidents(new GeoJsonPoint(first[0], first[1]),
                 new GeoJsonPoint(first[0], second[1]),

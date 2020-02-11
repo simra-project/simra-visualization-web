@@ -1,7 +1,7 @@
 package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class LegController {
     private LegService legService;
 
     // example: http://localhost:8080/legs/area?bottomleft=13.297089,52.481744&topright=13.456360,52.547463&minweight=1
-    @CachePut(value="legsWithin")
+    @Cacheable(value = "legsWithin")
     @GetMapping(value = "/legs/area")
     public HttpEntity<List<LegResource>> getLegsWithin(@RequestParam(value = "bottomleft") double[] first,
                                                        @RequestParam(value = "topright") double[] second,
@@ -30,6 +30,8 @@ public class LegController {
                                                        @RequestParam(value = "day", required = false) String day,
                                                        @RequestParam(value = "minDistance", required = false) Double minDist,
                                                        @RequestParam(value = "maxDistance", required = false) Double maxDist) {
+        System.out.println("No cache hit - Executing /legs/area");
+
         return ResponseEntity.ok(legService.getLegsWithin(new GeoJsonPoint(first[0], first[1]),
                 new GeoJsonPoint(first[0], second[1]),
                 new GeoJsonPoint(second[0], second[1]),
