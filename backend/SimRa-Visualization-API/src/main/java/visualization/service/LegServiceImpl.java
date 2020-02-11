@@ -1,12 +1,15 @@
 package visualization.service;
 
 import org.jetbrains.annotations.NotNull;
+import org.opengis.referencing.FactoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.stereotype.Service;
+import visualization.data.mongodb.IncidentRepository;
 import visualization.data.mongodb.LegRepository;
 import visualization.data.mongodb.RideRepository;
+import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.data.mongodb.entities.LegEntity;
 import visualization.data.mongodb.entities.RideEntity;
 import visualization.web.resources.LegResource;
@@ -24,6 +27,9 @@ public class LegServiceImpl implements LegService {
 
     @Autowired
     private RideRepository rideRepository;
+
+    @Autowired
+    private IncidentRepository incidentRepository;
 
     @Autowired
     private LegResourceMapper legResourceMapper;
@@ -67,7 +73,13 @@ public class LegServiceImpl implements LegService {
             }
         }
 
-        return legEntitiesFiltered.stream().map(legEntity -> legResourceMapper.mapLegEntityToResource(legEntity)).collect(Collectors.toList());
+        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationMapMatchedWithin(new GeoJsonPolygon(first, second, third, fourth, first));
+
+        try {
+            return legResourceMapper.mapLegEntitiesToResourcesWithIncidents(legEntitiesFiltered, incidentEntities);
+        } catch (FactoryException e) {
+            return new ArrayList<>();
+        }
     }
 
     @NotNull
