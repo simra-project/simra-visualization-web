@@ -1,6 +1,6 @@
 <template>
     <div>
-        <strong v-if="incident.scary">Scary</strong> Incident on {{ utils.getDate(incident) }}<br>
+        <strong v-if="incident.scary">Scary</strong> Incident<template v-if="utils.isRecentDate(incident)"> on {{ utils.getDate(incident) }}</template><br>
         <hr>
 
         Type: <strong>{{ utils.getType(incident) }}</strong><br>
@@ -16,7 +16,11 @@
 
         <p v-if="incident.description !== null">{{ incident.description }}</p>
 
-        <button class="button is-primary is-small is-fullwidth" @click="showRoute">Show Bike Ride</button>
+        <template v-if="isDebug">
+            <hr>Debug information: {{ incident }}<hr>
+        </template>
+
+        <button class="button is-primary is-small is-fullwidth" v-if="viewMode !== 3" @click="showRoute">Show Bike Ride</button>
     </div>
 </template>
 
@@ -26,6 +30,7 @@ import { IncidentUtils } from "@/services/IncidentUtils";
 export default {
     name: "MapPopup",
     props: {
+        viewMode: Number,
         incident: Object,
         showRoute: Function,
     },
@@ -34,6 +39,9 @@ export default {
             utils: IncidentUtils, // this is necessary because mixins don't work with dynamically created components
         };
     },
+    methods: {
+        isDebug: () => process.env.VUE_APP_DEBUG === "true",
+    }
 };
 </script>
 
