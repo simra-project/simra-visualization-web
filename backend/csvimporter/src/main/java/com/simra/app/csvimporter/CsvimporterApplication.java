@@ -41,6 +41,11 @@ public class CsvimporterApplication implements CommandLineRunner {
         this.mongoTemplate.indexOps("rides").ensureIndex(geospatialIndexLocation);
         logger.info("Rides Location Indexed setup.");
 
+        GeospatialIndex geospatialIndexLocationMapMatched=new GeospatialIndex("locationMapMatched");
+        geospatialIndexLocationMapMatched.typed(GeoSpatialIndexType.GEO_2DSPHERE);
+        this.mongoTemplate.indexOps("incidents").ensureIndex(geospatialIndexLocationMapMatched);
+        logger.info("Rides LocationMapMatched Indexed setup.");
+
         GeospatialIndex geospatialIndexIncident=new GeospatialIndex("location");
         geospatialIndexIncident.typed(GeoSpatialIndexType.GEO_2DSPHERE);
         this.mongoTemplate.indexOps("incidents").ensureIndex(geospatialIndexIncident);
