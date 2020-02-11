@@ -122,6 +122,12 @@ function loadIncidents(coords, filter) {
         fetch(`${ URL_BACKEND }/incidents/filter?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&${filtersQuery}`)
             .then(r => r.json())
             .then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    let seed = parseInt(result[i].properties.key + result[i].properties.ts);
+                    result[i].geometry.coordinates[0] += getCoordinateOffset(seed);
+                    result[i].geometry.coordinates[1] += getCoordinateOffset(seed + 1);
+                }
+
                 incidents[filter_string][coords] = result;
                 self.postMessage(["incidents", result]);
                 finishLoading();
@@ -130,4 +136,16 @@ function loadIncidents(coords, filter) {
         console.log("cache hit!");
         self.postMessage(["incidents", incidents[filter_string][coords]]);
     }
+}
+
+/**
+ * This will provide a fixed-per-seed noise offset for one coordinate axis.
+ * The value distribution is not uniform (which isn't really needed) but the function performs fast.
+ */
+function getCoordinateOffset(seed) {
+    var x = Math.sin(seed) * 10000;
+    x -= Math.floor(x);
+    x = (x - 0.5) * 2; // range [-1, 1]
+
+    return x / 5000;
 }
