@@ -464,11 +464,17 @@ export default {
             this.zoomUpdated(this.zoom);
             this.centerUpdated(this.center);
             this.boundsUpdated(this.bounds);
+
+            let lat = this.center.lat;
+            let lon = this.center.lng;
+            console.log(this.center);
+            ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
         });
 
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
-        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND])
+        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
+
     },
 };
 </script>
