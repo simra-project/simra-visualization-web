@@ -73,7 +73,7 @@
         <!-- Incident Marker & Incident Heatmap-->
         <template v-else-if="viewMode === 1">
             <Vue2LeafletHeatmap
-                v-if="zoom <= heatmapMaxZoom"
+                v-if="zoom <= heatmapMaxZoom && this.incident_heatmap.length !== 0"
                 :lat-lng="incident_heatmap"
                 :radius="heatmapRadius"
                 :min-opacity="heatmapMinOpacity"
@@ -280,6 +280,7 @@ export default {
                 this.loadMatchedRoutes();
             if (this.viewMode === 1 && (this.zoom > this.heatmapMaxZoom || this.incident_heatmap.length === 0))
                 this.loadIncidents();
+            console.log(this.incident_heatmap.length);
         },
         updateUrlQuery() {
             this.$router.replace({
@@ -493,11 +494,17 @@ export default {
             this.zoomUpdated(this.zoom);
             this.centerUpdated(this.center);
             this.boundsUpdated(this.bounds);
+
+            let lat = this.center.lat;
+            let lon = this.center.lng;
+            console.log(this.center);
+            ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
         });
 
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
-        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND])
+        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
+
     },
 };
 </script>
