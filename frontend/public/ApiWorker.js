@@ -103,13 +103,16 @@ async function loadLegs(filter) {
     loadLegsRunning = false;
 }
 
-var incidents = [];
-var prevLoadedWithFilters = false;
+var incidents = {};
 function loadIncidents(coords, filter) {
     let filterElements = Object.entries(filter).filter(x => x[1] != null);
-    prevLoadedWithFilters = filterElements.length > 0;
+    let filter_string =  JSON.stringify(filter);
 
-    if (!incidents.hasOwnProperty(coords) || filterElements.length > 0 || prevLoadedWithFilters) {
+    if (!incidents.hasOwnProperty(filter_string)) {
+        incidents[filter_string] = [];
+    }
+
+    if (!incidents[filter_string].hasOwnProperty(coords)) {
         startLoading();
 
         let filtersQuery = filterElements.map(x => `${ x[0] }=${ x[1] }`).join("&");
@@ -119,12 +122,12 @@ function loadIncidents(coords, filter) {
         fetch(`${ URL_BACKEND }/incidents/filter?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&${filtersQuery}`)
             .then(r => r.json())
             .then(result => {
-                incidents[coords] = result;
+                incidents[filter_string][coords] = result;
                 self.postMessage(["incidents", result]);
                 finishLoading();
             });
     } else {
         console.log("cache hit!");
-        self.postMessage(["incidents", incidents[coords]]);
+        self.postMessage(["incidents", incidents[filter_string][coords]]);
     }
 }
