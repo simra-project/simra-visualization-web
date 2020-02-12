@@ -13,12 +13,12 @@ self.onmessage = function(event) {
             loadRoutes(event.data[1]);
             break;
         case "matched":
-            queue = toTiles(event.data[1]);
+            queue = toTiles(event.data[1], event.data[2], event.data[3]);
             total_to_load = queue.length;
             progress = 0;
             updateLoadingProgress(progress, total_to_load);
             self.postMessage(["queue", queue]);
-            loadLegs(event.data[2]);
+            loadLegs();
             break;
         case "incidents":
             loadIncidents(event.data[1], event.data[2]);
@@ -89,7 +89,7 @@ const updateLoadingProgress = (progress, expectedTotal) => self.postMessage(["pr
 const startLoading = () => updateLoadingProgress(0, 1);
 const finishLoading = () => updateLoadingProgress(1, 1);
 
-function toTiles(coords) {
+function toTiles(coords, resolution, filters) {
     let min_x = Math.min(coords[0][0], coords[1][0]);
     let max_x = Math.max(coords[0][0], coords[1][0]);
     let min_y = Math.min(coords[0][1], coords[1][1]);
@@ -99,13 +99,17 @@ function toTiles(coords) {
     console.log(`step is ${step}`);
     let bounds = 0.05;
     let tiles = [];
+    console.log(`filters: ${filters}`);
+    let filterElements = filters != null ? Object.entries(filters).filter(x => x[1] != null) : null;
+    let filtersQuery = filterElements != null ? filterElements.map(x => `${ x[0] }=${ x[1] }`).join("&") : "";
+    console.log(`filtersquery: ${filtersQuery}`);
 
     console.log(`min_x: ${min_x}, mod: ${min_x%step}`);
 
     for (let x = min_x-min_x%step; x<=max_x+(1-max_x%step); x+=step) {
         tiles.push([]);
         for (let y = min_y-min_y%step; y<=max_y+(1-max_y%step); y+=step) {
-            tiles[tiles.length-1].push([[x-bounds,y-bounds], [x+step+bounds,y+step+bounds]]);
+            tiles[tiles.length-1].push([[x-bounds,y-bounds], [x+step+bounds,y+step+bounds], resolution, filtersQuery]);
         }
     }
 
@@ -137,24 +141,30 @@ function loadRoutes(data) {
 
 var legsLoaded = [];
 var loadLegsRunning = false;
-async function loadLegs(filter) {
+async function loadLegs() {
     if (loadLegsRunning)
         return;
     loadLegsRunning = true;
     while (!(queue.length === 0)) {
         coords = queue.pop();
-        if (!legsLoaded.hasOwnProperty(coords)) {
+        let resolution = coords[2];
+        let filters = coords[3];
+        let identifier = resolution.toString() + "//" + filters.toString();
+        if (!legsLoaded.hasOwnProperty(identifier)) {
+            legsLoaded[identifier] = [];
+        }
+        if (!legsLoaded[identifier].hasOwnProperty(coords)) {
             // console.log("starting " + coords);
             // console.log(coords);
-            // console.log(`${ backendUrl }/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${filter}`);
-            var r = await fetch(`${ URL_BACKEND }/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${filter}`);
+            console.log(`${ URL_BACKEND }/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${resolution}&${filters}`);
+            var r = await fetch(`${ URL_BACKEND }/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${resolution}&${filters}`);
             var result = await r.json();
-            legsLoaded[coords] = result;
+            legsLoaded[identifier][coords] = result;
             // console.log("done with " + coords);
             self.postMessage(["matched", result, coords]);
         } else {
             // console.log("cache hit!");
-            self.postMessage(["matched", legsLoaded[coords], coords]);
+            self.postMessage(["matched", legsLoaded[identifier][coords], coords]);
         }
         progress++;
         updateLoadingProgress(progress, total_to_load)

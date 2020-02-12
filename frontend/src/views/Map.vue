@@ -318,17 +318,19 @@ export default {
             console.log(`testing coords ${coords.toString()}`);
             if (this.incoming_legs_queue.includes(coords.toString())) {
                 if (!(this.loaded_legs_strings.includes(coords.toString()))) {
-                    this.loaded_legs.push([coords, response]);
                     this.rides.features.push(...response);
+                    let curMaxWeight = 1;
                     for (let ride of response) {
                         const weight = ride.properties.fileIdSet.length;
                         if (weight > this.rideMaxWeight)
                             this.rideMaxWeight = weight;
-
+                        if (weight > curMaxWeight)
+                            curMaxWeight = weight;
                         const weightIncident = ride.properties.incidentCount;
                         if (weightIncident > this.rideMaxIncidentWeight)
                             this.rideMaxIncidentWeight = weightIncident;
                     }
+                    this.loaded_legs.push([coords, response, curMaxWeight]);
                 } else {
                     console.log("Leg is already loaded.");
                 }
@@ -376,9 +378,12 @@ export default {
             let sw_lat_tmp = this.bounds._southWest.lat;
             let sw_lng_tmp = this.bounds._southWest.lng;
 
+            let filters = this.$refs.filters.getRideFilters();
+            console.log(filters);
+
             setTimeout(() => {
                 if (this.zoom === zoom_tmp && sw_lat_tmp === this.bounds._southWest.lat && sw_lng_tmp === this.bounds._southWest.lng) {
-                    this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1)]);
+                    this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1), filters]);
                 } else {
                     console.log(`expected lat ${sw_lat_tmp}, is ${this.bounds._southWest.lat}`);
                     console.log(`expected lng ${sw_lng_tmp}, is ${this.bounds._southWest.lng}`);
@@ -386,10 +391,6 @@ export default {
                 }
             }, 1000);
 
-            let filters = this.$refs.filters.getRideFilters();
-            console.log(filters);
-
-            this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1)]);
             // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
 
         },
@@ -435,6 +436,7 @@ export default {
         },
         updateQueue(queue) {
             console.log("updating queue");
+            console.log(queue);
             let queue_as_string = [];
             for(let item of queue) {
                 queue_as_string.push(item.toString());
@@ -442,6 +444,7 @@ export default {
             let new_features = [];
             let new_loaded_legs = [];
             let new_loaded_legs_strings = [];
+            this.rideMaxWeight = 1;
             for(let leg of this.loaded_legs) {
                 console.log("testing new leg");
                 if (queue_as_string.includes(leg[0].toString())) {
@@ -449,6 +452,9 @@ export default {
                     new_features.push(...leg[1]);
                     new_loaded_legs.push(leg);
                     new_loaded_legs_strings.push(leg[0].toString());
+                    console.log(leg);
+                    if (leg[2] > this.rideMaxWeight)
+                        this.rideMaxWeight = leg[2]
                 }
             }
             this.rides = {

@@ -96,7 +96,7 @@ export default {
             filterIncidentParticipants: [],
             filterIncidentWeekday: null,
             filterIncidentHours: [0, 24],
-            weekdays: [["Mo.", "Monday"], ["Di.", "Tuesday"], ["Mi.", "Wednesday"], ["Do.", "Thursday"], ["Fr.", "Friday"], ["Sa.", "Saturday"], ["So.", "Sunday"]],
+            weekdays: [["Mon", "Monday"], ["Tue", "Tuesday"], ["Wed", "Wednesday"], ["Thu", "Thursday"], ["Fri", "Friday"], ["Sat", "Saturday"], ["Sun", "Sunday"]],
             timerRides: null,
             timerIncidents: null,
         }
