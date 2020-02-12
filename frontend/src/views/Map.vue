@@ -340,13 +340,14 @@ export default {
             }
         },
         parseIncidents(response) {
+            while (this.incident_heatmap.length > 0) {
+                this.incident_heatmap.pop();
+            }
             for (var i = 0; i < response.length; i++) {
                 // console.log(response[i].properties.incidentType);
                 // if (response[i].properties.incidentType != 0)
                 this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
             }
-            console.log(this.incident_heatmap);
-            console.log("Incident heatmap loaded.");
         },
         loadDetailedRides() {
             // times 100 to avoid floating point errors
@@ -482,6 +483,7 @@ export default {
                     break;
                 case "incidents":
                     this.incidents = message.data[1];
+                    this.parseIncidents(message.data[1]);
                     break;
                 case "queue":
                     this.updateQueue(message.data[1]);
