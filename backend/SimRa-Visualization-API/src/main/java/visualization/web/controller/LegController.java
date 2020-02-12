@@ -27,9 +27,11 @@ public class LegController {
     public HttpEntity<List<LegResource>> getLegsWithin(@RequestParam(value = "bottomleft") double[] first,
                                                        @RequestParam(value = "topright") double[] second,
                                                        @RequestParam(value = "minWeight") int minWeight,
-                                                       @RequestParam(value = "day", required = false) String day,
+                                                       @RequestParam(value = "weekdays", required = false) String day,
                                                        @RequestParam(value = "minDistance", required = false) Double minDist,
-                                                       @RequestParam(value = "maxDistance", required = false) Double maxDist) {
+                                                       @RequestParam(value = "maxDistance", required = false) Double maxDist,
+                                                       @RequestParam(value = "fromMinutesOfDay", required = false) Integer startTime,
+                                                       @RequestParam(value = "untilMinutesOfDay", required = false) Integer endTime) {
         System.out.println("No cache hit - Executing /legs/area");
 
         return ResponseEntity.ok(legService.getLegsWithin(new GeoJsonPoint(first[0], first[1]),
@@ -39,6 +41,8 @@ public class LegController {
                 minWeight,
                 day,
                 minDist,
-                maxDist));
+                maxDist,
+                startTime,
+                endTime));
     }
 }

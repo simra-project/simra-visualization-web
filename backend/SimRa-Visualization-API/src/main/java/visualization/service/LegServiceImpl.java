@@ -13,11 +13,12 @@ import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.data.mongodb.entities.LegEntity;
 import visualization.data.mongodb.entities.RideEntity;
 import visualization.web.resources.LegResource;
-import visualization.web.resources.RideResource;
 import visualization.web.resources.serializers.LegResourceMapper;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class LegServiceImpl implements LegService {
@@ -35,48 +36,46 @@ public class LegServiceImpl implements LegService {
     private LegResourceMapper legResourceMapper;
 
     @Override
-    public List<LegResource> getLegsWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth, Integer minWeight, String day, Double minDist, Double maxDist) {
+    public List<LegResource> getLegsWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth, Integer minWeight, String day, Double minDist, Double maxDist, Integer startTime, Integer endTime) {
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
         List<LegEntity> legEntities = legRepository.findByGeometryWithin(polygon, minWeight);
 
-        HashSet<String> matching = new HashSet<String>();
-        for (RideEntity ride: rideRepository.findAll()) {
-            matching.add(ride.getId());
-        }
-        if (day != null) {
-            List<RideEntity> matchingRides = rideRepository.findByWeekday("Thu");
-            matching = updateMatchingSet(matching, matchingRides);
-        }
-
-        if (minDist != null || maxDist != null) {
-            if (maxDist == null) {
-                maxDist = Double.POSITIVE_INFINITY;
+        if (day != null || startTime != null || endTime != null) {
+            long start = System.nanoTime();
+            HashSet<String> matching = new HashSet<>();
+            if (startTime == null) {
+                startTime = 0;
             }
-            if (minDist == null) {
-                minDist = 0.0;
+            if (endTime == null) {
+                endTime = 24 * 60;
             }
-            List<RideEntity> matchingRides = rideRepository.findByDistanceBetween(minDist, maxDist);
-            matching = updateMatchingSet(matching, matchingRides);
-        }
+            String identifier = startTime.toString() + "/" + endTime.toString() + "/" + day;
+            List<RideEntity> matchingRides = rideRepository.findFilteredRides(null, startTime, endTime, day);
+            for (RideEntity ride : matchingRides) {
+                matching.add(ride.getId());
+            }
 
-        List<LegEntity> legEntitiesFiltered = new ArrayList<>();
-        for (LegEntity leg: legEntities) {
-            Set<String> matches = new HashSet<String>();
-            for (String id: leg.getProperties().getFileIdSet()) {
-                if (matching.contains(id)) {
-                    matches.add(id);
+            List<LegEntity> legEntitiesFiltered = new ArrayList<>();
+            for (LegEntity leg : legEntities) {
+                Set<String> matches = new HashSet<>();
+                for (String id : leg.getProperties().getFileIdSet()) {
+                    if (matching.contains(id)) {
+                        matches.add(id);
+                    }
+                }
+                if (!matches.isEmpty()) {
+                    leg.getProperties().setFileIdSet(matches);
+                    legEntitiesFiltered.add(leg);
                 }
             }
-            if (!matches.isEmpty()) {
-                leg.getProperties().setFileIdSet(matches);
-                legEntitiesFiltered.add(leg);
-            }
+
+            legEntities = legEntitiesFiltered;
         }
 
-        List<IncidentEntity> incidentEntities = incidentRepository.findByLocationMapMatchedWithin(new GeoJsonPolygon(first, second, third, fourth, first));
-
         try {
-            return legResourceMapper.mapLegEntitiesToResourcesWithIncidents(legEntitiesFiltered, incidentEntities);
+            List<IncidentEntity> incidentEntities = incidentRepository.findByLocationMapMatchedWithin(new GeoJsonPolygon(first, second, third, fourth, first));
+
+            return legResourceMapper.mapLegEntitiesToResourcesWithIncidents(legEntities, incidentEntities);
         } catch (FactoryException e) {
             return new ArrayList<>();
         }
