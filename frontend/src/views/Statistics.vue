@@ -220,7 +220,7 @@ export default {
             this.dataLoaded = false;
 
             setTimeout(() => {
-                fetch("http://localhost:8080/statistics?region=" + this.selectedLocation)
+                fetch(process.env.VUE_APP_BACKEND_URL + "/statistics?region=" + this.selectedLocation)
                     .then(r => r.json())
                     .then(r => {
                         this.dataLoaded = true;
