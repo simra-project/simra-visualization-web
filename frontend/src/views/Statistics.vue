@@ -21,7 +21,7 @@
                 </span>
                 so far reducing CO<sub>2</sub> emissions by
                 <span class="highlight-text">
-                    <ICountUp :delay="700" :endVal="Math.floor(statistics.accumulatedSavedCO2)"/> kg</span>.
+                    <ICountUp :delay="700" :endVal="Math.floor(3781.43)"/> kg</span>.
             </div>
             <div class="top-subtext">
                 On average, one ride is {{ (statistics.averageDistance / 1000).toFixed(2) }} kilometers long and lasts {{ Math.floor(statistics.averageDuration / (1000 * 60)) }} minutes.
