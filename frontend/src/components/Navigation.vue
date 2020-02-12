@@ -6,18 +6,20 @@
             </b-navbar-item>
         </template>
         <template slot="start">
-            <b-navbar-dropdown :hoverable="true" :class="{'dropdown-active': this.$route.path.startsWith('/map')}" boxed>
-                <template v-slot:label>
-                    <router-link to="/map" tag="span">Map</router-link>
-                </template>
+            <router-link to="/map" class="navbar-item" :class="{'is-active': this.$route.path.startsWith('/map')}">Map</router-link>
 
-                <router-link
-                    v-for="location in locations"
-                    :to="{ name: 'mapQuery', params: { lat:  location.lat, lng: location.lng, zoom: location.zoom } }"
-                    v-slot="{ href }">
-                    <b-navbar-item :href="href"><span class="icon"><i class="fas fa-city"></i></span> {{ location.name }}</b-navbar-item>
-                </router-link>
-            </b-navbar-dropdown>
+<!--            <b-navbar-dropdown :hoverable="true" :class="{'dropdown-active': this.$route.path.startsWith('/map')}" boxed>-->
+<!--                <template v-slot:label>-->
+<!--                    <router-link to="/map" tag="span">Map</router-link>-->
+<!--                </template>-->
+
+<!--                <router-link-->
+<!--                    v-for="location in locations"-->
+<!--                    :to="{ name: 'mapQuery', params: { lat:  location.lat, lng: location.lng, zoom: location.zoom } }"-->
+<!--                    v-slot="{ href }">-->
+<!--                    <b-navbar-item :href="href"><span class="icon"><i class="fas fa-city"></i></span> {{ location.name }}</b-navbar-item>-->
+<!--                </router-link>-->
+<!--            </b-navbar-dropdown>-->
 
             <router-link to="/statistics" class="navbar-item">Statistics</router-link>
             <router-link to="/about" class="navbar-item">About</router-link>
