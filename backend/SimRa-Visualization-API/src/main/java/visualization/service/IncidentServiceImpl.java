@@ -94,6 +94,13 @@ public class IncidentServiceImpl implements IncidentService {
             participantsList.addAll(Arrays.asList(participants));
         }
 
+        if (fromMinutesOfDay != null && untilMinutesOfDay == null){
+            untilMinutesOfDay = 24*60;
+        }
+        if (untilMinutesOfDay != null && fromMinutesOfDay == null){
+            fromMinutesOfDay = 0;
+        }
+
 
         List<IncidentEntity> incidentEntities = incidentRepositoryCustom.findFilteredIncidents(polygon, fromTs, untilTs, fromMinutesOfDay, untilMinutesOfDay, weekdaysList, bikeTypesList, incidentTypesList, child, trailer, scary, participantsList, description);
 

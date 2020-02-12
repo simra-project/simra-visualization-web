@@ -25,7 +25,7 @@ public class IncidentRepositoryCustomImpl implements IncidentRepositoryCustom {
             query.addCriteria(Criteria.where("ts").gte(fromTs).lte(untilTs));
         }
         if (fromMinutesOfDay != null && untilMinutesOfDay != null) {
-            query.addCriteria(Criteria.where("minutesOfDay").gte(fromMinutesOfDay).lte(untilTs));
+            query.addCriteria(Criteria.where("minuteOfDay").gte(fromMinutesOfDay).lte(untilMinutesOfDay));
         }
         if (weekdays.size() > 0) {
             query.addCriteria(Criteria.where("weekday").in(weekdays));
