@@ -3,14 +3,14 @@
         <hr class="hr-text" data-content="FILTERS">
 
         <template v-if="viewMode === 0 || viewMode === 2">
-            <b-field label="Bike rides" style="margin-bottom: 0.5rem;">
-                <b-checkbox v-model="filterRideWithIncident" @change.native="ridesChanged">With Incidents</b-checkbox>
-            </b-field>
+<!--            <b-field label="Bike rides" style="margin-bottom: 0.5rem;">-->
+<!--                <b-checkbox v-model="filterRideWithIncident" @change.native="ridesChanged">With Incidents</b-checkbox>-->
+<!--            </b-field>-->
 
-            <b-field :type="{ 'is-danger': !filterRideWithIncident && !filterRideWithoutIncident }"
-                     :message="{ 'You have to choose at least one of these options': !filterRideWithIncident && !filterRideWithoutIncident }">
-                <b-checkbox v-model="filterRideWithoutIncident" @change.native="ridesChanged">Without Incidents</b-checkbox>
-            </b-field>
+<!--            <b-field :type="{ 'is-danger': !filterRideWithIncident && !filterRideWithoutIncident }"-->
+<!--                     :message="{ 'You have to choose at least one of these options': !filterRideWithIncident && !filterRideWithoutIncident }">-->
+<!--                <b-checkbox v-model="filterRideWithoutIncident" @change.native="ridesChanged">Without Incidents</b-checkbox>-->
+<!--            </b-field>-->
 
             <b-field label="Weekday">
                 <b-select v-model="filterRideWeekday" @change.native="ridesChanged">
@@ -123,7 +123,6 @@ export default {
         getRideFilters() {
             // If a filter-value is the default, don't apply that filter
             return {
-                todo: this.filterRideWithIncident && this.filterRideWithoutIncident ? null : this.filterRideWithIncident, // TODO: wait for real parameter
                 weekdays: this.filterRideWeekday != null ? [this.filterRideWeekday] : null,
                 fromMinutesOfDay: this.filterRideHours[0] !== 0 ? this.filterRideHours[0] * 60 : null,
                 untilMinutesOfDay: this.filterRideHours[1] !== 24 ? this.filterRideHours[1] * 60 : null,

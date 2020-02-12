@@ -15,10 +15,7 @@ import visualization.data.mongodb.entities.RideEntity;
 import visualization.web.resources.LegResource;
 import visualization.web.resources.serializers.LegResourceMapper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class LegServiceImpl implements LegService {
@@ -72,9 +69,10 @@ public class LegServiceImpl implements LegService {
             legEntities = legEntitiesFiltered;
         }
 
-        try {
-            List<IncidentEntity> incidentEntities = incidentRepository.findByLocationMapMatchedWithin(new GeoJsonPolygon(first, second, third, fourth, first));
+        List<String> weekdays = day != null ? Collections.singletonList(day) : new ArrayList<>();
+        List<IncidentEntity> incidentEntities = incidentRepository.findFilteredIncidents(polygon, null, null, startTime, endTime, weekdays, new ArrayList<>(), new ArrayList<>(), null, null, null, new ArrayList<>(), null);
 
+        try {
             return legResourceMapper.mapLegEntitiesToResourcesWithIncidents(legEntities, incidentEntities);
         } catch (FactoryException e) {
             return new ArrayList<>();
