@@ -94,10 +94,10 @@ public class IncidentServiceImpl implements IncidentService {
             participantsList.addAll(Arrays.asList(participants));
         }
 
-        if (fromMinutesOfDay != null && untilMinutesOfDay == null){
-            untilMinutesOfDay = 24*60;
+        if (fromMinutesOfDay != null && untilMinutesOfDay == null) {
+            untilMinutesOfDay = 24 * 60;
         }
-        if (untilMinutesOfDay != null && fromMinutesOfDay == null){
+        if (untilMinutesOfDay != null && fromMinutesOfDay == null) {
             fromMinutesOfDay = 0;
         }
 

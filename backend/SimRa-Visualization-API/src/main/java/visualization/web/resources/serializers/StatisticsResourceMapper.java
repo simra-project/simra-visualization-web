@@ -1,6 +1,5 @@
 package visualization.web.resources.serializers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import visualization.data.mongodb.entities.StatisticsEntity;

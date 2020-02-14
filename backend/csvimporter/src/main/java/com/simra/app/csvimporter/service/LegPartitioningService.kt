@@ -1,9 +1,9 @@
 package com.simra.app.csvimporter.service
 
-import com.simra.app.csvimporter.repository.LegRepository
 import com.simra.app.csvimporter.model.LegEntity
 import com.simra.app.csvimporter.model.LegPropertyEntity
 import com.simra.app.csvimporter.model.RideEntity
+import com.simra.app.csvimporter.repository.LegRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.geo.Point
 import org.springframework.data.mongodb.core.geo.GeoJsonLineString

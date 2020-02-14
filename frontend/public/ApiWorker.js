@@ -1,10 +1,9 @@
-
 var queue = [];
 var total_to_load = 0;
 var progress = 0;
 var URL_BACKEND = "";
 
-self.onmessage = function(event) {
+self.onmessage = function (event) {
     switch (event.data[0]) {
         case "backendUrl":
             URL_BACKEND = event.data[1];
@@ -43,9 +42,9 @@ function spiral(array) {
     let size_x = array.length;
     let size_y = array[0].length;
 
-    let start_row = Math.floor(size_x/2);
+    let start_row = Math.floor(size_x / 2);
     let end_row = start_row;
-    let start_col = Math.floor(size_y/2);
+    let start_col = Math.floor(size_y / 2);
     let end_col = start_col - 1;
 
     let direction = 1;
@@ -104,12 +103,12 @@ function toTiles(coords, resolution, filters) {
     let filtersQuery = filterElements != null ? filterElements.map(x => `${ x[0] }=${ x[1] }`).join("&") : "";
     console.log(`filtersquery: ${filtersQuery}`);
 
-    console.log(`min_x: ${min_x}, mod: ${min_x%step}`);
+    console.log(`min_x: ${min_x}, mod: ${min_x % step}`);
 
-    for (let x = min_x-min_x%step; x<=max_x+(1-max_x%step); x+=step) {
+    for (let x = min_x - min_x % step; x <= max_x + (1 - max_x % step); x += step) {
         tiles.push([]);
-        for (let y = min_y-min_y%step; y<=max_y+(1-max_y%step); y+=step) {
-            tiles[tiles.length-1].push([[x-bounds,y-bounds], [x+step+bounds,y+step+bounds], resolution, filtersQuery]);
+        for (let y = min_y - min_y % step; y <= max_y + (1 - max_y % step); y += step) {
+            tiles[tiles.length - 1].push([[x - bounds, y - bounds], [x + step + bounds, y + step + bounds], resolution, filtersQuery]);
         }
     }
 
@@ -127,8 +126,8 @@ function loadRoutes(data) {
             expectedTotal++;
 
             console.log(coords);
-            console.log(`${ URL_BACKEND }/rides/area?bottomleft=${coords[0]/100},${coords[1]/100}&topright=${(coords[0]+1)/100},${(coords[1]+1)/100}`);
-            fetch(`${ URL_BACKEND }/rides/area?bottomleft=${coords[0]/100},${coords[1]/100}&topright=${(coords[0]+1)/100},${(coords[1]+1)/100}`)
+            console.log(`${URL_BACKEND}/rides/area?bottomleft=${coords[0] / 100},${coords[1] / 100}&topright=${(coords[0] + 1) / 100},${(coords[1] + 1) / 100}`);
+            fetch(`${URL_BACKEND}/rides/area?bottomleft=${coords[0] / 100},${coords[1] / 100}&topright=${(coords[0] + 1) / 100},${(coords[1] + 1) / 100}`)
                 .then(r => r.json())
                 .then(result => {
                     routesLoaded[coords] = result;
@@ -156,8 +155,8 @@ async function loadLegs() {
         if (!legsLoaded[identifier].hasOwnProperty(coords)) {
             // console.log("starting " + coords);
             // console.log(coords);
-            console.log(`${ URL_BACKEND }/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${resolution}&${filters}`);
-            var r = await fetch(`${ URL_BACKEND }/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${resolution}&${filters}`);
+            console.log(`${URL_BACKEND}/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${resolution}&${filters}`);
+            var r = await fetch(`${URL_BACKEND}/legs/area?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&minWeight=${resolution}&${filters}`);
             var result = await r.json();
             legsLoaded[identifier][coords] = result;
             // console.log("done with " + coords);
@@ -175,7 +174,7 @@ async function loadLegs() {
 var incidents = {};
 function loadIncidents(coords, filter) {
     let filterElements = Object.entries(filter).filter(x => x[1] != null);
-    let filter_string =  JSON.stringify(filter);
+    let filter_string = JSON.stringify(filter);
 
     if (!incidents.hasOwnProperty(filter_string)) {
         incidents[filter_string] = [];
@@ -187,8 +186,8 @@ function loadIncidents(coords, filter) {
         let filtersQuery = filterElements.map(x => `${ x[0] }=${ x[1] }`).join("&");
 
         console.log(coords);
-        console.log(`${ URL_BACKEND }/incidents/filter?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&${filtersQuery}`);
-        fetch(`${ URL_BACKEND }/incidents/filter?bottomleft=${coords[0][0]/100},${coords[0][1]/100}&topright=${coords[1][0]/100},${coords[1][1]/100}&${filtersQuery}`)
+        console.log(`${URL_BACKEND}/incidents/filter?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&${filtersQuery}`);
+        fetch(`${URL_BACKEND}/incidents/filter?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&${filtersQuery}`)
             .then(r => r.json())
             .then(result => {
                 for (let i = 0; i < result.length; i++) {

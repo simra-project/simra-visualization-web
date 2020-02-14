@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.data.mongodb.entities.RideEntity;
 
 import java.util.List;

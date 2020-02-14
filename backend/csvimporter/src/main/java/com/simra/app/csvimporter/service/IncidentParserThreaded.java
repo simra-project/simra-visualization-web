@@ -4,9 +4,9 @@ import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.simra.app.csvimporter.repository.IncidentRepository;
 import com.simra.app.csvimporter.model.IncidentEntity;
 import com.simra.app.csvimporter.model.RideEntity;
+import com.simra.app.csvimporter.repository.IncidentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class IncidentParserThreaded implements Runnable {
                     .withSkipLines(1)
                     .withIgnoreLeadingWhiteSpace(true)
                     .build().parse();
-            incidentBeans = incidentBeans.stream().filter(item -> item.getTs() != 0 ).filter(item -> item.getIncident() != 0).collect(Collectors.toList());
+            incidentBeans = incidentBeans.stream().filter(item -> item.getTs() != 0).filter(item -> item.getIncident() != 0).collect(Collectors.toList());
 
             incidentBeans.forEach(item -> {
                 item.setFileId(this.fileName);
@@ -79,7 +79,7 @@ public class IncidentParserThreaded implements Runnable {
                 Point geoPoint = new Point(new Position(places));
                 item.setLocation(geoPoint);
                 item.setLocationMapMatched(findNearestPointInRoute(places, rideEntity.getLocationMapMatched().getCoordinates()));
-                
+
                 item.cleanDesc();
                 item.setAddedAt(new Date());
                 item.setMinuteOfDay(Utils.getMinuteOfDay(item.getTs()));

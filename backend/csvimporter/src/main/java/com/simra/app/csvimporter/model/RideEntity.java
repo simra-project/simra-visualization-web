@@ -62,9 +62,13 @@ public class RideEntity extends ApplicationFileVersion {
         this.location = location;
     }
 
-    public List getTs() { return ts; }
+    public List getTs() {
+        return ts;
+    }
 
-    public void setTs(List ts) { this.ts = ts; }
+    public void setTs(List ts) {
+        this.ts = ts;
+    }
 
     public String getId() {
         return id;
@@ -98,7 +102,9 @@ public class RideEntity extends ApplicationFileVersion {
         this.locationMapMatched = locationMapMatched;
     }
 
-    public List getTsMapMatched() { return tsMapMatched; }
+    public List getTsMapMatched() {
+        return tsMapMatched;
+    }
 
     public void setTsMapMatched(List tsMapMatched) {
         this.tsMapMatched = tsMapMatched;
@@ -128,9 +134,13 @@ public class RideEntity extends ApplicationFileVersion {
         this.region = region;
     }
 
-    public long getTimeStamp() { return timeStamp; }
+    public long getTimeStamp() {
+        return timeStamp;
+    }
 
-    public void setTimeStamp(long timeStamp) { this.timeStamp = timeStamp; }
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
 
     public void setMapMatchedRideBeans(List<RideCSV> mapMatchedRideBeans) {

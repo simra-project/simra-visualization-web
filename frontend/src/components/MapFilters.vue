@@ -177,14 +177,14 @@ export default {
             // Don't allow selecting the same hour for the range start and end
             if (value[0] === value[1]) {
                 if (value[0] < 24) value[1] += 1;
-                else value[0] -=1;
+                else value[0] -= 1;
             }
         },
         filterIncidentHours(value, oldValue) {
             // Don't allow selecting the same hour for the range start and end
             if (value[0] === value[1]) {
                 if (value[0] < 24) value[1] += 1;
-                else value[0] -=1;
+                else value[0] -= 1;
             }
         }
     }

@@ -82,7 +82,7 @@ public class LegServiceImpl implements LegService {
     @NotNull
     private HashSet<String> updateMatchingSet(HashSet<String> matching, List<RideEntity> matchingRides) {
         HashSet<String> matching_new = new HashSet<String>();
-        for (RideEntity ride: matchingRides) {
+        for (RideEntity ride : matchingRides) {
             String id = ride.getId();
             if (matching.contains(id)) {
                 matching_new.add(id);

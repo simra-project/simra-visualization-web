@@ -241,7 +241,7 @@ export default {
                             showRoute: () => {
                                 let rideId = feature.properties.rideId;
                                 ApiService.loadRide(rideId).then(response => {
-                                    let {ride, incidents} = response;
+                                    let { ride, incidents } = response;
 
                                     if (ride.status !== 500 && incidents.status !== 500) {
                                         console.log(ride);
@@ -439,14 +439,14 @@ export default {
             console.log("updating queue");
             console.log(queue);
             let queue_as_string = [];
-            for(let item of queue) {
+            for (let item of queue) {
                 queue_as_string.push(item.toString());
             }
             let new_features = [];
             let new_loaded_legs = [];
             let new_loaded_legs_strings = [];
             this.rideMaxWeight = 1;
-            for(let leg of this.loaded_legs) {
+            for (let leg of this.loaded_legs) {
                 console.log("testing new leg");
                 if (queue_as_string.includes(leg[0].toString())) {
                     console.log("I've seen this leg before!");

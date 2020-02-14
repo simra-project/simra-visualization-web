@@ -1,6 +1,5 @@
 package visualization.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import visualization.data.mongodb.StatisticsRepository;

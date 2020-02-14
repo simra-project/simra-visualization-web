@@ -103,10 +103,10 @@ public class IncidentEntity extends IncidentCSV {
         this.region = region;
     }
 
-    public void cleanDesc(){
-        if(!this.getDesc().isEmpty()){
-            this.setDesc(this.getDesc().replace(";linebreak;","\n"));
-            this.setDesc(this.getDesc().replace(";komma;",","));
+    public void cleanDesc() {
+        if (!this.getDesc().isEmpty()) {
+            this.setDesc(this.getDesc().replace(";linebreak;", "\n"));
+            this.setDesc(this.getDesc().replace(";komma;", ","));
         }
     }
 }

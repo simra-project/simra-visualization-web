@@ -1,9 +1,6 @@
 package visualization.data.mongodb.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.json.JSONObject;
-import org.json.JSONString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

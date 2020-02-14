@@ -53,7 +53,6 @@ export default {
         background-color: white;
 
 
-
         &.viewModeIncidents {
             width: 60%;
             margin-left: auto;

@@ -23,8 +23,8 @@ class ApiService {
     }
 
     static async loadRide(rideId: Number) {
-        let ride = fetch(`${ this.URL_BACKEND }/rides/mapmatched/${rideId}`).then(r => r.json());
-        let incidents = fetch(`${ this.URL_BACKEND }/rides/${rideId}/incidents/all`).then(r => r.json());
+        let ride = fetch(`${ this.URL_BACKEND }/rides/mapmatched/${ rideId }`).then(r => r.json());
+        let incidents = fetch(`${ this.URL_BACKEND }/rides/${ rideId }/incidents/all`).then(r => r.json());
 
         // Waiting for both request simultanously
         return {
@@ -34,7 +34,7 @@ class ApiService {
     }
 
     static async loadIncidentsOnRide(rideId: Number) {
-        return fetch(`${ this.URL_BACKEND }/rides/${rideId}/incidents/all`).then(r => r.json());
+        return fetch(`${ this.URL_BACKEND }/rides/${ rideId }/incidents/all`).then(r => r.json());
     }
 }
 

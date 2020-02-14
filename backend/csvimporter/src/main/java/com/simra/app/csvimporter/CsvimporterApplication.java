@@ -36,21 +36,20 @@ public class CsvimporterApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        GeospatialIndex geospatialIndexLocation=new GeospatialIndex("locationMapMatched");
+        GeospatialIndex geospatialIndexLocation = new GeospatialIndex("locationMapMatched");
         geospatialIndexLocation.typed(GeoSpatialIndexType.GEO_2DSPHERE);
         this.mongoTemplate.indexOps("rides").ensureIndex(geospatialIndexLocation);
         logger.info("Rides Location Indexed setup.");
 
-        GeospatialIndex geospatialIndexLocationMapMatched=new GeospatialIndex("locationMapMatched");
+        GeospatialIndex geospatialIndexLocationMapMatched = new GeospatialIndex("locationMapMatched");
         geospatialIndexLocationMapMatched.typed(GeoSpatialIndexType.GEO_2DSPHERE);
         this.mongoTemplate.indexOps("incidents").ensureIndex(geospatialIndexLocationMapMatched);
         logger.info("Rides LocationMapMatched Indexed setup.");
 
-        GeospatialIndex geospatialIndexIncident=new GeospatialIndex("location");
+        GeospatialIndex geospatialIndexIncident = new GeospatialIndex("location");
         geospatialIndexIncident.typed(GeoSpatialIndexType.GEO_2DSPHERE);
         this.mongoTemplate.indexOps("incidents").ensureIndex(geospatialIndexIncident);
         logger.info("Incident Location Indexed setup.");
-
 
 
         monitorService.startRecursiveWatcher();
