@@ -13,19 +13,20 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@RequestMapping("/rides")
 public class RideController {
 
     @Autowired
     private RideService rideService;
 
     // gets raw ride by rideId
-    @GetMapping(value = "/rides/raw/{rideId}")
+    @GetMapping(value = "/raw/{rideId}")
     public HttpEntity<RideResource> getRawRideByRideId(@PathVariable String rideId) {
         return ResponseEntity.ok(rideService.getRawRideById(rideId));
     }
 
     // gets mapMatched ride by rideId
-    @GetMapping(value = "/rides/mapmatched/{rideId}")
+    @GetMapping(value = "/mapmatched/{rideId}")
     public HttpEntity<RideResource> getMapMatchedByRideId(@PathVariable String rideId) {
         return ResponseEntity.ok(rideService.getMapMatchedRideById(rideId));
     }
@@ -33,7 +34,7 @@ public class RideController {
 
     // get all rides in range minDistance and maxDistance around a Point (longitude, latitude)
     @Cacheable(value = "radiusRides")
-    @GetMapping(value = "/rides")
+    @GetMapping
     public HttpEntity<List<RideResource>> getRidesNear(@RequestParam(value = "lon") double longitude,
                                                        @RequestParam(value = "lat") double latitude,
                                                        @RequestParam(value = "max") int maxDistance) {
@@ -44,7 +45,7 @@ public class RideController {
 
     // example: http://localhost:8080/rides/area?bottomleft=13.297089,52.481744&topright=13.456360,52.547463
     @Cacheable(value = "areaRides")
-    @GetMapping(value = "/rides/area")
+    @GetMapping(value = "/area")
     public HttpEntity<List<RideResource>> getRidesWithin(@RequestParam(value = "bottomleft") double[] first,
                                                          @RequestParam(value = "topright") double[] second) {
         System.out.println("No cache hit - Executing /rides/area");
@@ -55,20 +56,20 @@ public class RideController {
                 new GeoJsonPoint(second[0], first[1])));
     }
 
-    @GetMapping(value = "/rides/from/{fromTs}/to/{untilTs}")
+    @GetMapping(value = "/from/{fromTs}/to/{untilTs}")
     public HttpEntity<List<RideResource>> getRidesAtTime(@PathVariable Long fromTs,
                                                          @PathVariable Long untilTs) {
         return ResponseEntity.ok(rideService.getRidesAtTime(fromTs, untilTs));
     }
 
     //checks if a specific ride is already imported
-    @GetMapping(value = "/rides/status/{rideId}")
+    @GetMapping(value = "/status/{rideId}")
     public ResponseEntity<Boolean> isRideImported(@PathVariable String rideId) {
         return ResponseEntity.ok(rideService.isRideImported(rideId));
     }
 
     //counts all imported rides
-    @GetMapping(value = "/rides/status/count")
+    @GetMapping(value = "/status/count")
     public ResponseEntity<Long> getImportedRidesCount() {
         return ResponseEntity.ok(rideService.getImportedRidesCount());
     }
