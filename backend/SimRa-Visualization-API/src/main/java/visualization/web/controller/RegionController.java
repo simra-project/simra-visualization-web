@@ -28,7 +28,7 @@ public class RegionController {
         return ResponseEntity.ok(regionService.createRegion(regionEntity));
     }
 
-    @PutMapping("regions")
+    @PutMapping("/regions")
     public HttpEntity<RegionResource> updateRegion(@Valid @RequestBody RegionEntity regionEntity) {
         return ResponseEntity.ok(regionService.updateRegion(regionEntity));
     }
