@@ -45,7 +45,7 @@ git clone https://github.com/simra-project/SimRa-Visualization.git
 cd SimRa-Visualization
 
 #compile jars
-mvn clean install -DskipTests -U
+sudo mvn clean install -DskipTests
 
 #import dump
 mongorestore
@@ -57,7 +57,7 @@ npm run build
 cd ..
 
 #configure and start frontend
-cat <<EOT > /etc/nginx/sites-enabled/simra.conf
+sudo cat <<EOT > /etc/nginx/sites-enabled/simra.conf
 server {
   listen 80;
   server_name $servername;
@@ -73,7 +73,7 @@ EOT
 sudo service nginx restart
 
 #configure and start interface
-cat <<EOT > /etc/systemd/system/simra_api.service
+sudo cat <<EOT > /etc/systemd/system/simra_api.service
 [Unit]
 Description=Simra Springboot API
 After=syslog.target
@@ -94,12 +94,12 @@ EOT
 sudo systemctl start simra_api
 
 #configure and start backend
-cat <<EOT >> backend/csvimporter/src/main/resources/application.properties
+sudo cat <<EOT >> backend/csvimporter/src/main/resources/application.properties
 csv.monitor.path=$monitorpath
 logging.file.name=$loggingpath/csvimporter.log
 EOT
 
-cat <<EOT > /etc/systemd/system/simra_backend.service
+sudo cat <<EOT > /etc/systemd/system/simra_backend.service
 [Unit]
 Description=Simra Springboot API
 After=syslog.target
