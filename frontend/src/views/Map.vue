@@ -6,7 +6,12 @@
            @update:zoom="zoomUpdated"
            @update:center="centerUpdated"
            @update:bounds="boundsUpdated"
-           @click="clickedOnMap($event)">
+           @click="clickedOnMap($event)"
+    >
+<!--        drag and drop implementation basierend auf: https://codepen.io/nguernse/pen/JyYdNY-->
+        <div style="visibility:hidden; opacity:0" id="dropzone">
+            <div id="textnode">Fahrt aus CSV anzeigen</div>
+        </div>
         <l-tile-layer :url="url" :class="{monochrome: devMonochromeMap}"/>
 
         <l-control position="topleft">
@@ -55,7 +60,7 @@
 
         <!-- MapMatched Bike Rides (+ combined view) -->
         <template v-if="viewMode === 0 || viewMode === 2">
-            <l-geo-json
+            <l-geo-json ref="aggregated_map"
                 v-if="aggregatetRides"
                 :geojson="rides"
                 :options="viewMode === 0 ? geoJsonStyleRides : geoJsonStyleCombined"
@@ -109,6 +114,13 @@
                 <l-popup/>
             </l-geo-json>
         </template>
+
+        <l-geo-json ref="csv_route" :geojson="imported_ride" :options="geoJsonCSVStyle" v-if="imported_ride !== null" @ready="tofront">
+
+        </l-geo-json>
+        <l-geo-json ref="csv_incidents" :geojson="imported_incidents" :options="geoJsonCSVStyleMarker" v-if="imported_incidents !== null">
+        </l-geo-json>
+
     </l-map>
 </template>
 
@@ -128,6 +140,7 @@ import MapPopup from "@/components/MapPopup";
 import Vue2LeafletHeatmap from "@/components/Vue2LeafletHeatmap";
 import { ApiService } from "@/services/ApiService";
 import { IncidentUtils } from "@/services/IncidentUtils";
+import Papa from "papaparse";
 
 export default {
     components: {
@@ -186,6 +199,8 @@ export default {
             incoming_legs_queue: [],
             loaded_legs: [],
             loaded_legs_strings: [],
+            imported_ride: null,
+            imported_incidents: null,
             geosearchOptions: {
                 provider: new OpenStreetMapProvider(),
             },
@@ -224,6 +239,19 @@ export default {
             geoJsonStyleHighlight: {
                 color: "hsl(215, 71%, 53%)",
                 weight: 4,
+            },
+            geoJsonCSVStyle: {
+                color: "hsl(354,100%,43%)",
+                weight: 4,
+            },
+            geoJsonCSVStyleMarker: {
+                pointToLayer: (feature, latlng) => L.marker(latlng, {
+                    icon: ExtraMarkers.icon({
+                        icon: "fa-file-import",
+                        markerColor:  "orange-dark",
+                        prefix: "fa",
+                    }),
+                }),
             },
             geoJsonOptionsMarker: {
                 pointToLayer: (feature, latlng) => L.marker(latlng, {
@@ -300,6 +328,16 @@ export default {
             if (!this.bounds.contains(rideBounds)) {
                 this.$refs.map.mapObject.flyToBounds(rideBounds);
             }
+        },
+        async tofront (mapObject) {
+            while (1) {
+                mapObject.bringToFront();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        },
+        toback (mapObject) {
+            console.log("BACK");
+            mapObject.bringToBack();
         },
         unfocusRideHighlight() {
             this.viewMode = 1;
@@ -490,6 +528,48 @@ export default {
                     break;
             }
         },
+        addFiles(files) {
+            let droppedFiles = files;
+            if(!droppedFiles) return;
+            // this tip, convert FileList to array, credit: https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
+            this.readFile(Array.from(droppedFiles).pop());
+        },
+        readFile(f) {
+            let self = this;
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let content = e.target.result;
+                let seperator = /\n[=]+\n.*\n/mg;
+                let newline = /#.*\n/mg;
+                let split = content.split(seperator, 2);
+                let incidents = split[0].split(newline, 2)[1];
+                let route = split[1];
+                let data = Papa.parse(route, {header: true, skipEmptyLines: true});
+                let result = {
+                    type: "LineString",
+                    coordinates: []
+                };
+                for (let line of data.data) {
+                    if (line.lat !== "" && line.lon !== "") {
+                        result.coordinates.push([Number(line.lon), Number(line.lat)]);
+                    }
+                }
+                self.imported_ride = result;
+                let geoJson = L.geoJSON(result);
+                self.highlightedRideLoaded(geoJson);
+
+                incidents = Papa.parse(incidents, {header: true, skipEmptyLines: true});
+                let csv_incidents = {
+                    type: "MultiPoint",
+                    coordinates: []
+                };
+                for (let incident of incidents.data) {
+                    csv_incidents.coordinates.push([Number(incident.lon), Number(incident.lat)])
+                }
+                self.imported_incidents = csv_incidents;
+            };
+            reader.readAsText(f, "UTF-8");
+        },
         isDebug: () => process.env.VUE_APP_DEBUG === "true",
     },
     async mounted() {
@@ -512,7 +592,40 @@ export default {
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
         this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
+        let self = this;
+        window.addEventListener("dragenter", function (e) {
+            document.querySelector("#dropzone").style.visibility = "";
+            document.querySelector("#dropzone").style.opacity = 1;
+            document.querySelector("#textnode").style.fontSize = "48px";
+        });
 
+        window.addEventListener("dragleave", function (e) {
+            e.preventDefault();
+
+            document.querySelector("#dropzone").style.visibility = "hidden";
+            document.querySelector("#dropzone").style.opacity = 0;
+            document.querySelector("#textnode").style.fontSize = "42px";
+
+        });
+
+        window.addEventListener("dragover", function (e) {
+            e.preventDefault();
+            document.querySelector("#dropzone").style.visibility = "";
+            document.querySelector("#dropzone").style.opacity = 1;
+            document.querySelector("#textnode").style.fontSize = "48px";
+        });
+
+        window.addEventListener("drop", function (e) {
+            e.preventDefault();
+            document.querySelector("#dropzone").style.visibility = "hidden";
+            document.querySelector("#dropzone").style.opacity = 0;
+            document.querySelector("#textnode").style.fontSize = "42px";
+
+            var files = e.dataTransfer.files;
+            console.log("Drop files:", files);
+            //this.uploadFile(files);
+            self.addFiles(files);
+        });
     },
 };
 </script>
@@ -684,5 +797,27 @@ export default {
         .extra-marker-shadow {
             background-image: url("../assets/markers_shadow@2x.png");
         }
+    }
+
+    div#dropzone {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999999999;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        transition: visibility 175ms, opacity 175ms;
+        display: table;
+        text-shadow: 1px 1px 2px #000;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.45);
+        font: bold 42px Oswald, DejaVu Sans, Tahoma, sans-serif;
+    }
+    div#textnode {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+        transition: font-size 175ms;
     }
 </style>

@@ -19,6 +19,7 @@
         "leaflet-extra-markers": "^1.1.0",
         "leaflet-geosearch": "^2.7.0",
         "leaflet.heat": "^0.2.0",
+        "papaparse": "^5.1.1",
         "vue": "^2.6.11",
         "vue-apexcharts": "^1.5.1",
         "vue-class-component": "^7.0.2",
