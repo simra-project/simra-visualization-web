@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 #get info from user
 echo Please enter server name, ex: yourserver.com:
 read servername
