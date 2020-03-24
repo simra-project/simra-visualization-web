@@ -13,7 +13,7 @@ import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.data.mongodb.entities.LegEntity;
 import visualization.data.mongodb.entities.RideEntity;
 import visualization.web.resources.LegResource;
-import visualization.web.resources.serializers.LegResourceMapper;
+import visualization.service.serializers.LegResourceMapper;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package visualization.web.resources.serializers;
+package visualization.service.serializers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;

@@ -1,4 +1,4 @@
-package visualization.web.resources.serializers;
+package visualization.service.serializers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

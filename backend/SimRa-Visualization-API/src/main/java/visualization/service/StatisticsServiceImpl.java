@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import visualization.data.mongodb.StatisticsRepository;
 import visualization.data.mongodb.entities.StatisticsEntity;
 import visualization.web.resources.StatisticsResource;
-import visualization.web.resources.serializers.StatisticsResourceMapper;
+import visualization.service.serializers.StatisticsResourceMapper;
 
 import java.io.IOException;
 

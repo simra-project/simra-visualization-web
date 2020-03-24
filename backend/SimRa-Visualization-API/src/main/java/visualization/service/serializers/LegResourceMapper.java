@@ -1,4 +1,4 @@
-package visualization.web.resources.serializers;
+package visualization.service.serializers;
 
 import kotlin.Pair;
 import org.geotools.geometry.jts.JTS;

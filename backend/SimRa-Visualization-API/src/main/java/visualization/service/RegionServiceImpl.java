@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import visualization.data.mongodb.RegionRepository;
 import visualization.data.mongodb.entities.RegionEntity;
 import visualization.web.resources.RegionResource;
-import visualization.web.resources.serializers.RegionResourceMapper;
+import visualization.service.serializers.RegionResourceMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import visualization.data.mongodb.IncidentRepository;
 import visualization.data.mongodb.entities.IncidentEntity;
 import visualization.web.resources.IncidentResource;
-import visualization.web.resources.serializers.IncidentResourceMapper;
+import visualization.service.serializers.IncidentResourceMapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;

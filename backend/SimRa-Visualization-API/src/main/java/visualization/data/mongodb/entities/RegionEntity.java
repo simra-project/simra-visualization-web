@@ -5,7 +5,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
-import visualization.web.resources.serializers.GeoJsonPointDeserializer;
+import visualization.service.serializers.GeoJsonPointDeserializer;
 
 @Getter
 @Setter

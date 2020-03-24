@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import visualization.data.mongodb.RideRepository;
 import visualization.data.mongodb.entities.RideEntity;
 import visualization.web.resources.RideResource;
-import visualization.web.resources.serializers.RideResourceMapper;
+import visualization.service.serializers.RideResourceMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
