@@ -46,6 +46,12 @@ sudo apt install git -y
 git clone https://github.com/simra-project/SimRa-Visualization.git
 cd SimRa-Visualization
 
+#update configuration of CSV importer
+sudo cat <<EOT >> backend/csvimporter/src/main/resources/application.properties
+csv.monitor.path=$monitorpath
+logging.file.name=$loggingpath/csvimporter.log
+EOT
+
 #compile jars
 sudo mvn clean install -DskipTests
 
@@ -96,10 +102,6 @@ EOT
 sudo systemctl start simra_api
 
 #configure and start backend
-sudo cat <<EOT >> backend/csvimporter/src/main/resources/application.properties
-csv.monitor.path=$monitorpath
-logging.file.name=$loggingpath/csvimporter.log
-EOT
 
 sudo cat <<EOT > /etc/systemd/system/simra_backend.service
 [Unit]
