@@ -11,8 +11,12 @@ read loggingdir
 echo Please specify the user you want to run the java applications on:
 read javauser
 
-#install nginx
+#add required repositories
+sudo apt-get install software-properties-common
+sudo apt-add-repository universe
 sudo apt update
+
+#install nginx
 sudo apt install nginx -y
 
 #install java + maven
