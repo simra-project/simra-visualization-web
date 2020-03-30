@@ -49,7 +49,7 @@ cd SimRa-Visualization
 #update configuration of CSV importer
 sudo cat <<EOT >> backend/csvimporter/src/main/resources/application.properties
 csv.monitor.path=$monitorpath
-logging.file.name=$loggingpath/csvimporter.log
+logging.file.name=$loggingdir/csvimporter.log
 EOT
 
 #compile jars
