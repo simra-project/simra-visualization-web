@@ -15,23 +15,34 @@
         <l-tile-layer :url="url" :class="{monochrome: devMonochromeMap}"/>
 
         <l-control position="topleft">
-            <div class="overlay overlay-menu is-hidden-mobile" :class="{ disabled: viewMode === 3 }">
+            <div class="overlay overlay-menu" :class="{ disabled: viewMode === 3, minimized: !viewModeOverlayMaximized }">
                 <b-tabs type="is-toggle" v-model="viewMode" @change="updateUrlQuery">
-                    <b-tab-item label="Rides" icon="biking"/>
-                    <b-tab-item label="Incidents" icon="car-crash"/>
-                    <b-tab-item label="Combined" icon="layer-group"/>
+                    <b-tab-item :label="viewModeOverlayMaximized ? 'Rides' : ''" icon="biking"/>
+                    <b-tab-item :label="viewModeOverlayMaximized ? 'Incidents' : ''" icon="car-crash"/>
+                    <b-tab-item :label="viewModeOverlayMaximized ? 'Combined' : ''" icon="layer-group"/>
                 </b-tabs>
 
                 <b-checkbox v-model="devMonochromeMap" style="margin-bottom: 10px;">Monochrome Map</b-checkbox>
 
                 <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents" style="margin-top: 12px"/>
 
-                <div v-if="isDebug()">
+                <div v-if="isDebug()" class="debug-settings">
                     <hr>
                     <strong style="font-size: 16px; margin: -12px 0 4px; display: block;">Debug Settings</strong>
                     <b-checkbox v-model="devMonochromeMap">Monochrome Map</b-checkbox><br>
                     <b-checkbox v-model="devLegPartitions">Legs Partitions <span style="color: #999">(Move map)</span></b-checkbox><br>
                     <b-checkbox v-model="devOverlayIncidents">Overlay Incidents</b-checkbox><br>
+                </div>
+
+                <div class="minMaxToggle is-hidden-mobile">
+                    <a @click="viewModeOverlayMaximized = !viewModeOverlayMaximized">
+                        <template v-if="viewModeOverlayMaximized">
+                            Minimize view <i class="fa fa-compress-alt"></i>
+                        </template>
+                        <template v-else>
+                            Maximize view <i class="fa fa-expand-alt"></i>
+                        </template>
+                    </a>
                 </div>
             </div>
         </l-control>
@@ -167,6 +178,7 @@ export default {
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
             viewMode: parseInt(this.$route.query.m) || 0, // 0 - rides, 1 - incidents, 2 - combined, 3 - highlighted ride
+            viewModeOverlayMaximized: window.innerWidth > 768,
             loadingProgress: null,
             rides: [],
             rideHighlighted: null,
@@ -726,6 +738,20 @@ export default {
                     filter: grayscale(1);
                 }
 
+                &.minimized {
+                    .b-tabs {
+                        margin-bottom: 0;
+                    }
+
+                    label.b-checkbox, .map-filters, .debug-settings {
+                        display: none;
+                    }
+
+                    .minMaxToggle {
+                        margin-top: 7px;
+                    }
+                }
+
                 nav.tabs.is-toggle ul {
                     li {
                         flex: 1 0;
@@ -747,6 +773,23 @@ export default {
 
                 .b-checkbox.checkbox {
                     font-size: 16px;
+                }
+
+                .minMaxToggle {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    font-size: 16px;
+                    padding-right: 6px;
+                    margin-top: 5px;
+
+                    a {
+                        color: #777;
+
+                        i.fa {
+                            margin-left: 3px;
+                        }
+                    }
                 }
             }
 
