@@ -1,10 +1,18 @@
-# FCP-WS19
+# SimRa-Visualization
 
-Repository for the Fog Computing Project (WS2019/2020).
+This project is part of the SimRa research project which includes the following subprojects:
+- [sirma-android](https://github.com/simra-project/simra-android/): The SimRa app for Android.
+- [simra-ios](https://github.com/simra-project/simra-ios): The SimRa app for iOS.
+- [backend](https://github.com/simra-project/backend): The SimRa backend software.
+- [dataset](https://github.com/simra-project/dataset): Result data from the SimRa project.
+- [screenshots](https://github.com/simra-project/screenshots): Screenshots of both the iOS and Android app.
+- [SimRa-Visualization](https://github.com/simra-project/SimRa-Visualization): Web application for visualizing the dataset.
 
-https://www.digital-future.berlin/forschung/projekte/simra/
+In this project, we collect – with a strong focus on data protection and privacy – data on such near crashes to identify when and where bicyclists are especially at risk. We also aim to identify the main routes of bicycle traffic in Berlin. To obtain such data, we have developed a smartphone app that uses GPS information to track routes of bicyclists and the built-in acceleration sensors to pre-categorize near crashes. After their trip, users are asked to annotate and upload the collected data, pseudonymized per trip.
+For more information see [our website](https://www.digital-future.berlin/en/research/projects/simra/).
 
-# Maven structure
+# Instructions
+## Maven structure
 
 ```
 pom.xml
@@ -37,7 +45,7 @@ $ mvn clean install -pl :<artifactId>
 
 ```
 
-# DB connection
+## DB connection
 To connect to your mongodb use application.properties file to set up credentials.
 
 ```Application.properties
@@ -56,7 +64,7 @@ simra.region.default=Berlin
 # Other configurations can be found in Application.properties file.
 
 ```
-# Run as Spring Boot Application
+## Run as Spring Boot Application
 ```shell script
 $ java -jar backend/csvimporter/target/csvimporter-0.0.1-SNAPSHOT.jar  
 ```
@@ -64,7 +72,7 @@ $ java -jar backend/csvimporter/target/csvimporter-0.0.1-SNAPSHOT.jar
 
 
 
-# Database Structure
+## Database Structure
 Info: So far only filtered data is pushed into the database.
 
 - Incidents DB Example (incidentsCollection)
@@ -190,7 +198,7 @@ Info: So far only filtered data is pushed into the database.
     }
 }
 ```
-#Region Import
+##Region Import
 Region is imported by parsing Folder path of ride or profile file. 
 Its important to keep Rides and Profiles under City name.
 
