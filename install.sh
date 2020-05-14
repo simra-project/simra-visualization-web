@@ -6,6 +6,8 @@ echo Please enter server name, ex: yourserver.com:
 read servername
 echo Please specify the directory to be monitored by the importer:
 read monitordir
+echo Please specify the directory for the pbf files:
+read pbffiles
 echo Please specify the logging directory:
 read loggingdir
 echo Please specify the user you want to run the java applications on:
@@ -53,6 +55,7 @@ cd SimRa-Visualization
 #update configuration of CSV importer
 sudo cat <<EOT >> backend/csvimporter/src/main/resources/application.properties
 csv.monitor.path=$monitorpath
+pbf.path=$pbffiles
 logging.file.name=$loggingdir/csvimporter.log
 EOT
 
@@ -89,7 +92,8 @@ sudo cat <<EOT > /etc/systemd/system/simra_api.service
 [Unit]
 Description=Simra Springboot API
 After=syslog.target
-After=network.target[Service]
+After=network.target
+[Service]
 User=$javauser
 Type=simple
 
@@ -111,7 +115,8 @@ sudo cat <<EOT > /etc/systemd/system/simra_backend.service
 [Unit]
 Description=Simra Springboot API
 After=syslog.target
-After=network.target[Service]
+After=network.target
+[Service]
 User=$javauser
 Type=simple
 
