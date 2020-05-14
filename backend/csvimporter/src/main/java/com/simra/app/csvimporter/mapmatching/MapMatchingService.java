@@ -16,8 +16,11 @@ import com.graphhopper.util.shapes.GHPoint3D;
 import com.simra.app.csvimporter.model.RideCSV;
 import com.simra.app.csvimporter.service.Utils;
 import io.jenetics.jpx.GPX;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -30,11 +33,12 @@ public class MapMatchingService {
 
     private GraphHopper graphHopper;
 
-    public MapMatchingService() {
+    @Inject
+    public MapMatchingService(@Value("${pbf.path}") File pbfPath) {
 
         CmdArgs graphHopperConfiguration = new CmdArgs();
         graphHopperConfiguration.put("graph.flag_encoders", "bike");
-        graphHopperConfiguration.put("datareader.file", "backend/csvimporter/map-data/Brandenburg_and_Berlin.osm.pbf");
+        graphHopperConfiguration.put("datareader.file", pbfPath.getPath());
 
         this.graphHopper = new GraphHopperOSM().init(graphHopperConfiguration);
         this.graphHopper.importOrLoad();
