@@ -93,9 +93,6 @@ sudo cat <<EOT > /etc/systemd/system/simra_api.service
 Description=Simra Springboot API
 After=syslog.target
 After=network.target
-[Service]
-User=$javauser
-Type=simple
 
 [Service]
 ExecStart=/usr/bin/java -jar `pwd`/backend/SimRa-Visualization-API/target/SimRa-Visualization-API-1.0-SNAPSHOT.jar
@@ -103,6 +100,8 @@ Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=simra_api
+User=$javauser
+Type=simple
 
 [Install]
 WantedBy=multi-user.target
@@ -116,9 +115,6 @@ sudo cat <<EOT > /etc/systemd/system/simra_backend.service
 Description=Simra Springboot API
 After=syslog.target
 After=network.target
-[Service]
-User=$javauser
-Type=simple
 
 [Service]
 ExecStart=/usr/bin/java -jar `pwd`/backend/csvimporter/target/csvimporter-0.0.1-SNAPSHOT.jar
@@ -126,6 +122,8 @@ Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=simra_backend
+User=$javauser
+Type=simple
 
 [Install]
 WantedBy=multi-user.target
