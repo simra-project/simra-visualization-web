@@ -72,6 +72,7 @@ npm run build
 cd ..
 
 #configure and start frontend
+sudo sed -i 's/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 256;/g' /etc/nginx/nginx.conf
 sudo cat <<EOT > /etc/nginx/sites-enabled/simra.conf
 server {
   listen 80;
