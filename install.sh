@@ -49,7 +49,7 @@ sudo systemctl start mongod
 sudo apt install git -y
 
 #clone repository
-git clone https://github.com/simra-project/SimRa-Visualization.git
+git clone https://github.com/selphiron/SimRa-Visualization.git
 cd SimRa-Visualization
 
 #update configuration of CSV importer
