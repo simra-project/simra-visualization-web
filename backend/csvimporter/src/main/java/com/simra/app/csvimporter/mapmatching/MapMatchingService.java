@@ -38,6 +38,7 @@ public class MapMatchingService {
 
         CmdArgs graphHopperConfiguration = new CmdArgs();
         graphHopperConfiguration.put("graph.flag_encoders", "bike");
+        graphHopperConfiguration.put("graph.dataaccess", "MMAP_STORE");
         graphHopperConfiguration.put("datareader.file", pbfPath.getPath());
 
         this.graphHopper = new GraphHopperOSM().init(graphHopperConfiguration);
