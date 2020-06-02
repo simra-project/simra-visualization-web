@@ -69,7 +69,7 @@ mongorestore
 cd frontend
 sudo cat <<EOT > .env.production
 VUE_APP_TITLE=SimRa Visualization
-VUE_APP_BACKEND_URL=$servername:8080
+VUE_APP_BACKEND_URL=http://$servername:8080
 VUE_APP_DEBUG=false
 EOT
 npm install
