@@ -49,7 +49,7 @@ sudo systemctl start mongod
 sudo apt install git -y
 
 #clone repository
-git clone https://github.com/simra-project/SimRa-Visualization.git
+git clone https://github.com/selphiron/SimRa-Visualization.git
 cd SimRa-Visualization
 
 #update configuration of CSV importer
@@ -67,11 +67,17 @@ mongorestore
 
 #compile frontend
 cd frontend
+sudo cat <<EOT > .env.production
+VUE_APP_TITLE=SimRa Visualization
+VUE_APP_BACKEND_URL=http://$servername:8080
+VUE_APP_DEBUG=false
+EOT
 npm install
 npm run build
 cd ..
 
 #configure and start frontend
+sudo sed -i 's/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 256;/g' /etc/nginx/nginx.conf
 sudo cat <<EOT > /etc/nginx/sites-enabled/simra.conf
 server {
   listen 80;
