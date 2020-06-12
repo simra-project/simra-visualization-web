@@ -25,7 +25,7 @@ pom.xml
 -- frontend
     -- pom.xml
 ```
-#MVN command
+## MVN command
 
 ```shell script
 To clean:
@@ -198,7 +198,7 @@ Info: So far only filtered data is pushed into the database.
     }
 }
 ```
-##Region Import
+## Region Import
 Region is imported by parsing Folder path of ride or profile file. 
 Its important to keep Rides and Profiles under City name.
 
