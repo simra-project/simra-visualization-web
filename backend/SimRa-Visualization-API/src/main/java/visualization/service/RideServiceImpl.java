@@ -1,6 +1,7 @@
 package visualization.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,14 @@ public class RideServiceImpl implements RideService {
     @Override
     public List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth) {
         GeoJsonPolygon polygon = new GeoJsonPolygon(first, second, third, fourth, first);
+        List<RideEntity> rideEntities = rideRepository.findByPolygonIntersects(polygon);
+
+        return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RideResource> getRidesWithinPolygon(List<Point> targetPolygon) {
+        GeoJsonPolygon polygon = new GeoJsonPolygon(targetPolygon);
         List<RideEntity> rideEntities = rideRepository.findByPolygonIntersects(polygon);
 
         return rideEntities.stream().map(rideEntity -> rideResourceMapper.mapRideEntityToResource(rideEntity, false)).collect(Collectors.toList());
