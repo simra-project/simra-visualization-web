@@ -128,7 +128,7 @@
 
 
         <!-- Shows results of polygon select -->
-        <l-geo-json :geojson="polygonResult" :options="geoJsonStylePolyResults" />
+        <l-geo-json v-if="polygonResult" :geojson="polygonResult" :options="geoJsonStylePolyResults" />
 
         <l-geo-json ref="csv_route" :geojson="imported_ride" :options="geoJsonCSVStyle" v-if="imported_ride !== null" @ready="tofront">
 
