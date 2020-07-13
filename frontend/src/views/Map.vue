@@ -126,6 +126,10 @@
             </l-geo-json>
         </template>
 
+
+        <!-- Shows results of polygon select -->
+        <l-geo-json :geojson="polygonResult" :options="geoJsonStylePolyResults" />
+
         <l-geo-json ref="csv_route" :geojson="imported_ride" :options="geoJsonCSVStyle" v-if="imported_ride !== null" @ready="tofront">
 
         </l-geo-json>
@@ -211,6 +215,7 @@ export default {
             incoming_legs_queue: [],
             loaded_legs: [],
             loaded_legs_strings: [],
+            polygonResult: [],
             imported_ride: null,
             imported_incidents: null,
             geosearchOptions: {
@@ -229,6 +234,17 @@ export default {
                         color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
                         weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 4.5 + 1.5,
                         opacity: 1,
+                    };
+                },
+            },
+            geoJsonStylePolyResults: {
+                style: feature => {
+                    let weight = 1;
+                    let color = "#178a00";
+                    return {
+                        color: color,
+                        weight: weight,
+                        opacity: 0.8,
                     };
                 },
             },
@@ -516,6 +532,10 @@ export default {
             this.loaded_legs_strings = new_loaded_legs_strings;
             this.incoming_legs_queue = queue_as_string;
         },
+        setPolygonResult(polygonResult) {
+            this.polygonResult = { "type": "FeatureCollection",
+                "features": polygonResult };
+        },
         handleWorkerMessage(message) {
             switch (message.data[0]) {
                 case "progress":
@@ -537,6 +557,9 @@ export default {
                     break;
                 case "queue":
                     this.updateQueue(message.data[1]);
+                    break;
+                case "polygon":
+                    this.setPolygonResult(message.data[1]);
                     break;
             }
         },
@@ -599,6 +622,8 @@ export default {
             let lon = this.center.lng;
             console.log(this.center);
             ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
+
+            this.apiWorker.postMessage(["polygon", [13.342959519984184,52.53110092453128,13.353492468639496,52.53003083236175,13.35087532050109,52.52462124790662]]);
         });
 
         this.apiWorker = new Worker("/ApiWorker.js");
