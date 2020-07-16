@@ -24,6 +24,9 @@ self.onmessage = function (event) {
             break;
         case "route":
             break;
+        case "polygon":
+            loadPolygon(event.data[1]);
+            break;
     }
 };
 
@@ -204,6 +207,16 @@ function loadIncidents(coords, filter) {
         console.log("cache hit!");
         self.postMessage(["incidents", incidents[filter_string][coords]]);
     }
+}
+
+function loadPolygon(polygon) {
+    startLoading();
+    let url = `${URL_BACKEND}/rides/polygon?coords=${polygon.join(',')}`;
+    console.log(url);
+    fetch(url).then(r => r.json()).then(result => {
+        self.postMessage(["polygon", result]);
+        finishLoading();
+    });
 }
 
 /**

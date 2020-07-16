@@ -2,6 +2,7 @@ package visualization.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import visualization.service.RideService;
 import visualization.web.resources.RideResource;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -54,6 +56,21 @@ public class RideController {
                 new GeoJsonPoint(first[0], second[1]),
                 new GeoJsonPoint(second[0], second[1]),
                 new GeoJsonPoint(second[0], first[1])));
+    }
+
+    // example: http://localhost:8080/rides/polygon?coords=13.297089,52.481744,13.456360,52.481744,13.456360,52.547463,13.297089,52.547463
+    @Cacheable(value = "polygonRides")
+    @GetMapping(value = "/polygon")
+    public HttpEntity<List<RideResource>> getRidesWithinPolygon(@RequestParam(value = "coords") double[] coords) {
+        System.out.println("No cache hit - Executing /rides/polygon");
+
+        List<Point> points = new LinkedList<>();
+        for (int i=0; i<coords.length/2; i++) {
+            points.add(new GeoJsonPoint(coords[i*2], coords[i*2+1]));
+        }
+        points.add(points.get(0));
+
+        return ResponseEntity.ok(rideService.getRidesWithinPolygon(points));
     }
 
     @GetMapping(value = "/from/{fromTs}/to/{untilTs}")
