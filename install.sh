@@ -5,7 +5,7 @@ set -e
 echo Please enter server name, ex: yourserver.com:
 read servername
 echo Please specify the directory to be monitored by the importer:
-read monitordir
+read monitorpath
 echo Please specify the directory for the pbf files:
 read pbffiles
 echo Please specify the logging directory:
