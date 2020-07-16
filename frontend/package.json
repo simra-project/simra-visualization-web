@@ -16,6 +16,7 @@
         "epic-spinners": "^1.1.0",
         "leaflet": "^1.6.0",
         "leaflet-defaulticon-compatibility": "^0.1.1",
+        "leaflet-draw": "^1.0.4",
         "leaflet-extra-markers": "^1.2.1",
         "leaflet-geosearch": "^2.7.0",
         "leaflet.heat": "^0.2.0",
