@@ -1,5 +1,6 @@
 package visualization.service;
 
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import visualization.web.resources.RideResource;
 
@@ -14,6 +15,8 @@ public interface RideService {
     RideResource getMapMatchedRideById(String rideId);
 
     List<RideResource> getRidesWithin(GeoJsonPoint first, GeoJsonPoint second, GeoJsonPoint third, GeoJsonPoint fourth);
+
+    List<RideResource> getRidesWithinPolygon(List<Point> polygon);
 
     List<RideResource> getRidesAtTime(Long fromTs, Long untilTs);
 

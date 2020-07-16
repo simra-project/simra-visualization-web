@@ -126,6 +126,10 @@
             </l-geo-json>
         </template>
 
+
+        <!-- Shows results of polygon select -->
+        <l-geo-json v-if="polygonResult" :geojson="polygonResult" :options="geoJsonStylePolyResults" />
+
         <l-geo-json ref="csv_route" :geojson="imported_ride" :options="geoJsonCSVStyle" v-if="imported_ride !== null" @ready="tofront">
 
         </l-geo-json>
@@ -139,6 +143,7 @@
 import Vue from "vue";
 import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer, LTooltip } from "vue2-leaflet";
 import * as L from "leaflet";
+import LDraw from "leaflet-draw";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 import { ExtraMarkers } from "leaflet-extra-markers";
@@ -164,6 +169,7 @@ export default {
         LPopup,
         LCircleMarker,
         LTooltip,
+        LDraw,
         Vue2LeafletHeatmap,
         VGeosearch,
         LGeoJson,
@@ -211,6 +217,8 @@ export default {
             incoming_legs_queue: [],
             loaded_legs: [],
             loaded_legs_strings: [],
+            polygonMapLayer: null,
+            polygonResult: [],
             imported_ride: null,
             imported_incidents: null,
             geosearchOptions: {
@@ -229,6 +237,17 @@ export default {
                         color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
                         weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 4.5 + 1.5,
                         opacity: 1,
+                    };
+                },
+            },
+            geoJsonStylePolyResults: {
+                style: feature => {
+                    let weight = 1;
+                    let color = "#178a00";
+                    return {
+                        color: color,
+                        weight: weight,
+                        opacity: 0.8,
                     };
                 },
             },
@@ -516,6 +535,10 @@ export default {
             this.loaded_legs_strings = new_loaded_legs_strings;
             this.incoming_legs_queue = queue_as_string;
         },
+        setPolygonResult(polygonResult) {
+            this.polygonResult = { "type": "FeatureCollection",
+                "features": polygonResult };
+        },
         handleWorkerMessage(message) {
             switch (message.data[0]) {
                 case "progress":
@@ -537,6 +560,9 @@ export default {
                     break;
                 case "queue":
                     this.updateQueue(message.data[1]);
+                    break;
+                case "polygon":
+                    this.setPolygonResult(message.data[1]);
                     break;
             }
         },
@@ -583,6 +609,42 @@ export default {
             reader.readAsText(f, "UTF-8");
         },
         isDebug: () => process.env.VUE_APP_DEBUG === "true",
+        initDrawToolbar(mapObject) {
+            mapObject.addControl(new window.L.Control.Draw({
+                position: 'topright',
+                draw: {
+                    polyline: false,
+                    rectangle: false,
+                    circle: false,
+                    circlemarker: false,
+                    marker: false,
+                    polygon: {
+                        showArea: true,
+                        showLength: true,
+                    }
+                }
+            }));
+
+            this.polygonMapLayer = new window.L.FeatureGroup().addTo(mapObject);
+            mapObject.on(window.L.Draw.Event.CREATED, (e) => {
+                if (e.layerType !== 'polygon') return;
+
+                this.polygonResult = [];
+                this.polygonMapLayer.clearLayers();
+                this.polygonMapLayer.addLayer(e.layer);
+
+                let coordinates = e.layer._latlngs[0].flatMap(x => [x.lng, x.lat])
+                this.apiWorker.postMessage(["polygon", coordinates]);
+
+                console.log("User selected polygon area: " + coordinates);
+            });
+
+            // Removing polygon and rides on click
+            this.polygonMapLayer.on('click', () => {
+                this.polygonResult = [];
+                this.polygonMapLayer.clearLayers();
+            });
+        },
     },
     async mounted() {
         this.$nextTick(() => {
@@ -599,6 +661,8 @@ export default {
             let lon = this.center.lng;
             console.log(this.center);
             ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
+
+            // this.apiWorker.postMessage(["polygon", [13.342959519984184,52.53110092453128,13.353492468639496,52.53003083236175,13.35087532050109,52.52462124790662]]);
         });
 
         this.apiWorker = new Worker("/ApiWorker.js");
@@ -638,6 +702,8 @@ export default {
             //this.uploadFile(files);
             self.addFiles(files);
         });
+
+        this.initDrawToolbar(this.$refs.map.mapObject);
     },
 };
 </script>
@@ -813,6 +879,7 @@ export default {
     @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
     @import '~leaflet-geosearch/dist/style.css';
     @import '~leaflet-geosearch/assets/css/leaflet.css';
+    @import '~leaflet-draw/dist/leaflet.draw.css';
 </style>
 
 <style lang="less">
