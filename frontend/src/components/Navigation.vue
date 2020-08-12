@@ -1,12 +1,13 @@
 <template>
-    <b-navbar class="container">
+    <b-navbar style="border-bottom: 1px solid #ddd">
         <template slot="brand">
             <b-navbar-item tag="router-link" :to="{ path: '/' }">
                 <img src="../assets/Logo_MCC.png" height="28">
+                <span class="nav-brand-text">SimRa Visualization</span>
             </b-navbar-item>
         </template>
         <template slot="start">
-            <router-link to="/map" class="navbar-item" :class="{'is-active': this.$route.path.startsWith('/map')}">Map</router-link>
+<!--            <router-link to="/map" class="navbar-item" :class="{'is-active': this.$route.path.startsWith('/map')}">Map</router-link>-->
 
 <!--            <b-navbar-dropdown :hoverable="true" :class="{'dropdown-active': this.$route.path.startsWith('/map')}" boxed>-->
 <!--                <template v-slot:label>-->
@@ -21,8 +22,8 @@
 <!--                </router-link>-->
 <!--            </b-navbar-dropdown>-->
 
-            <router-link to="/statistics" class="navbar-item">Statistics</router-link>
-            <router-link to="/about" class="navbar-item">About</router-link>
+<!--            <router-link to="/statistics" class="navbar-item">Statistics</router-link>-->
+<!--            <router-link to="/about" class="navbar-item">About</router-link>-->
         </template>
 
         <template slot="end">
@@ -64,5 +65,17 @@ export default {
 
     .navbar-dropdown .navbar-item .icon {
         margin-right: 4px;
+    }
+
+    .navbar-brand {
+        padding: 0 8px;
+
+        .nav-brand-text {
+            padding-left: 8px;
+            color: #ff0102;
+            font-size: 1.25rem;
+            font-weight: bold;
+            font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
     }
 </style>
