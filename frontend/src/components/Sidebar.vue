@@ -3,7 +3,8 @@
         <div class="entries">
             <SidebarEntry title="Rides"
                           icon="fa-biking"
-                          :iconColor="'#156ec7'"
+                          :icon-color="'#156ec7'"
+                          :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_RIDES}"
                           @entryClicked="switchToView(config.VIEW_MODE_RIDES)">
                 <MapFilters :view-mode="0" ref="filterRides"></MapFilters>
@@ -11,7 +12,8 @@
 
             <SidebarEntry title="Incidents"
                           icon="fa-car-crash"
-                          :iconColor="'#1d917c'"
+                          :icon-color="'#1d917c'"
+                          :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_INCIDENTS}"
                           @entryClicked="switchToView(config.VIEW_MODE_INCIDENTS)">
                 <MapFilters :view-mode="1" ref="filterIncidents"></MapFilters>
@@ -19,7 +21,8 @@
 
             <SidebarEntry title="Combined"
                           icon="fa-layer-group"
-                          :iconColor="'#d63e12'"
+                          :icon-color="'#d63e12'"
+                          :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_COMBINED}"
                           @entryClicked="switchToView(config.VIEW_MODE_COMBINED)">
                 <MapFilters :view-mode="2" ref="filterCombined"></MapFilters>
@@ -27,7 +30,8 @@
 
             <SidebarEntry title="Box-Analysis"
                           icon="fa-draw-polygon"
-                          :iconColor="'#156ec7'"
+                          :icon-color="'#156ec7'"
+                          :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_BOX_ANALYSIS}"
                           @entryClicked="switchToView(config.VIEW_MODE_BOX_ANALYSIS)">
                 <div class="entry-subtext">
@@ -37,7 +41,8 @@
 
             <SidebarEntry :title="'Tools'"
                           :icon="'fa-tools'"
-                          :iconColor="'#1d917c'"
+                          :icon-color="'#1d917c'"
+                          :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_TOOLS}"
                           @entryClicked="switchToView(config.VIEW_MODE_TOOLS)">
                 <div class="entry-subtext">

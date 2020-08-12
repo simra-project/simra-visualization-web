@@ -1,5 +1,5 @@
 <template>
-    <div class="entry">
+    <div class="entry" :title="isSmall ? title : ''">
         <div class="entry-label" @click="$emit('entryClicked')">
             <div class="entry-icon">
                 <i class="fas fa-lg" :class="icon" :style="'color: ' + iconColor "></i>
@@ -20,6 +20,7 @@ export default {
         'title',
         'icon',
         'iconColor',
+        'isSmall',
     ]
 };
 </script>
@@ -35,7 +36,7 @@ export default {
             padding: 12px 8px;
 
             &:hover, &:active {
-                background-color: #eaeaea;//#dcdcdc;
+                background-color: #eaeaea;
                 cursor: pointer;
             }
 
