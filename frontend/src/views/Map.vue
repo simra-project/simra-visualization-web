@@ -1,333 +1,119 @@
 <template>
-    <l-map ref="map"
-           :zoom="zoom"
-           :center="center"
-           :min-zoom="9"
-           @update:zoom="zoomUpdated"
-           @update:center="centerUpdated"
-           @update:bounds="boundsUpdated"
-           @click="clickedOnMap($event)"
-    >
-<!--        drag and drop implementation basierend auf: https://codepen.io/nguernse/pen/JyYdNY-->
-        <div style="visibility:hidden; opacity:0" id="dropzone">
-            <div id="textnode">Fahrt aus CSV anzeigen</div>
-        </div>
-        <l-tile-layer :url="url" :class="{monochrome: devMonochromeMap}"/>
+    <div class="main-layout" style="display:flex;">
+        <Sidebar ref="sidebar" v-model.sync="viewMode"></Sidebar>
 
-        <l-control position="topleft">
-            <div class="overlay overlay-menu" :class="{ disabled: viewMode === 3, minimized: !viewModeOverlayMaximized }">
-                <b-tabs type="is-toggle" v-model="viewMode" @change="updateUrlQuery">
-                    <b-tab-item :label="viewModeOverlayMaximized ? 'Rides' : ''" icon="biking"/>
-                    <b-tab-item :label="viewModeOverlayMaximized ? 'Incidents' : ''" icon="car-crash"/>
-                    <b-tab-item :label="viewModeOverlayMaximized ? 'Combined' : ''" icon="layer-group"/>
-                </b-tabs>
+        <section class="hero is-fullheight-with-navbar" style="width: 100%; border-top: none; min-height: calc(100vh - 3.25rem - 1px);">
+            <l-map ref="map"
+                   style="width: 100%"
+                   :zoom="zoom"
+                   :center="center"
+                   :min-zoom="9"
+                   @update:zoom="zoomUpdated"
+                   @update:center="centerUpdated"
+                   @update:bounds="boundsUpdated"
+                   @click="clickedOnMap($event)"
+            >
+                <l-tile-layer :url="mapUrl" :class="{monochrome: devMonochromeMap}"/>
 
-                <b-checkbox v-model="devMonochromeMap" style="margin-bottom: 10px;">Monochrome Map</b-checkbox>
+                <div class="leaflet-control bottomcenter">
+                    <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
+                        <div class="overlay overlay-loading">
+                            <div class="spinner-container">
+                                <scaling-squares-spinner
+                                    :animation-duration="1750"
+                                    :size="30"
+                                    color="hsl(217, 71%, 53%)"
+                                />
 
-                <MapFilters ref="filters" :view-mode="viewMode" @rides-changed="loadMatchedRoutes" @incidents-changed="loadIncidents" style="margin-top: 12px"/>
+                                <div class="text">Loading Map Data</div>
+                            </div>
 
-                <div v-if="isDebug()" class="debug-settings">
-                    <hr>
-                    <strong style="font-size: 16px; margin: -12px 0 4px; display: block;">Debug Settings</strong>
-                    <b-checkbox v-model="devMonochromeMap">Monochrome Map</b-checkbox><br>
-                    <b-checkbox v-model="devLegPartitions">Legs Partitions <span style="color: #999">(Move map)</span></b-checkbox><br>
-                    <b-checkbox v-model="devOverlayIncidents">Overlay Incidents</b-checkbox><br>
-                </div>
-
-                <div class="minMaxToggle is-hidden-mobile">
-                    <a @click="viewModeOverlayMaximized = !viewModeOverlayMaximized">
-                        <template v-if="viewModeOverlayMaximized">
-                            Minimize view <i class="fa fa-compress-alt"></i>
-                        </template>
-                        <template v-else>
-                            Maximize view <i class="fa fa-expand-alt"></i>
-                        </template>
-                    </a>
-                </div>
-            </div>
-        </l-control>
-
-        <div class="leaflet-control bottomcenter">
-            <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
-                <div class="overlay overlay-loading">
-                    <div class="spinner-container">
-                        <scaling-squares-spinner
-                            :animation-duration="1750"
-                            :size="30"
-                            color="hsl(217, 71%, 53%)"
-                        />
-
-                        <div class="text">Loading Map Data</div>
+                            <b-progress type="is-primary is-small" :value="loadingProgress"/>
+                        </div>
                     </div>
-
-                    <b-progress type="is-primary is-small" :value="loadingProgress"/>
                 </div>
-            </div>
-        </div>
 
-        <l-control position="bottomright">
-            <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
-        </l-control>
+                <l-control position="bottomright">
+                    <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
+                </l-control>
 
-        <!-- MapMatched Bike Rides (+ combined view) -->
-        <template v-if="viewMode === 0 || viewMode === 2">
-            <l-geo-json ref="aggregated_map"
-                v-if="aggregatetRides"
-                :geojson="rides"
-                :options="viewMode === 0 ? geoJsonStyleRides : geoJsonStyleCombined"
-            />
+                <RideView v-if="viewMode === config.VIEW_MODE_RIDES || viewMode === config.VIEW_MODE_COMBINED" ref="rideView"
+                          :zoom="zoom"
+                          :bounds="bounds"
+                          :view-mode="viewMode"
+                          @on-progress="updateLoadingView"
+                />
 
-            <l-geo-json v-if="devOverlayIncidents"
-                        v-for="incident in incidents"
-                        :key="incident.key"
-                        :geojson="incident"
-                        :options="geoJsonOptionsMarker">
-                <l-popup/>
-            </l-geo-json>
-        </template>
+                <IncidentView v-if="viewMode === config.VIEW_MODE_INCIDENTS" ref="incidentView"
+                              :zoom="zoom"
+                              :bounds="bounds"
+                              @on-progress="updateLoadingView"
+                              @fit-in-view="fitMapObjectIntoView"
+                />
 
-        <!-- Incident Marker & Incident Heatmap-->
-        <template v-else-if="viewMode === 1">
-            <Vue2LeafletHeatmap
-                v-if="zoom <= heatmapMaxZoom && this.incident_heatmap.length !== 0"
-                :lat-lng="incident_heatmap"
-                :radius="heatmapRadius"
-                :min-opacity="heatmapMinOpacity"
-                :max-zoom="10" :blur="heatmapBlur"
-                :max="heatmapMaxPointIntensity"/>
+                <BoxAnalysisView v-if="viewMode === config.VIEW_MODE_BOX_ANALYSIS" ref="boxAnalysisView"
+                                 :mapLayer="boxAnalysisMapLayer"
+                                 @on-progress="updateLoadingView"
+                />
 
-            <l-geo-json v-else
-                        v-for="incident in incidents"
-                        :key="incident.key"
-                        :geojson="incident"
-                        :options="geoJsonOptionsMarker">
-                <l-popup/>
-            </l-geo-json>
-        </template>
-
-        <!-- Single, highlighted Bike Ride with its Incidents -->
-        <template v-else-if="viewMode === 3">
-            <l-geo-json :geojson="rideHighlighted" :options="geoJsonStyleHighlight" @ready="highlightedRideLoaded"/>
-
-            <l-marker :lat-lng="rideHighlightStart" :icon="rideHighlightStartIcon">
-                <l-tooltip :options="{direction: 'bottom'}"><strong>Start</strong></l-tooltip>
-            </l-marker>
-            <l-marker :lat-lng="rideHighlightEnd" :icon="rideHighlightEndIcon">
-                <l-tooltip :options="{direction: 'bottom'}">
-                    <strong>End - {{ (rideHighlighted.properties.distance / 1000).toFixed(1) }} km in {{ rideHighlighted.properties.duration >= 60 ? Math.floor(rideHighlighted.properties.duration / 60) + " h " : "" }}{{ Math.floor(rideHighlighted.properties.duration % 60) }} min</strong>
-                </l-tooltip>
-            </l-marker>
-
-            <l-geo-json v-for="incident in rideHighlightedIncidents"
-                        :key="incident.key"
-                        :geojson="incident"
-                        :options="geoJsonOptionsMarker">
-                <l-popup/>
-            </l-geo-json>
-        </template>
-
-
-        <!-- Shows results of polygon select -->
-        <l-geo-json v-if="polygonResult" :geojson="polygonResult" :options="geoJsonStylePolyResults" />
-
-        <l-geo-json ref="csv_route" :geojson="imported_ride" :options="geoJsonCSVStyle" v-if="imported_ride !== null" @ready="tofront">
-
-        </l-geo-json>
-        <l-geo-json ref="csv_incidents" :geojson="imported_incidents" :options="geoJsonCSVStyleMarker" v-if="imported_incidents !== null">
-        </l-geo-json>
-
-    </l-map>
+                <ToolsView v-if="viewMode === config.VIEW_MODE_TOOLS" ref="toolsView"
+                           @fit-in-view="fitMapObjectIntoView"
+                />
+            </l-map>
+        </section>
+    </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { LCircleMarker, LControl, LGeoJson, LMap, LMarker, LPolyline, LPopup, LTileLayer, LTooltip } from "vue2-leaflet";
-import * as L from "leaflet";
-import LDraw from "leaflet-draw";
-import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
-import { OpenStreetMapProvider } from "leaflet-geosearch";
-import { ExtraMarkers } from "leaflet-extra-markers";
-import VGeosearch from "vue2-leaflet-geosearch";
+import { LControl, LMap, LTileLayer } from "vue2-leaflet";
 import { ScalingSquaresSpinner } from "epic-spinners";
 
+import Config from "@/constants";
 import MapFilters from "@/components/MapFilters";
 import MapLegend from "@/components/MapLegend";
-import MapPopup from "@/components/MapPopup";
-import Vue2LeafletHeatmap from "@/components/Vue2LeafletHeatmap";
-import { ApiService } from "@/services/ApiService";
-import { IncidentUtils } from "@/services/IncidentUtils";
-import Papa from "papaparse";
+import Sidebar from "@/components/Sidebar";
+
+import RideView from "@/viewModes/ride/RideView";
+import IncidentView from "@/viewModes/incident/IncidentView";
+import BoxAnalysisView from "@/viewModes/boxAnalysis/BoxAnalysisView";
+import ToolsView from "@/viewModes/tools/ToolsView";
 
 export default {
     components: {
         LMap,
         LTileLayer,
         LControl,
-        LPolyline,
-        Vue2LeafletMarkerCluster,
-        LMarker,
-        LPopup,
-        LCircleMarker,
-        LTooltip,
-        LDraw,
-        Vue2LeafletHeatmap,
-        VGeosearch,
-        LGeoJson,
         ScalingSquaresSpinner,
         MapFilters,
         MapLegend,
+        Sidebar,
+        RideView,
+        IncidentView,
+        BoxAnalysisView,
+        ToolsView,
     },
     data() {
         return {
-            url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            // General
+            config: Config,
+            viewMode: parseInt(this.$route.query.m) || Config.VIEW_MODE_RIDES,
+            loadingProgress: null,
+            devMonochromeMap: false,
+
+            // Map
+            mapObject: null,
+            mapUrl: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
-            viewMode: parseInt(this.$route.query.m) || 0, // 0 - rides, 1 - incidents, 2 - combined, 3 - highlighted ride
-            viewModeOverlayMaximized: window.innerWidth > 768,
-            loadingProgress: null,
-            rides: [],
-            rideHighlighted: null,
-            rideHighlightedIncidents: [],
-            rideHighlightStart: [0, 0],
-            rideHighlightEnd: [0, 0],
-            rideHighlightStartIcon: ExtraMarkers.icon({
-                icon: 'fa-biking',
-                markerColor: 'white',
-                prefix: 'fa'
-            }),
-            rideHighlightEndIcon: ExtraMarkers.icon({
-                icon: 'fa-flag-checkered',
-                markerColor: 'black',
-                prefix: 'fa'
-            }),
-            rideMaxWeight: 1,
-            rideMaxIncidentWeight: 0.1,
-            incidents: [],
-            incident_heatmap: [],
-            heatmapMaxZoom: 15,
-            heatmapMinOpacity: 0.75,
-            heatmapMaxPointIntensity: 1.0,
-            heatmapRadius: 20,
-            heatmapBlur: 30,
-            aggregatetRides: true,
-            detailedAreasLoaded: {},
-            detailedRides: [],
-            detailedRidesLoaded: {},
-            incoming_legs_queue: [],
-            loaded_legs: [],
-            loaded_legs_strings: [],
-            polygonMapLayer: null,
-            polygonResult: [],
-            imported_ride: null,
-            imported_incidents: null,
-            geosearchOptions: {
-                provider: new OpenStreetMapProvider(),
-            },
-            devLegPartitions: false,
-            devMonochromeMap: false,
-            devOverlayIncidents: false,
-            geoJsonStyleRides: {
-                style: feature => {
-                    if (this.devLegPartitions) return {
-                        color: '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6),
-                    };
 
-                    return {
-                        color: 'hsl(' + (240 - (1 - ((feature.properties.fileIdSet.length - 1) / (this.rideMaxWeight - 1))) * 50) + ', 71%, 53%)',
-                        weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 4.5 + 1.5,
-                        opacity: 1,
-                    };
-                },
-            },
-            geoJsonStylePolyResults: {
-                style: feature => {
-                    let weight = 1;
-                    let color = "#178a00";
-                    return {
-                        color: color,
-                        weight: weight,
-                        opacity: 0.8,
-                    };
-                },
-            },
-            geoJsonStyleCombined: {
-                style: feature => {
-                    let weight = feature.properties.incidentCount / this.rideMaxIncidentWeight;
-                    let color = "#84ca50";
-                    if (weight > 0.15) color = "#ede202";
-                    if (weight > 0.35) color = "#f07d02";
-                    if (weight > 0.60) color = "#e60000";
-                    if (weight > 0.85) color = "#9e1313";
-
-                    return {
-                        color: color,
-                        weight: Math.sqrt(feature.properties.fileIdSet.length / this.rideMaxWeight) * 6.5 + 1.5,
-                        opacity: 1,
-                    };
-                },
-            },
-            geoJsonStyleHighlight: {
-                color: "hsl(215, 71%, 53%)",
-                weight: 4,
-            },
-            geoJsonCSVStyle: {
-                color: "hsl(354,100%,43%)",
-                weight: 4,
-            },
-            geoJsonCSVStyleMarker: {
-                pointToLayer: (feature, latlng) => L.marker(latlng, {
-                    icon: ExtraMarkers.icon({
-                        icon: "fa-file-import",
-                        markerColor:  "orange-dark",
-                        prefix: "fa",
-                    }),
-                }),
-            },
-            geoJsonOptionsMarker: {
-                pointToLayer: (feature, latlng) => L.marker(latlng, {
-                    icon: ExtraMarkers.icon({
-                        icon: IncidentUtils.getIcon(feature.properties),
-                        markerColor: feature.properties.scary ? "orange-dark" : "blue",
-                        prefix: "fa",
-                    }),
-                }),
-                onEachFeature: (feature, layer) => layer.bindPopup(() => {
-                    const mapPopup = new (Vue.extend(MapPopup))({
-                        propsData: {
-                            viewMode: this.viewMode,
-                            incident: feature.properties,
-                            showRoute: () => {
-                                let rideId = feature.properties.rideId;
-                                ApiService.loadRide(rideId).then(response => {
-                                    let { ride, incidents } = response;
-
-                                    if (ride.status !== 500 && incidents.status !== 500) {
-                                        console.log(ride);
-                                        console.log(incidents);
-                                        ride.properties.duration = Math.floor((ride.properties.ts[ride.properties.ts.length - 1] - ride.properties.ts[0]) / (60 * 1000));
-
-                                        this.rideHighlightStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
-                                        this.rideHighlightEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];
-                                        this.rideHighlighted = ride;
-                                        this.rideHighlightedIncidents = incidents;
-                                        this.viewMode = 3;
-                                    } else {
-                                        console.log("associated ride is not in db.");
-                                    }
-                                });
-                            },
-                        },
-                    });
-                    return mapPopup.$mount().$el;
-                }),
-            },
+            // Extras for view modes
+            boxAnalysisMapLayer: null,
         };
     },
     methods: {
         zoomUpdated(zoom) {
             this.zoom = zoom;
-            this.aggregatetRoutes = zoom < 100;
         },
         centerUpdated(center) {
             this.center = center;
@@ -335,11 +121,6 @@ export default {
         },
         boundsUpdated(bounds) {
             this.bounds = bounds;
-            if (this.viewMode === 0 || this.viewMode === 2)
-                this.loadMatchedRoutes();
-            if (this.viewMode === 1 && (this.zoom > this.heatmapMaxZoom || this.incident_heatmap.length === 0))
-                this.loadIncidents();
-            console.log(this.incident_heatmap.length);
         },
         updateUrlQuery() {
             this.$router.replace({
@@ -353,146 +134,28 @@ export default {
             }).catch(() => {
             });
         },
-        highlightedRideLoaded(mapObject) {
-            // Fitting ride into view if it's not already
-            let rideBounds = mapObject.getBounds().pad(0.1);
-            if (!this.bounds.contains(rideBounds)) {
-                this.$refs.map.mapObject.flyToBounds(rideBounds);
+        fitMapObjectIntoView(mapObject) {
+            // Fitting a map object (e.g. a ride) into view if it's not already
+            let bounds = mapObject.getBounds().pad(0.1);
+            if (!this.bounds.contains(bounds)) {
+                this.mapObject.flyToBounds(bounds);
             }
         },
-        async tofront (mapObject) {
-            while (1) {
-                mapObject.bringToFront();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        },
-        toback (mapObject) {
-            console.log("BACK");
-            mapObject.bringToBack();
-        },
-        unfocusRideHighlight() {
-            this.viewMode = 1;
-            this.rideHighlightStart = [0, 0];
-            this.rideHighlightEnd = [0, 0];
-            this.rideHighlighted = null;
-            this.rideHighlightedIncidents = [];
-            console.log("unfocussing highlighted ride");
-        },
-        clickedOnMap(event) {
-            if (event.originalEvent.target.nodeName !== 'path' && this.rideHighlighted != null) {
-                this.unfocusRideHighlight();
-            }
-        },
-        parseRoutes(response, coords) {
-            console.log(`testing coords ${coords.toString()}`);
-            if (this.incoming_legs_queue.includes(coords.toString())) {
-                if (!(this.loaded_legs_strings.includes(coords.toString()))) {
-                    this.rides.features.push(...response);
-                    let curMaxWeight = 1;
-                    for (let ride of response) {
-                        const weight = ride.properties.fileIdSet.length;
-                        if (weight > this.rideMaxWeight)
-                            this.rideMaxWeight = weight;
-                        if (weight > curMaxWeight)
-                            curMaxWeight = weight;
-                        const weightIncident = ride.properties.incidentCount;
-                        if (weightIncident > this.rideMaxIncidentWeight)
-                            this.rideMaxIncidentWeight = weightIncident;
-                    }
-                    this.loaded_legs.push([coords, response, curMaxWeight]);
-                } else {
-                    console.log("Leg is already loaded.");
-                }
-            } else {
-                console.log("Leg is not in queue.");
-                console.log(this.incoming_legs_queue);
-            }
-        },
-        parseIncidents(response) {
-            while (this.incident_heatmap.length > 0) {
-                this.incident_heatmap.pop();
-            }
-            for (var i = 0; i < response.length; i++) {
-                // console.log(response[i].properties.incidentType);
-                // if (response[i].properties.incidentType != 0)
-                this.incident_heatmap.push([response[i].geometry.coordinates[1], response[i].geometry.coordinates[0], 1]);
-            }
-        },
-        loadDetailedRides() {
-            // times 100 to avoid floating point errors
-            let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
-            let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
-            let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
-            let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
-
-            let coords = [];
-
-            for (let y = min_y; y < max_y; y++) {
-                for (let x = min_x; x < max_x; x++) {
-                    coords.push([x, y]);
-                }
-            }
-
-            this.apiWorker.postMessage(["routes", coords]);
-
-            console.log(`minx: ${ min_x }, maxx: ${ max_x }`);
-            console.log(`miny: ${ min_y }, maxy: ${ max_y }`);
-        },
-        loadMatchedRoutes() {
-            let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
-            let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
-            let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
-            let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
-
-            let zoom_tmp = this.zoom;
-            let sw_lat_tmp = this.bounds._southWest.lat;
-            let sw_lng_tmp = this.bounds._southWest.lng;
-
-            let filters = this.$refs.filters.getRideFilters();
-            console.log(filters);
-
-            setTimeout(() => {
-                if (this.zoom === zoom_tmp && sw_lat_tmp === this.bounds._southWest.lat && sw_lng_tmp === this.bounds._southWest.lng) {
-                    this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1), filters]);
-                } else {
-                    console.log(`expected lat ${sw_lat_tmp}, is ${this.bounds._southWest.lat}`);
-                    console.log(`expected lng ${sw_lng_tmp}, is ${this.bounds._southWest.lng}`);
-                    console.log("--> map motion detected, waiting to get new data.");
-                }
-            }, 1000);
-
-            // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
-
-        },
-        loadIncidents() {
-            console.log("loading incidents");
-            let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
-            let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
-            let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
-            let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
-            console.log([[min_x, min_y], [max_x, max_y]]);
-
-            let filters = this.$refs.filters.getIncidentFilters();
-            console.log(filters);
-
-            this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]], filters]);
-        },
-        // loadChunk(x, y) {
-        //     if (this.detailedAreasLoaded[`${x},${y}`] == null) {
-        //         this.detailedAreasLoaded[`${x},${y}`] = [];
-        //         console.log("Started loading new chunk.");
-        //         ApiService.loadRoutes(y/100, x/100, (y+1)/100, (x+1)/100).then(response => {
-        //             this.detailedAreasLoaded[`${x},${y}`] = response;
-        //             response.forEach(route => {
-        //                 if (this.detailedRoutesLoaded[route.properties.rideId] == null) {
-        //                     this.detailedRoutesLoaded[route.properties.rideId] = route;
-        //                     this.detailedRoutes.push(route);
-        //                     console.log("added route");
-        //                 }
-        //             })
-        //         })
+        // async tofront (mapObject) {
+        //     while (1) {
+        //         mapObject.bringToFront();
+        //         await new Promise(resolve => setTimeout(resolve, 1000));
         //     }
         // },
+        // toback (mapObject) {
+        //     console.log("BACK");
+        //     mapObject.bringToBack();
+        // },
+        clickedOnMap(event) {
+            if (this.viewMode === Config.VIEW_MODE_INCIDENTS) {
+                this.$refs.incidentView.clickedOnMap(event);
+            }
+        },
         updateLoadingView(progress, expectedTotal) {
             if (expectedTotal === 0) return;
             let currentProgress = Math.min(Math.max(progress / expectedTotal, 0.0), 1.0);
@@ -504,212 +167,31 @@ export default {
                 setTimeout(() => this.loadingProgress = null, 1200);
             }
         },
-        updateQueue(queue) {
-            console.log("updating queue");
-            console.log(queue);
-            let queue_as_string = [];
-            for (let item of queue) {
-                queue_as_string.push(item.toString());
-            }
-            let new_features = [];
-            let new_loaded_legs = [];
-            let new_loaded_legs_strings = [];
-            this.rideMaxWeight = 1;
-            for (let leg of this.loaded_legs) {
-                console.log("testing new leg");
-                if (queue_as_string.includes(leg[0].toString())) {
-                    console.log("I've seen this leg before!");
-                    new_features.push(...leg[1]);
-                    new_loaded_legs.push(leg);
-                    new_loaded_legs_strings.push(leg[0].toString());
-                    console.log(leg);
-                    if (leg[2] > this.rideMaxWeight)
-                        this.rideMaxWeight = leg[2]
-                }
-            }
-            this.rides = {
-                type: "FeatureCollection",
-                features: new_features
-            };
-            this.loaded_legs = new_loaded_legs;
-            this.loaded_legs_strings = new_loaded_legs_strings;
-            this.incoming_legs_queue = queue_as_string;
-        },
-        setPolygonResult(polygonResult) {
-            this.polygonResult = { "type": "FeatureCollection",
-                "features": polygonResult };
-        },
-        handleWorkerMessage(message) {
-            switch (message.data[0]) {
-                case "progress":
-                    this.updateLoadingView(message.data[1], message.data[2]);
-                    break;
-                case "routes":
-                    console.log(message.data[1]);
-                    this.detailedRides.push(...message.data[1]);
-                    console.log(this.detailedRides.length + " detailed routes loaded.");
-                    break;
-                case "matched":
-                    console.log(`message.data[1]`);
-                    console.log(message.data[1]);
-                    this.parseRoutes(message.data[1], message.data[2]);
-                    break;
-                case "incidents":
-                    this.incidents = message.data[1];
-                    this.parseIncidents(message.data[1]);
-                    break;
-                case "queue":
-                    this.updateQueue(message.data[1]);
-                    break;
-                case "polygon":
-                    this.setPolygonResult(message.data[1]);
-                    break;
-            }
-        },
-        addFiles(files) {
-            let droppedFiles = files;
-            if(!droppedFiles) return;
-            // this tip, convert FileList to array, credit: https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
-            this.readFile(Array.from(droppedFiles).pop());
-        },
-        readFile(f) {
-            let self = this;
-            let reader = new FileReader();
-            reader.onload = function (e) {
-                let content = e.target.result;
-                let seperator = /\n[=]+\n.*\n/mg;
-                let newline = /#.*\n/mg;
-                let split = content.split(seperator, 2);
-                let incidents = split[0].split(newline, 2)[1];
-                let route = split[1];
-                let data = Papa.parse(route, {header: true, skipEmptyLines: true});
-                let result = {
-                    type: "LineString",
-                    coordinates: []
-                };
-                for (let line of data.data) {
-                    if (line.lat !== "" && line.lon !== "") {
-                        result.coordinates.push([Number(line.lon), Number(line.lat)]);
-                    }
-                }
-                self.imported_ride = result;
-                let geoJson = L.geoJSON(result);
-                self.highlightedRideLoaded(geoJson);
-
-                incidents = Papa.parse(incidents, {header: true, skipEmptyLines: true});
-                let csv_incidents = {
-                    type: "MultiPoint",
-                    coordinates: []
-                };
-                for (let incident of incidents.data) {
-                    csv_incidents.coordinates.push([Number(incident.lon), Number(incident.lat)])
-                }
-                self.imported_incidents = csv_incidents;
-            };
-            reader.readAsText(f, "UTF-8");
-        },
-        isDebug: () => process.env.VUE_APP_DEBUG === "true",
-        initDrawToolbar(mapObject) {
-            mapObject.addControl(new window.L.Control.Draw({
-                position: 'topright',
-                draw: {
-                    polyline: false,
-                    rectangle: false,
-                    circle: false,
-                    circlemarker: false,
-                    marker: false,
-                    polygon: {
-                        showArea: true,
-                        showLength: true,
-                    }
-                }
-            }));
-
-            this.polygonMapLayer = new window.L.FeatureGroup().addTo(mapObject);
-            mapObject.on(window.L.Draw.Event.CREATED, (e) => {
-                if (e.layerType !== 'polygon') return;
-
-                this.polygonResult = [];
-                this.polygonMapLayer.clearLayers();
-                this.polygonMapLayer.addLayer(e.layer);
-
-                let coordinates = e.layer._latlngs[0].flatMap(x => [x.lng, x.lat])
-                this.apiWorker.postMessage(["polygon", coordinates]);
-
-                console.log("User selected polygon area: " + coordinates);
-            });
-
-            // Removing polygon and rides on click
-            this.polygonMapLayer.on('click', () => {
-                this.polygonResult = [];
-                this.polygonMapLayer.clearLayers();
-            });
-        },
     },
     async mounted() {
         this.$nextTick(() => {
-            this.zoom = this.$refs.map.mapObject.getZoom();
-            this.center = this.$refs.map.mapObject.getCenter();
-            this.bounds = this.$refs.map.mapObject.getBounds();
-            this.loadMatchedRoutes();
+            this.mapObject = this.$refs.map.mapObject;
+            this.zoom = this.mapObject.getZoom();
+            this.center = this.mapObject.getCenter();
+            this.bounds = this.mapObject.getBounds();
 
             this.zoomUpdated(this.zoom);
             this.centerUpdated(this.center);
             this.boundsUpdated(this.bounds);
 
-            let lat = this.center.lat;
-            let lon = this.center.lng;
-            console.log(this.center);
-            ApiService.loadIncidents(lat, lon).then(response => (this.parseIncidents(response)));
-
-            // this.apiWorker.postMessage(["polygon", [13.342959519984184,52.53110092453128,13.353492468639496,52.53003083236175,13.35087532050109,52.52462124790662]]);
+            this.boxAnalysisMapLayer = new window.L.FeatureGroup().addTo(this.mapObject);
         });
-
-        this.apiWorker = new Worker("/ApiWorker.js");
-        this.apiWorker.onmessage = this.handleWorkerMessage;
-        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
-        let self = this;
-        window.addEventListener("dragenter", function (e) {
-            document.querySelector("#dropzone").style.visibility = "";
-            document.querySelector("#dropzone").style.opacity = 1;
-            document.querySelector("#textnode").style.fontSize = "48px";
-        });
-
-        window.addEventListener("dragleave", function (e) {
-            e.preventDefault();
-
-            document.querySelector("#dropzone").style.visibility = "hidden";
-            document.querySelector("#dropzone").style.opacity = 0;
-            document.querySelector("#textnode").style.fontSize = "42px";
-
-        });
-
-        window.addEventListener("dragover", function (e) {
-            e.preventDefault();
-            document.querySelector("#dropzone").style.visibility = "";
-            document.querySelector("#dropzone").style.opacity = 1;
-            document.querySelector("#textnode").style.fontSize = "48px";
-        });
-
-        window.addEventListener("drop", function (e) {
-            e.preventDefault();
-            document.querySelector("#dropzone").style.visibility = "hidden";
-            document.querySelector("#dropzone").style.opacity = 0;
-            document.querySelector("#textnode").style.fontSize = "42px";
-
-            var files = e.dataTransfer.files;
-            console.log("Drop files:", files);
-            //this.uploadFile(files);
-            self.addFiles(files);
-        });
-
-        this.initDrawToolbar(this.$refs.map.mapObject);
+    },
+    watch: {
+        viewMode: function (newValue, oldValue) {
+            this.updateUrlQuery();
+            this.updateLoadingView(1, 1);
+        }
     },
 };
 </script>
 
 <style lang="scss">
-
     .vue2leaflet-map {
         height: 100%;
         width: 100%;
@@ -797,137 +279,10 @@ export default {
             box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
             color: #4a4a4a;
             position: relative;
-
-            &.overlay-menu {
-                &.disabled {
-                    pointer-events: none;
-                    filter: grayscale(1);
-                }
-
-                &.minimized {
-                    .b-tabs {
-                        margin-bottom: 0;
-                    }
-
-                    label.b-checkbox, .map-filters, .debug-settings {
-                        display: none;
-                    }
-
-                    .minMaxToggle {
-                        margin-top: 7px;
-                    }
-                }
-
-                nav.tabs.is-toggle ul {
-                    li {
-                        flex: 1 0;
-
-                        a {
-                            padding: 0.5em 0.75em;
-                        }
-
-                        &:not(.is-active) a {
-                            background-color: white;
-                            color: #3273dc;
-                        }
-                    }
-                }
-
-                section {
-                    display: none;
-                }
-
-                .b-checkbox.checkbox {
-                    font-size: 16px;
-                }
-
-                .minMaxToggle {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    font-size: 16px;
-                    padding-right: 6px;
-                    margin-top: 5px;
-
-                    a {
-                        color: #777;
-
-                        i.fa {
-                            margin-left: 3px;
-                        }
-                    }
-                }
-            }
-
-            &.overlay-debug {
-                opacity: 0.5;
-                transition: opacity 0.5s;
-                max-width: 400px;
-
-                &:hover {
-                    opacity: 1;
-                }
-            }
         }
 
         &.leaflet-control-zoom {
             display: none;
         }
-    }
-
-    @import "~leaflet.markercluster/dist/MarkerCluster.css";
-    @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
-    @import '~leaflet-geosearch/dist/style.css';
-    @import '~leaflet-geosearch/assets/css/leaflet.css';
-    @import '~leaflet-draw/dist/leaflet.draw.css';
-</style>
-
-<style lang="less">
-    @import "~leaflet-extra-markers/src/assets/less/leaflet.extra-markers";
-
-    .extra-marker {
-        background-image: url("../assets/markers_custom.png");
-
-        &.extra-marker-circle-white i.fa.fa-biking {
-            color: #555 !important;
-        }
-    }
-
-    .extra-marker-shadow {
-        background-image: url("../assets/markers_shadow.png");
-        opacity: 0.75;
-    }
-
-    @media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),
-    (-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {
-        .extra-marker {
-            background-image: url("../assets/markers_custom@2x.png");
-        }
-
-        .extra-marker-shadow {
-            background-image: url("../assets/markers_shadow@2x.png");
-        }
-    }
-
-    div#dropzone {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 9999999999;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        transition: visibility 175ms, opacity 175ms;
-        display: table;
-        text-shadow: 1px 1px 2px #000;
-        color: #fff;
-        background: rgba(0, 0, 0, 0.45);
-        font: bold 42px Oswald, DejaVu Sans, Tahoma, sans-serif;
-    }
-    div#textnode {
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle;
-        transition: font-size 175ms;
     }
 </style>

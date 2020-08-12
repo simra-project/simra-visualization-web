@@ -16,11 +16,11 @@
 
         <p v-if="incident.description !== null">{{ incident.description }}</p>
 
-        <template v-if="isDebug">
+        <template v-if="isDebug && false">
             <hr>Debug information: {{ incident }}<hr>
         </template>
 
-        <button class="button is-primary is-small is-fullwidth" v-if="viewMode !== 3" @click="showRoute">Show Bike Ride</button>
+        <button class="button is-primary is-small is-fullwidth" v-if="showRouteEnabled || true" @click="showRoute">Show Bike Ride</button>
     </div>
 </template>
 
@@ -30,8 +30,8 @@ import { IncidentUtils } from "@/services/IncidentUtils";
 export default {
     name: "MapPopup",
     props: {
-        viewMode: Number,
         incident: Object,
+        showRouteEnabled: Boolean,
         showRoute: Function,
     },
     data() {

@@ -1,6 +1,6 @@
 <template>
     <div class="map-filters">
-        <hr class="hr-text" data-content="FILTERS">
+<!--        <hr class="hr-text" data-content="FILTERS">-->
 
         <template v-if="viewMode === 0 || viewMode === 2">
 <!--            <b-field label="Bike rides" style="margin-bottom: 0.5rem;">-->
@@ -22,7 +22,7 @@
             <b-field label="Time of day">
                 <b-slider v-model="filterRideHours" @change="ridesChanged"
                           :min="0" :max="24" :step="1" lazy rounded :custom-formatter="h => h + ':00'">
-                    <template v-for="h in [4, 8, 12, 16, 20]">
+                    <template v-for="h in [6, 12, 18]">
                         <b-slider-tick :value="h" :key="h">{{ h }}:00</b-slider-tick>
                     </template>
                 </b-slider>
