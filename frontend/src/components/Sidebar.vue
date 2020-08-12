@@ -90,11 +90,10 @@ export default {
     methods: {
         switchToView(viewId) {
             if (this.value === viewId) {
-                this.value = Config.viewModes.NONE;
+                this.$emit('input', Config.viewModes.NONE);
             } else {
-                this.value = viewId;
+                this.$emit('input', viewId);
             }
-            this.$emit('input', this.value);
         }
     }
 };

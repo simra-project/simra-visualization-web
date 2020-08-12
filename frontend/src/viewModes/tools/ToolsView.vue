@@ -86,9 +86,6 @@ export default {
         },
     },
     async mounted() {
-        this.$nextTick(() => {
-        });
-
         window.addEventListener("dragenter", function (e) {
             document.querySelector("#dropzone").style.visibility = "";
             document.querySelector("#dropzone").style.opacity = 1;

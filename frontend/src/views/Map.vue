@@ -37,30 +37,36 @@
                     <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
                 </l-control>
 
-                <RideView v-if="viewMode === config.viewModes.RIDES || viewMode === config.viewModes.COMBINED" ref="rideView"
-                          :zoom="zoom"
-                          :bounds="bounds"
-                          :view-mode="viewMode"
-                          :get-filters="getFiltersRide"
-                          @on-progress="updateLoadingView"
-                />
-
-                <IncidentView v-if="viewMode === config.viewModes.INCIDENTS" ref="incidentView"
+                <!-- Because of a Vue/DOM problem, view modes have to be declared this way ... (wrapped in a tag) -->
+                <div>
+                    <RideView v-if="viewMode === config.viewModes.RIDES || viewMode === config.viewModes.COMBINED" ref="rideView"
                               :zoom="zoom"
                               :bounds="bounds"
-                              :get-filters="getFiltersIncident"
+                              :view-mode="viewMode"
+                              :get-filters="getFiltersRide"
                               @on-progress="updateLoadingView"
-                              @fit-in-view="fitMapObjectIntoView"
-                />
-
-                <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
-                                 :mapLayer="boxAnalysisMapLayer"
-                                 @on-progress="updateLoadingView"
-                />
-
-                <ToolsView v-if="viewMode === config.viewModes.TOOLS" ref="toolsView"
-                           @fit-in-view="fitMapObjectIntoView"
-                />
+                    />
+                </div>
+                <div>
+                    <IncidentView v-if="viewMode === config.viewModes.INCIDENTS" ref="incidentView"
+                                  :zoom="zoom"
+                                  :bounds="bounds"
+                                  :get-filters="getFiltersIncident"
+                                  @on-progress="updateLoadingView"
+                                  @fit-in-view="fitMapObjectIntoView"
+                    />
+                </div>
+                <div>
+                    <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
+                                     :mapLayer="boxAnalysisMapLayer"
+                                     @on-progress="updateLoadingView"
+                    />
+                </div>
+                <div>
+                    <ToolsView v-if="viewMode === config.viewModes.TOOLS" ref="toolsView"
+                               @fit-in-view="fitMapObjectIntoView"
+                    />
+                </div>
             </l-map>
         </section>
     </div>
