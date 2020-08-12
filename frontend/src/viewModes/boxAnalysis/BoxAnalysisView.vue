@@ -40,6 +40,16 @@ export default {
     },
     methods: {
         initPolygonSelection(mapObject) {
+            // Fixing moving the map while adding polygon points
+            // Source: https://gis.stackexchange.com/questions/341221/while-dragging-a-map-in-leaflet-it-marks-a-point-for-the-feature
+            // 2nd Source: https://github.com/Leaflet/Leaflet.draw/issues/695
+            const originalOnTouch = L.Draw.Polyline.prototype._onTouch;
+            L.Draw.Polyline.prototype._onTouch = function (e) {
+                if (e.originalEvent.pointerType !== "mouse" && e.originalEvent.pointerType !== "touch") {
+                    return originalOnTouch.call(this, e);
+                }
+            };
+
             this.polygonTool = new L.Draw.Polygon(mapObject, {
                 showArea: true,
                 showLength: true,
