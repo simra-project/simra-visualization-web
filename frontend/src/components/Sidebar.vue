@@ -7,7 +7,7 @@
                           :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_RIDES}"
                           @entryClicked="switchToView(config.VIEW_MODE_RIDES)">
-                <MapFilters :view-mode="0" ref="filterRides"></MapFilters>
+                <MapFilters :view-mode="0" ref="filterRides" @rides-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
             <SidebarEntry title="Incidents"
@@ -16,7 +16,7 @@
                           :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_INCIDENTS}"
                           @entryClicked="switchToView(config.VIEW_MODE_INCIDENTS)">
-                <MapFilters :view-mode="1" ref="filterIncidents"></MapFilters>
+                <MapFilters :view-mode="1" ref="filterIncidents" @incidents-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
             <SidebarEntry title="Combined"
@@ -25,7 +25,7 @@
                           :is-small="small"
                           :class="{'selected': value === config.VIEW_MODE_COMBINED}"
                           @entryClicked="switchToView(config.VIEW_MODE_COMBINED)">
-                <MapFilters :view-mode="2" ref="filterCombined"></MapFilters>
+                <MapFilters :view-mode="2" ref="filterCombined" @rides-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
             <SidebarEntry title="Box-Analysis"
@@ -51,8 +51,11 @@
             </SidebarEntry>
         </div>
 
+        <div class="bottom-expand-button" @click="small = false" title="Expand menu">
+            <i class="fas fa-lg fa-angle-double-right"></i>
+        </div>
         <div class="bottom">
-            <div class="bottom-settings">
+            <div class="bottom-settings" :title="small ? 'Settings' : ''">
                 <div class="bottom-icon">
                     <i class="fas fa-lg fa-cogs"></i>
                 </div>
@@ -63,9 +66,6 @@
             <div class="bottom-reduce-button" @click="small = true">
                 <i class="fas fa-lg fa-angle-double-left"></i>
             </div>
-        </div>
-        <div class="bottom-expand-button" @click="small = false">
-            <i class="fas fa-lg fa-angle-double-right"></i>
         </div>
     </div>
 </template>
@@ -120,7 +120,7 @@ export default {
 
     .entries {
         padding-top: 8px;
-        height: calc(100% - 52px);
+        height: calc(100% - 53px);
         overflow-y: scroll;
     }
 
@@ -129,6 +129,7 @@ export default {
         display: flex;
         align-items: center;
         border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
         .bottom-settings {
             display: flex;

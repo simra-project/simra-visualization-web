@@ -38,10 +38,11 @@ export default {
         border-color: #dbdbdb !important;
         height: 2.24em;
         padding-right: 40px;
+        background-color: white !important;
 
         &:hover, &:focus, &:active {
             border-color: #b5b5b5 !important;
-            background-color: transparent !important;
+            background-color: white !important;
         }
 
         &:focus, &:active {

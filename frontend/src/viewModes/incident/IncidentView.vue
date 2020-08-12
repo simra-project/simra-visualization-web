@@ -62,11 +62,11 @@ export default {
     props: {
         zoom: Number,
         bounds: Object,
+        getFilters: { default: {} },
     },
     data() {
         return {
             incidents: [],
-            filters: [],
 
             // Heatmap
             incident_heatmap: [],
@@ -127,7 +127,7 @@ export default {
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
             console.log([[min_x, min_y], [max_x, max_y]]);
 
-            this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]], this.filters]);
+            this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]], this.getFilters()]);
         },
         processIncidentsForHeatmap() {
             while (this.incident_heatmap.length > 0) {

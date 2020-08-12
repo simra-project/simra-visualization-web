@@ -1,6 +1,6 @@
 <template>
     <div class="main-layout" style="display:flex;">
-        <Sidebar ref="sidebar" v-model.sync="viewMode"></Sidebar>
+        <Sidebar ref="sidebar" v-model.sync="viewMode" @filters-changed="forwardChangedFilters"></Sidebar>
 
         <section class="hero is-fullheight-with-navbar" style="width: 100%; border-top: none; min-height: calc(100vh - 3.25rem - 1px);">
             <l-map ref="map"
@@ -41,12 +41,14 @@
                           :zoom="zoom"
                           :bounds="bounds"
                           :view-mode="viewMode"
+                          :get-filters="getFiltersRide"
                           @on-progress="updateLoadingView"
                 />
 
                 <IncidentView v-if="viewMode === config.VIEW_MODE_INCIDENTS" ref="incidentView"
                               :zoom="zoom"
                               :bounds="bounds"
+                              :get-filters="getFiltersIncident"
                               @on-progress="updateLoadingView"
                               @fit-in-view="fitMapObjectIntoView"
                 />
@@ -141,19 +143,17 @@ export default {
                 this.mapObject.flyToBounds(bounds);
             }
         },
-        // async tofront (mapObject) {
-        //     while (1) {
-        //         mapObject.bringToFront();
-        //         await new Promise(resolve => setTimeout(resolve, 1000));
-        //     }
-        // },
-        // toback (mapObject) {
-        //     console.log("BACK");
-        //     mapObject.bringToBack();
-        // },
         clickedOnMap(event) {
             if (this.viewMode === Config.VIEW_MODE_INCIDENTS) {
                 this.$refs.incidentView.clickedOnMap(event);
+            }
+        },
+        forwardChangedFilters() {
+            if (this.viewMode === Config.VIEW_MODE_RIDES || this.viewMode === Config.VIEW_MODE_COMBINED) {
+                this.$refs.rideView.loadMatchedRoutes(false);
+            }
+            if (this.viewMode === Config.VIEW_MODE_INCIDENTS) {
+                this.$refs.incidentView.loadIncidents();
             }
         },
         updateLoadingView(progress, expectedTotal) {
@@ -166,6 +166,15 @@ export default {
             if (progress === expectedTotal) {
                 setTimeout(() => this.loadingProgress = null, 1200);
             }
+        },
+        getFiltersRide() {
+            if (this.viewMode === Config.VIEW_MODE_COMBINED) {
+                return this.$refs.sidebar.$refs.filterCombined.getRideFilters();
+            }
+            return this.$refs.sidebar.$refs.filterRides.getRideFilters();
+        },
+        getFiltersIncident() {
+            return this.$refs.sidebar.$refs.filterIncidents.getIncidentFilters();
         },
     },
     async mounted() {

@@ -20,12 +20,12 @@ export default {
         zoom: Number,
         bounds: Object,
         viewMode: Number,
+        getFilters: { default: {} },
     },
     data() {
         return {
             config: Config,
             rides: [],
-            filters: [],
             rideMaxWeight: 1,
             rideMaxIncidentWeight: 0.1,
 
@@ -68,7 +68,7 @@ export default {
     },
 
     methods: {
-        loadMatchedRoutes() {
+        loadMatchedRoutes(delayed) {
             let min_y = Math.floor(this.bounds._southWest.lat * 100) - 1;
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
@@ -80,13 +80,13 @@ export default {
 
             setTimeout(() => {
                 if (this.zoom === zoom_tmp && sw_lat_tmp === this.bounds._southWest.lat && sw_lng_tmp === this.bounds._southWest.lng) {
-                    this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1), this.filters]);
+                    this.apiWorker.postMessage(["matched", [[min_x, min_y], [max_x, max_y]], Math.max((16 - this.zoom), 1), this.getFilters()]);
                 } else {
                     console.log(`expected lat ${sw_lat_tmp}, is ${this.bounds._southWest.lat}`);
                     console.log(`expected lng ${sw_lng_tmp}, is ${this.bounds._southWest.lng}`);
                     console.log("--> map motion detected, waiting to get new data.");
                 }
-            }, 1000);
+            }, delayed ? 1000 : 0);
 
             // this.apiWorker.postMessage(["matched", [[this.bounds._southWest.lng * 100, this.bounds._southWest.lat * 100], [this.bounds._northEast.lng * 100, this.bounds._northEast.lat]], 1]);
         },
@@ -166,11 +166,11 @@ export default {
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
         this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
-        this.loadMatchedRoutes();
+        this.loadMatchedRoutes(true);
     },
     watch: {
         bounds: function (newValue, oldValue) {
-            this.loadMatchedRoutes();
+            this.loadMatchedRoutes(true);
         }
     }
 };
