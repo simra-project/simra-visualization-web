@@ -71,7 +71,6 @@ import { LControl, LMap, LTileLayer } from "vue2-leaflet";
 import { ScalingSquaresSpinner } from "epic-spinners";
 
 import Config from "@/constants";
-import MapFilters from "@/components/MapFilters";
 import MapLegend from "@/components/MapLegend";
 import Sidebar from "@/components/Sidebar";
 
@@ -82,13 +81,15 @@ import ToolsView from "@/viewModes/tools/ToolsView";
 
 export default {
     components: {
+        // Map
         LMap,
         LTileLayer,
         LControl,
         ScalingSquaresSpinner,
-        MapFilters,
+        // Components
         MapLegend,
         Sidebar,
+        // View Modes
         RideView,
         IncidentView,
         BoxAnalysisView,

@@ -73,12 +73,11 @@
 <script>
 import MapFilters from "@/components/MapFilters";
 import SidebarEntry from "@/components/SidebarEntry";
-import SidebarSubEntry from "@/components/SidebarSubEntry";
 import Config from "@/constants";
 
 export default {
     name: "Sidebar",
-    components: { SidebarEntry, SidebarSubEntry, MapFilters },
+    components: { SidebarEntry, MapFilters },
     props: [
         'value',
     ],
