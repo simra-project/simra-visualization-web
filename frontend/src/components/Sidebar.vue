@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar resizable">
+    <div class="sidebar" :class="{'small': small, 'resizable': !small}">
         <div class="entries">
             <SidebarEntry title="Rides"
                           icon="fa-biking"
@@ -45,6 +45,23 @@
                 </div>
             </SidebarEntry>
         </div>
+
+        <div class="bottom">
+            <div class="bottom-settings">
+                <div class="bottom-icon">
+                    <i class="fas fa-lg fa-cogs"></i>
+                </div>
+                <div class="bottom-text">
+                    Settings
+                </div>
+            </div>
+            <div class="bottom-reduce-button" @click="small = true">
+                <i class="fas fa-lg fa-angle-double-left"></i>
+            </div>
+        </div>
+        <div class="bottom-expand-button" @click="small = false">
+            <i class="fas fa-lg fa-angle-double-right"></i>
+        </div>
     </div>
 </template>
 
@@ -63,6 +80,7 @@ export default {
     data() {
         return {
             config: Config,
+            small: false,
         }
     },
     methods: {
@@ -78,7 +96,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
     .sidebar {
         width: 370px;//240px;
         flex-shrink: 0;
@@ -97,5 +115,96 @@ export default {
 
     .entries {
         padding-top: 8px;
+        height: calc(100% - 52px);
+        overflow-y: scroll;
+    }
+
+    .bottom {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+        .bottom-settings {
+            display: flex;
+            align-items: center;
+            padding: 12px 8px;
+            width: 100%;
+
+            &:hover, &:active {
+                background-color: #eaeaea;
+                cursor: pointer;
+            }
+
+            .bottom-icon {
+                width: 60px;
+                flex-shrink: 0;
+                padding-right: 6px;
+                text-align: center;
+            }
+
+            .bottom-text {
+                width: 100%;
+                color: black;
+                font-size: 18px;
+                font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                user-select: none;
+            }
+        }
+
+        .bottom-reduce-button {
+            height: 100%;
+            width: 60px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover, &:active {
+                background-color: #eaeaea;
+                cursor: pointer;
+                color: #156ec7;
+            }
+        }
+    }
+
+    .bottom-expand-button {
+        height: 52px;
+        width: 70px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        &:hover, &:active {
+            background-color: #eaeaea;
+            cursor: pointer;
+            color: #156ec7;
+        }
+    }
+
+    .sidebar.small {
+        width: 71px;
+
+        .entries {
+            height: calc(100% - 104px);
+        }
+
+        .entry {
+            .entry-label .entry-text, .entry-content {
+                display: none;
+            }
+        }
+
+        .bottom .bottom-settings .bottom-text {
+            display: none;
+        }
+
+        .bottom .bottom-reduce-button {
+            display: none;
+        }
+
+        .bottom-expand-button {
+            display: flex;
+        }
     }
 </style>
