@@ -1,7 +1,7 @@
 <template>
     <l-geo-json ref="aggregated_map"
                 :geojson="rides"
-                :options="viewMode === config.VIEW_MODE_COMBINED ? styleCombined : styleRides"
+                :options="viewMode === config.viewModes.COMBINED ? styleCombined : styleRides"
     />
 </template>
 

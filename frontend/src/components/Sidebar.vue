@@ -5,8 +5,8 @@
                           icon="fa-biking"
                           :icon-color="'#156ec7'"
                           :is-small="small"
-                          :class="{'selected': value === config.VIEW_MODE_RIDES}"
-                          @entryClicked="switchToView(config.VIEW_MODE_RIDES)">
+                          :class="{'selected': value === config.viewModes.RIDES}"
+                          @entryClicked="switchToView(config.viewModes.RIDES)">
                 <MapFilters :view-mode="0" ref="filterRides" @rides-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
@@ -14,8 +14,8 @@
                           icon="fa-car-crash"
                           :icon-color="'#1d917c'"
                           :is-small="small"
-                          :class="{'selected': value === config.VIEW_MODE_INCIDENTS}"
-                          @entryClicked="switchToView(config.VIEW_MODE_INCIDENTS)">
+                          :class="{'selected': value === config.viewModes.INCIDENTS}"
+                          @entryClicked="switchToView(config.viewModes.INCIDENTS)">
                 <MapFilters :view-mode="1" ref="filterIncidents" @incidents-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
@@ -23,8 +23,8 @@
                           icon="fa-layer-group"
                           :icon-color="'#d63e12'"
                           :is-small="small"
-                          :class="{'selected': value === config.VIEW_MODE_COMBINED}"
-                          @entryClicked="switchToView(config.VIEW_MODE_COMBINED)">
+                          :class="{'selected': value === config.viewModes.COMBINED}"
+                          @entryClicked="switchToView(config.viewModes.COMBINED)">
                 <MapFilters :view-mode="2" ref="filterCombined" @rides-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
@@ -32,8 +32,8 @@
                           icon="fa-draw-polygon"
                           :icon-color="'#156ec7'"
                           :is-small="small"
-                          :class="{'selected': value === config.VIEW_MODE_BOX_ANALYSIS}"
-                          @entryClicked="switchToView(config.VIEW_MODE_BOX_ANALYSIS)">
+                          :class="{'selected': value === config.viewModes.BOX_ANALYSIS}"
+                          @entryClicked="switchToView(config.viewModes.BOX_ANALYSIS)">
                 <div class="entry-subtext">
                     Draw a shape on the map to see what bike rides went through it. Click on the shape to draw a new one.
                 </div>
@@ -43,8 +43,8 @@
                           :icon="'fa-tools'"
                           :icon-color="'#1d917c'"
                           :is-small="small"
-                          :class="{'selected': value === config.VIEW_MODE_TOOLS}"
-                          @entryClicked="switchToView(config.VIEW_MODE_TOOLS)">
+                          :class="{'selected': value === config.viewModes.TOOLS}"
+                          @entryClicked="switchToView(config.viewModes.TOOLS)">
                 <div class="entry-subtext">
                     Upload a ride to analyze it (drag the file on the map).
                 </div>
@@ -91,7 +91,7 @@ export default {
     methods: {
         switchToView(viewId) {
             if (this.value === viewId) {
-                this.value = Config.VIEW_MODE_NONE;
+                this.value = Config.viewModes.NONE;
             } else {
                 this.value = viewId;
             }

@@ -1,13 +1,13 @@
 <template>
-    <div class="overlay legend" :class="{viewModeIncidents: viewMode === 1 || viewMode === 3}">
-        <div v-if="viewMode === 0" class="legend-row viewModeRides">
+    <div class="overlay legend" :class="{viewModeIncidents: viewMode === config.viewModes.INCIDENTS}">
+        <div v-if="viewMode === config.viewModes.RIDES" class="legend-row viewModeRides">
             <div class="color-box color-box-rides c1"></div>
             <div class="color-box color-box-rides c2"></div>
             <div class="color-box color-box-rides c3"></div>
-            <div class="text-box"> Bikers per street segment</div>
+            <div class="text-box"> Bicyclists per street segment</div>
         </div>
 
-        <div v-else-if="viewMode === 1 || viewMode === 3" class="legend-row viewModeIncidents">
+        <div v-else-if="viewMode === config.viewModes.INCIDENTS" class="legend-row viewModeIncidents">
             <div class="marker marker-scary"><i class="fa fa-car"/></div>
             <div class="text-box" style="break-after: page">Scary Incident</div>
 
@@ -15,7 +15,7 @@
             <div class="text-box">Regular Incident</div>
         </div>
 
-        <template v-else-if="viewMode === 2">
+        <template v-else-if="viewMode === config.viewModes.COMBINED">
             <div class="legend-row viewModeRides">
                 <div class="color-box color-box-combined c1"></div>
                 <div class="color-box color-box-combined c2"></div>
@@ -28,19 +28,25 @@
                 <div class="color-box color-box-combined-gray c2"></div>
                 <div class="color-box color-box-combined-gray c3"></div>
                 <div class="color-box color-box-combined-gray c4"></div>
-                <div class="text-box"> Bikers per street segment (line width)</div>
+                <div class="text-box"> Bicyclists per street segment (line width)</div>
             </div>
-
         </template>
     </div>
 </template>
 
 <script>
+import Config from "@/constants";
+
 export default {
     name: "MapLegend",
     props: {
         viewMode: Number,
     },
+    data() {
+        return {
+            config: Config,
+        }
+    }
 };
 </script>
 
@@ -51,7 +57,6 @@ export default {
         -webkit-box-shadow: none;
         box-shadow: none;
         background-color: white;
-
 
         &.viewModeIncidents {
             width: 60%;

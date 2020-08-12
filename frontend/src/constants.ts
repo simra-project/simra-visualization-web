@@ -1,10 +1,16 @@
 
+let viewModes = {
+    NONE: 0,
+    RIDES: 1,
+    INCIDENTS: 2,
+    COMBINED: 3,
+    BOX_ANALYSIS: 4,
+    TOOLS: 5,
+}
 
 export default {
-    VIEW_MODE_NONE: 0,
-    VIEW_MODE_RIDES: 1,
-    VIEW_MODE_INCIDENTS: 2,
-    VIEW_MODE_COMBINED: 3,
-    VIEW_MODE_BOX_ANALYSIS: 4,
-    VIEW_MODE_TOOLS: 10,
+    viewModes: viewModes,
+    viewModeHasLegend(viewMode: number) {
+        return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS || viewMode === viewModes.COMBINED;
+    }
 }
