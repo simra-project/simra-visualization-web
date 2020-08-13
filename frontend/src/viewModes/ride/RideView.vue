@@ -1,12 +1,23 @@
 <template>
-    <l-geo-json ref="aggregated_map"
-                :geojson="rides"
-                :options="viewMode === config.viewModes.COMBINED ? styleCombined : styleRides"
-    />
+    <div>
+        <div class="leaflet-control topcenter rides-submode-switcher" v-if="viewMode === config.viewModes.RIDES">
+            <b-tabs type="is-toggle-rounded" v-model="subViewMode">
+                <b-tab-item label="Density" icon="chart-area"></b-tab-item>
+                <b-tab-item label="Original Rides" icon="database"></b-tab-item>
+            </b-tabs>
+        </div>
+
+        <l-geo-json v-if="subViewMode === 0" ref="aggregated_map"
+                    :geojson="rides"
+                    :options="viewMode === config.viewModes.COMBINED ? styleCombined : styleRides"
+        />
+
+        <l-tile-layer v-if="subViewMode === 1" url="http://207.180.205.80:1337/tiles/simra_rides/{z}/{x}/{y}.png"/>
+    </div>
 </template>
 
 <script>
-import { LGeoJson } from "vue2-leaflet";
+import { LGeoJson, LTileLayer } from "vue2-leaflet";
 
 import Config from "@/constants";
 import { ApiService } from "@/services/ApiService";
@@ -15,6 +26,7 @@ export default {
     name: "RideView",
     components: {
         LGeoJson,
+        LTileLayer,
     },
     props: {
         zoom: Number,
@@ -25,6 +37,7 @@ export default {
     data() {
         return {
             config: Config,
+            subViewMode: 0, // 0 - Density, 1 - Original Rides
             rides: [],
             rideMaxWeight: 1,
             rideMaxIncidentWeight: 0.1,
@@ -170,12 +183,25 @@ export default {
     },
     watch: {
         bounds: function (newValue, oldValue) {
-            this.loadMatchedRoutes(true);
-        }
+            if (this.subViewMode === 0) this.loadMatchedRoutes(true);
+        },
+        subViewMode: function (newValue, oldValue) {
+            if (newValue === 0 && newValue !== oldValue) this.loadMatchedRoutes(true);
+        },
+        viewMode: function (newValue, oldValue) {
+            if (newValue === Config.viewModes.COMBINED) this.subViewMode = 0;
+        },
     }
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+    .rides-submode-switcher .b-tabs {
+        margin-top: 16px;
 
+        li > a {
+            background-color: white;
+            color: #3273dc;
+        }
+    }
 </style>
