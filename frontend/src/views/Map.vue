@@ -1,6 +1,9 @@
 <template>
     <div class="main-layout" style="display:flex;">
-        <Sidebar ref="sidebar" v-model.sync="viewMode" @filters-changed="forwardChangedFilters"></Sidebar>
+        <Sidebar v-model.sync="viewMode" ref="sidebar"
+                 @filters-changed="forwardChangedFilters"
+                 @size-changed="mapObject.invalidateSize()"
+        />
 
         <section class="hero is-fullheight-with-navbar" style="width: 100%; border-top: none; min-height: calc(100vh - 3.25rem - 1px);">
             <l-map ref="map"

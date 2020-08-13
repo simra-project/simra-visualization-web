@@ -95,6 +95,11 @@ export default {
                 this.$emit('input', viewId);
             }
         }
+    },
+    watch: {
+        small: function (newValue, oldValue) {
+            if (newValue !== oldValue) this.$emit('size-changed');
+        }
     }
 };
 </script>
@@ -113,13 +118,15 @@ export default {
             max-width: 50%;
             resize: horizontal;
             overflow-x: hidden;
+            overflow-y: hidden;
         }
     }
 
     .entries {
         padding-top: 8px;
         height: calc(100% - 53px);
-        overflow-y: scroll;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .bottom {
@@ -188,6 +195,7 @@ export default {
 
     .sidebar.small {
         width: 71px;
+        overflow: hidden;
 
         .entries {
             height: calc(100% - 104px);
