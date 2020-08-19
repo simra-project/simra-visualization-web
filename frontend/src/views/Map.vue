@@ -10,11 +10,11 @@
                    style="width: 100%"
                    :zoom="zoom"
                    :center="center"
-                   :min-zoom="9"
-                   @update:zoom="zoomUpdated"
-                   @update:center="centerUpdated"
-                   @update:bounds="boundsUpdated"
-                   @click="clickedOnMap($event)"
+                   :min-zoom="2"
+                   @update:zoom="zoom = $event"
+                   @update:center="center = $event; updateUrlQuery();"
+                   @update:bounds="bounds = $event"
+                   @click="clickedOnMap"
             >
                 <l-tile-layer :url="mapUrl" :class="{monochrome: devMonochromeMap}"/>
 
@@ -127,16 +127,6 @@ export default {
         };
     },
     methods: {
-        zoomUpdated(zoom) {
-            this.zoom = zoom;
-        },
-        centerUpdated(center) {
-            this.center = center;
-            this.updateUrlQuery();
-        },
-        boundsUpdated(bounds) {
-            this.bounds = bounds;
-        },
         updateUrlQuery() {
             this.$router.replace({
                 name: "mapQuery",
@@ -197,10 +187,7 @@ export default {
             this.zoom = this.mapObject.getZoom();
             this.center = this.mapObject.getCenter();
             this.bounds = this.mapObject.getBounds();
-
-            this.zoomUpdated(this.zoom);
-            this.centerUpdated(this.center);
-            this.boundsUpdated(this.bounds);
+            this.updateUrlQuery();
 
             this.boxAnalysisMapLayer = new window.L.FeatureGroup().addTo(this.mapObject);
         });
