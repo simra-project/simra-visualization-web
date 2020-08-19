@@ -1,18 +1,22 @@
 <template>
     <div>
         <div class="leaflet-control topcenter rides-submode-switcher" v-if="viewMode === config.viewModes.RIDES">
-            <b-tabs type="is-toggle-rounded" v-model="subViewMode">
+            <b-tabs type="is-toggle-rounded"
+                    :value="subViewMode"
+                    @change="$emit('update:sub-view-mode', $event)"
+                    @update="$emit('update:sub-view-mode', $event)"
+            >
                 <b-tab-item label="Density" icon="chart-area"></b-tab-item>
                 <b-tab-item label="Original Rides" icon="database"></b-tab-item>
             </b-tabs>
         </div>
 
-        <l-geo-json v-if="subViewMode === 0" ref="aggregated_map"
+        <l-geo-json v-if="subViewMode === config.subViewModes.RIDES_DENSITY" ref="aggregated_map"
                     :geojson="rides"
                     :options="viewMode === config.viewModes.COMBINED ? styleCombined : styleRides"
         />
 
-        <l-tile-layer v-if="subViewMode === 1" url="http://207.180.205.80:1337/tiles/simra_rides/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/simra_rides/{z}/{x}/{y}.png"/>
     </div>
 </template>
 
@@ -32,12 +36,12 @@ export default {
         zoom: Number,
         bounds: Object,
         viewMode: Number,
+        subViewMode: Number,
         getFilters: { default: {} },
     },
     data() {
         return {
             config: Config,
-            subViewMode: 0, // 0 - Density, 1 - Original Rides
             rides: [],
             rideMaxWeight: 1,
             rideMaxIncidentWeight: 0.1,
@@ -186,10 +190,7 @@ export default {
             if (this.subViewMode === 0) this.loadMatchedRoutes(true);
         },
         subViewMode: function (newValue, oldValue) {
-            if (newValue === 0 && newValue !== oldValue) this.loadMatchedRoutes(true);
-        },
-        viewMode: function (newValue, oldValue) {
-            if (newValue === Config.viewModes.COMBINED) this.subViewMode = 0;
+            if (newValue === Config.subViewModes.RIDES_DENSITY && newValue !== oldValue) this.loadMatchedRoutes(true);
         },
     }
 };

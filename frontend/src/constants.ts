@@ -8,8 +8,15 @@ let viewModes = {
     TOOLS: 5,
 }
 
+let subViewModes = {
+    DEFAULT: 0,
+    RIDES_DENSITY: 0,
+    RIDES_ORIGINAL: 1,
+}
+
 export default {
     viewModes: viewModes,
+    subViewModes: subViewModes,
     viewModeHasLegend(viewMode: number) {
         return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS || viewMode === viewModes.COMBINED;
     }

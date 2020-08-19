@@ -18,7 +18,7 @@ const routes = [
         component: Map,
     },
     {
-        path: "/map?lat=:lat&lng=:lng&z=:zoom&m=:viewMode",
+        path: "/map?lat=:lat&lng=:lng&z=:zoom&m=:viewMode&sm=:subViewMode",
         name: 'mapQuery',
         component: Map,
     },

@@ -46,8 +46,10 @@
                               :zoom="zoom"
                               :bounds="bounds"
                               :view-mode="viewMode"
+                              :sub-view-mode="subViewMode"
                               :get-filters="getFiltersRide"
                               @on-progress="updateLoadingView"
+                              @update:sub-view-mode="subViewMode = $event"
                     />
                 </div>
                 <div>
@@ -109,6 +111,7 @@ export default {
             // General
             config: Config,
             viewMode: parseInt(this.$route.query.m) || Config.viewModes.RIDES,
+            subViewMode: parseInt(this.$route.query.sm) || Config.subViewModes.DEFAULT,
             loadingProgress: null,
             devMonochromeMap: false,
 
@@ -142,6 +145,7 @@ export default {
                     lng: this.center.lng,
                     zoom: this.zoom,
                     viewMode: this.viewMode,
+                    subViewMode: this.subViewMode,
                 },
             }).catch(() => {
             });
@@ -205,6 +209,11 @@ export default {
         viewMode: function (newValue, oldValue) {
             this.updateUrlQuery();
             this.updateLoadingView(1, 1);
+
+            if (newValue !== oldValue) this.subViewMode = Config.subViewModes.DEFAULT;
+        },
+        subViewMode: function (newValue, oldValue) {
+            this.updateUrlQuery();
         }
     },
 };
