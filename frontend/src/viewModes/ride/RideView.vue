@@ -11,12 +11,15 @@
             </b-tabs>
         </div>
 
-        <l-geo-json v-if="subViewMode === config.subViewModes.RIDES_DENSITY" ref="aggregated_map"
-                    :geojson="rides"
-                    :options="viewMode === config.viewModes.COMBINED ? styleCombined : styleRides"
-        />
+<!--        <l-geo-json v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY" ref="aggregated_map"-->
+<!--                    :geojson="rides"-->
+<!--                    :options="styleRides"-->
+<!--        />-->
 
-        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/simra_rides/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY" url="http://207.180.205.80:1337/tiles/simra_rides_density/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/simra_rides_original/{z}/{x}/{y}.png"/>
+
+        <l-tile-layer v-if="viewMode === config.viewModes.COMBINED" url="http://207.180.205.80:1337/tiles/simra_combined/{z}/{x}/{y}.png"/>
     </div>
 </template>
 
@@ -183,14 +186,14 @@ export default {
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
         this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
-        this.loadMatchedRoutes(true);
+        // this.loadMatchedRoutes(true);
     },
     watch: {
         bounds: function (newValue, oldValue) {
-            if (this.subViewMode === 0) this.loadMatchedRoutes(true);
+            // if (this.viewMode === Config.viewModes.RIDES && this.subViewMode === Config.subViewModes.RIDES_DENSITY) this.loadMatchedRoutes(true);
         },
         subViewMode: function (newValue, oldValue) {
-            if (newValue === Config.subViewModes.RIDES_DENSITY && newValue !== oldValue) this.loadMatchedRoutes(true);
+            // if (newValue === Config.subViewModes.RIDES_DENSITY && newValue !== oldValue) this.loadMatchedRoutes(true);
         },
     }
 };
