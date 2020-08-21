@@ -213,7 +213,7 @@ export default {
         flex: 1 0;
 
         // The class monochrome can only be set on the element before
-        .monochrome ~ .leaflet-pane.leaflet-map-pane .leaflet-pane.leaflet-tile-pane {
+        .monochrome ~ .leaflet-pane.leaflet-map-pane .leaflet-pane.leaflet-tile-pane .leaflet-layer:nth-child(1) {
             filter: grayscale(1);
         }
     }
