@@ -16,7 +16,7 @@
                    @update:bounds="bounds = $event"
                    @click="clickedOnMap"
             >
-                <l-tile-layer :url="mapUrl" :class="{monochrome: viewMode === Config.viewModes.RIDES || viewMode === Config.viewModes.COMBINED}"/>
+                <l-tile-layer :url="mapUrl" :class="{monochrome: viewMode === config.viewModes.RIDES || viewMode === config.viewModes.COMBINED}"/>
 
                 <div class="leaflet-control bottomcenter">
                     <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
