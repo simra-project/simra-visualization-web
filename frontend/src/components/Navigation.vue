@@ -27,6 +27,18 @@
         </template>
 
         <template slot="end">
+            <b-navbar-dropdown :label="'Map style: ' + mapStyle.name" ref="mapStyleDropdown">
+                <div v-for="style in config.mapStyles"
+                     class="map-style"
+                     :class="{'selected': style.key === mapStyle.key}"
+                     :key="style.key"
+                     @click="switchToMapStyle(style)"
+                >
+                    <div class="img" :style="'background-image: url(\'' + previewURL(style.url) + '\')'"></div>
+                    <span>{{ style.name + (style.key === mapStyle.key ? ' (selected)' : '')}}</span>
+                </div>
+            </b-navbar-dropdown>
+
             <div class="navbar-item">
                 <div class="buttons">
                     <a class="button is-primary" href="https://www.mcc.tu-berlin.de/menue/forschung/projekte/simra/">
@@ -39,11 +51,40 @@
 </template>
 
 <script>
+import Config from "@/constants"
+
 export default {
     name: "Navigation",
     props: {
-        locations: Array,
+        mapStyle: { default: {} },
+        center: { default: {} },
+        zoom: { default: {} },
     },
+    data() {
+        return {
+            config: Config,
+        }
+    },
+    methods: {
+        previewURL(url) {
+            // Converting center coordinate to nearest tile
+            // Found here: https://stackoverflow.com/a/23058284/410143
+            const xtile = parseInt(Math.floor((this.center.lng + 180) / 360 * (1 << this.zoom)));
+            const latRadians = this.center.lat * Math.PI / 180;
+            const ytile = parseInt(Math.floor((1 - Math.log(Math.tan(latRadians) + 1 / Math.cos(latRadians)) / Math.PI) / 2 * (1 << this.zoom)));
+
+            url = url.replace("{z}", this.zoom);
+            url = url.replace("{x}", xtile);
+            url = url.replace("{y}", ytile);
+            url = url.replace("{r}", '');
+            url = url.replace("{s}", 'a');
+            return url;
+        },
+        switchToMapStyle(mapStyle) {
+            this.$refs.mapStyleDropdown.closeMenu();
+            this.$emit('update:map-style', mapStyle);
+        },
+    }
 };
 </script>
 
@@ -77,5 +118,50 @@ export default {
             font-weight: bold;
             font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
+    }
+
+    .navbar-item.has-dropdown .map-style .img {
+        display: none;
+    }
+
+    .navbar-item.has-dropdown.is-active .map-style .img {
+        display: block;
+    }
+
+    .map-style {
+        height: 120px;
+        cursor: pointer;
+
+        .img {
+            width: 100%;
+            height: 120px;
+            max-height: 120px;
+            object-fit: cover;
+        }
+
+        span {
+            position: relative;
+            background-color: rgba(33, 33, 33, 0.5);
+            color: white;
+            bottom: 21px;
+            display: block;
+            padding-left: 8px;
+            width: 100%;
+        }
+
+        &.selected {
+            cursor: auto;
+
+            .img {
+                filter: contrast(0.5);
+            }
+        }
+    }
+</style>
+
+<style lang="scss">
+    .navbar-item.has-dropdown .navbar-dropdown {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
     }
 </style>

@@ -1,79 +1,87 @@
 <template>
-    <div class="main-layout" style="display:flex;">
-        <Sidebar v-model.sync="viewMode" ref="sidebar"
-                 @filters-changed="forwardChangedFilters"
-                 @size-changed="mapObject.invalidateSize()"
+    <div>
+        <Navigation :map-style="mapStyle"
+                    :center="center"
+                    :zoom="zoom"
+                    @update:map-style="mapStyle = $event; updateUrlQuery();"
         />
 
-        <section class="hero is-fullheight-with-navbar" style="width: 100%; border-top: none; min-height: calc(100vh - 3.25rem - 1px);">
-            <l-map ref="map"
-                   style="width: 100%"
-                   :zoom="zoom"
-                   :center="center"
-                   :min-zoom="2"
-                   @update:zoom="zoom = $event"
-                   @update:center="center = $event; updateUrlQuery();"
-                   @update:bounds="bounds = $event"
-                   @click="clickedOnMap"
-            >
-                <l-tile-layer :url="mapUrl" :class="{monochrome: viewMode === config.viewModes.RIDES || viewMode === config.viewModes.COMBINED}"/>
+        <div class="main-layout" style="display:flex;">
+            <Sidebar v-model.sync="viewMode" ref="sidebar"
+                     @filters-changed="forwardChangedFilters"
+                     @size-changed="mapObject.invalidateSize()"
+            />
 
-                <div class="leaflet-control bottomcenter">
-                    <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
-                        <div class="overlay overlay-loading">
-                            <div class="spinner-container">
-                                <scaling-squares-spinner
-                                    :animation-duration="1750"
-                                    :size="30"
-                                    color="hsl(217, 71%, 53%)"
-                                />
+            <section class="hero is-fullheight-with-navbar" style="width: 100%; border-top: none; min-height: calc(100vh - 3.25rem - 1px);">
+                <l-map ref="map"
+                       style="width: 100%"
+                       :zoom="zoom"
+                       :center="center"
+                       :min-zoom="2"
+                       @update:zoom="zoom = $event"
+                       @update:center="center = $event; updateUrlQuery();"
+                       @update:bounds="bounds = $event"
+                       @click="clickedOnMap"
+                >
+                    <l-tile-layer :url="mapStyle.url" :class="{monochrome: false}"/>
 
-                                <div class="text">Loading Map Data</div>
+                    <div class="leaflet-control bottomcenter">
+                        <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
+                            <div class="overlay overlay-loading">
+                                <div class="spinner-container">
+                                    <scaling-squares-spinner
+                                        :animation-duration="1750"
+                                        :size="30"
+                                        color="hsl(217, 71%, 53%)"
+                                    />
+
+                                    <div class="text">Loading Map Data</div>
+                                </div>
+
+                                <b-progress type="is-primary is-small" :value="loadingProgress"/>
                             </div>
-
-                            <b-progress type="is-primary is-small" :value="loadingProgress"/>
                         </div>
                     </div>
-                </div>
 
-                <l-control position="bottomright" v-if="config.viewModeHasLegend(viewMode)">
-                    <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
-                </l-control>
+                    <l-control position="bottomright" v-if="config.viewModeHasLegend(viewMode)">
+                        <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
+                    </l-control>
 
-                <!-- Because of a Vue/DOM problem, view modes have to be declared this way ... (wrapped in a tag) -->
-                <div>
-                    <RideView v-if="viewMode === config.viewModes.RIDES || viewMode === config.viewModes.COMBINED" ref="rideView"
-                              :zoom="zoom"
-                              :bounds="bounds"
-                              :view-mode="viewMode"
-                              :sub-view-mode="subViewMode"
-                              :get-filters="getFiltersRide"
-                              @on-progress="updateLoadingView"
-                              @update:sub-view-mode="subViewMode = $event"
-                    />
-                </div>
-                <div>
-                    <IncidentView v-if="viewMode === config.viewModes.INCIDENTS" ref="incidentView"
+                    <!-- Because of a Vue/DOM problem, view modes have to be declared this way ... (wrapped in a tag) -->
+                    <div>
+                        <RideView v-if="viewMode === config.viewModes.RIDES || viewMode === config.viewModes.COMBINED" ref="rideView"
                                   :zoom="zoom"
                                   :bounds="bounds"
-                                  :get-filters="getFiltersIncident"
+                                  :view-mode="viewMode"
+                                  :sub-view-mode="subViewMode"
+                                  :get-filters="getFiltersRide"
                                   @on-progress="updateLoadingView"
-                                  @fit-in-view="fitMapObjectIntoView"
-                    />
-                </div>
-                <div>
-                    <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
-                                     :mapLayer="boxAnalysisMapLayer"
-                                     @on-progress="updateLoadingView"
-                    />
-                </div>
-                <div>
-                    <ToolsView v-if="viewMode === config.viewModes.TOOLS" ref="toolsView"
-                               @fit-in-view="fitMapObjectIntoView"
-                    />
-                </div>
-            </l-map>
-        </section>
+                                  @update:sub-view-mode="subViewMode = $event"
+                        />
+                    </div>
+                    <div>
+                        <IncidentView v-if="viewMode === config.viewModes.INCIDENTS" ref="incidentView"
+                                      :zoom="zoom"
+                                      :bounds="bounds"
+                                      :get-filters="getFiltersIncident"
+                                      @on-progress="updateLoadingView"
+                                      @fit-in-view="fitMapObjectIntoView"
+                        />
+                    </div>
+                    <div>
+                        <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
+                                         :mapLayer="boxAnalysisMapLayer"
+                                         @on-progress="updateLoadingView"
+                        />
+                    </div>
+                    <div>
+                        <ToolsView v-if="viewMode === config.viewModes.TOOLS" ref="toolsView"
+                                   @fit-in-view="fitMapObjectIntoView"
+                        />
+                    </div>
+                </l-map>
+            </section>
+        </div>
     </div>
 </template>
 
@@ -83,6 +91,7 @@ import { ScalingSquaresSpinner } from "epic-spinners";
 
 import Config from "@/constants";
 import MapLegend from "@/components/MapLegend";
+import Navigation from "@/components/Navigation";
 import Sidebar from "@/components/Sidebar";
 
 import RideView from "@/viewModes/ride/RideView";
@@ -99,6 +108,7 @@ export default {
         ScalingSquaresSpinner,
         // Components
         MapLegend,
+        Navigation,
         Sidebar,
         // View Modes
         RideView,
@@ -117,7 +127,7 @@ export default {
 
             // Map
             mapObject: null,
-            mapUrl: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            mapStyle: Config.mapStyles[this.$route.query.style] || Config.mapStyles.OSM,
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,
@@ -134,6 +144,7 @@ export default {
                     lat: this.center.lat,
                     lng: this.center.lng,
                     zoom: this.zoom,
+                    style: this.mapStyle.key,
                     viewMode: this.viewMode,
                     subViewMode: this.subViewMode,
                 },

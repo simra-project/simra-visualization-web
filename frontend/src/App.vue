@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <Navigation :locations="locations"></Navigation>
+
 
 <!--        <section class="hero is-fullheight-with-navbar">-->
             <router-view :locations="locations"></router-view>
