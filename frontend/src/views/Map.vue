@@ -23,7 +23,7 @@
                        @update:bounds="bounds = $event"
                        @click="clickedOnMap"
                 >
-                    <l-tile-layer :url="mapStyle.url" :class="{monochrome: false}"/>
+                    <l-tile-layer :url="mapStyle.url" :class="{monochrome: false}" :attribution="mapStyle.attribution"/>
 
                     <div class="leaflet-control bottomcenter">
                         <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
@@ -79,6 +79,8 @@
                                    @fit-in-view="fitMapObjectIntoView"
                         />
                     </div>
+
+                    <l-tile-layer v-if="mapStyle.hasLabelLayer" :url="mapStyle.urlLabels" pane="overlayPane"/>
                 </l-map>
             </section>
         </div>

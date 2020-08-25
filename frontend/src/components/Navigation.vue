@@ -28,14 +28,16 @@
 
         <template slot="end">
             <b-navbar-dropdown :label="'Map style: ' + mapStyle.name" ref="mapStyleDropdown">
-                <div v-for="style in config.mapStyles"
-                     class="map-style"
-                     :class="{'selected': style.key === mapStyle.key}"
-                     :key="style.key"
-                     @click="switchToMapStyle(style)"
-                >
-                    <div class="img" :style="'background-image: url(\'' + previewURL(style.url) + '\')'"></div>
-                    <span>{{ style.name + (style.key === mapStyle.key ? ' (selected)' : '')}}</span>
+                <div class="map-style-container">
+                    <div v-for="style in config.mapStyles"
+                         class="map-style"
+                         :class="{'selected': style.key === mapStyle.key}"
+                         :key="style.key"
+                         @click="switchToMapStyle(style)"
+                    >
+                        <div class="img" :style="'background-image: url(\'' + previewURL(style.url) + '\')'"></div>
+                        <span>{{ style.name + (style.key === mapStyle.key ? ' (selected)' : '')}}</span>
+                    </div>
                 </div>
             </b-navbar-dropdown>
 
@@ -147,6 +149,7 @@ export default {
             display: block;
             padding-left: 8px;
             width: 100%;
+            margin-bottom: -21px;
         }
 
         &.selected {
@@ -163,5 +166,7 @@ export default {
     .navbar-item.has-dropdown .navbar-dropdown {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
+        overflow-y: scroll;
+        max-height: calc(100vh - 52px - 22px - 52px);
     }
 </style>
