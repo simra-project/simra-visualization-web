@@ -65,8 +65,9 @@
 </template>
 
 <script>
-import CountryFlag from 'vue-country-flag'
-import Config from "@/constants"
+import VueCookie from 'vue-cookie';
+import CountryFlag from 'vue-country-flag';
+import Config from "@/constants";
 
 export default {
     name: "Navigation",
@@ -114,6 +115,7 @@ export default {
             if (lang === this.$i18n.locale) return;
 
             this.$i18n.locale = lang;
+            VueCookie.set('locale', lang, 365 * 100);
         },
     }
 };
