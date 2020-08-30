@@ -35,7 +35,7 @@
                                         color="hsl(217, 71%, 53%)"
                                     />
 
-                                    <div class="text">Loading Map Data</div>
+                                    <div class="text">{{ $t('map.loadingMapData') }}</div>
                                 </div>
 
                                 <b-progress type="is-primary is-small" :value="loadingProgress"/>

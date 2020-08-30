@@ -27,7 +27,7 @@
         </template>
 
         <template slot="end">
-            <b-navbar-dropdown :label="'Map style: ' + mapStyle.name" ref="mapStyleDropdown">
+            <b-navbar-dropdown :label="$t('navigation.mapStyle', [mapStyle.name])" ref="mapStyleDropdown">
                 <div class="map-style-container">
                     <div v-for="style in config.mapStyles"
                          class="map-style"
@@ -36,15 +36,27 @@
                          @click="switchToMapStyle(style)"
                     >
                         <div class="img" :style="'background-image: url(\'' + previewURL(style.url) + '\')'"></div>
-                        <span>{{ style.name + (style.key === mapStyle.key ? ' (selected)' : '')}}</span>
+                        <span>{{ style.name + (style.key === mapStyle.key ? $t('navigation.selected') : '')}}</span>
                     </div>
                 </div>
+            </b-navbar-dropdown>
+
+            <b-navbar-dropdown class="lang-switcher">
+                <template v-slot:label>
+                    <country-flag v-if="$i18n.locale === 'en'" country='gb'/>
+                    <country-flag v-if="$i18n.locale === 'de'" country='de'/>
+                </template>
+
+                <b-navbar-item v-for="(lang, langId) in languages"
+                               @click="switchLanguage(langId)">
+                    <country-flag :country='lang.flagCode'/> {{ $t(lang.name) }}
+                </b-navbar-item>
             </b-navbar-dropdown>
 
             <div class="navbar-item">
                 <div class="buttons">
                     <a class="button is-primary" href="https://www.mcc.tu-berlin.de/menue/forschung/projekte/simra/">
-                        <strong>Download App</strong>
+                        <strong>{{ $t('navigation.downloadApp') }}</strong>
                     </a>
                 </div>
             </div>
@@ -53,10 +65,12 @@
 </template>
 
 <script>
+import CountryFlag from 'vue-country-flag'
 import Config from "@/constants"
 
 export default {
     name: "Navigation",
+    components: { CountryFlag },
     props: {
         mapStyle: { default: {} },
         center: { default: {} },
@@ -65,6 +79,16 @@ export default {
     data() {
         return {
             config: Config,
+            languages: {
+                'en': {
+                    name: 'navigation.lang.english',
+                    flagCode: 'gb',
+                },
+                'de': {
+                    name: 'navigation.lang.german',
+                    flagCode: 'de',
+                },
+            },
         }
     },
     methods: {
@@ -85,6 +109,11 @@ export default {
         switchToMapStyle(mapStyle) {
             this.$refs.mapStyleDropdown.closeMenu();
             this.$emit('update:map-style', mapStyle);
+        },
+        switchLanguage(lang) {
+            if (lang === this.$i18n.locale) return;
+
+            this.$i18n.locale = lang;
         },
     }
 };
@@ -168,5 +197,21 @@ export default {
         padding-bottom: 0 !important;
         overflow-y: scroll;
         max-height: calc(100vh - 52px - 22px - 52px);
+    }
+
+    .lang-switcher  {
+        .navbar-link {
+            padding-right: 1.5em !important;
+            padding-left: 0;
+
+            .flag {
+                filter: grayscale(0.25);
+                transition: filter 250ms ease;
+            }
+        }
+
+        &.is-active .flag, .navbar-link:hover .flag {
+            filter: none;
+        }
     }
 </style>

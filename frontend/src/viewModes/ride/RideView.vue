@@ -6,8 +6,8 @@
                     @change="$emit('update:sub-view-mode', $event)"
                     @update="$emit('update:sub-view-mode', $event)"
             >
-                <b-tab-item label="Density" icon="chart-area"></b-tab-item>
-                <b-tab-item label="Original Rides" icon="database"></b-tab-item>
+                <b-tab-item :label="$t('ride.density')" icon="chart-area"></b-tab-item>
+                <b-tab-item :label="$t('ride.originalRides')" icon="database"></b-tab-item>
             </b-tabs>
         </div>
 

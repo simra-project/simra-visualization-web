@@ -1,0 +1,63 @@
+{
+    "navigation": {
+        "downloadApp": "Download App",
+        "mapStyle": "Map style: {0}",
+        "selected": " (selected)",
+        "lang": {
+            "english": "English",
+            "german": "German"
+        }
+    },
+    "sidebar": {
+        "rides": "Rides",
+        "incidents": "Incidents",
+        "combined": "Combined",
+        "boxAnalysis": "Box-Analysis",
+        "boxAnalysisDescription": "Draw a shape on the map to see what bike rides went through it. Click on the shape to draw a new one.",
+        "tools": "Tools",
+        "toolsDescription": "Upload a ride to analyze it (drag the file on the map).",
+        "settings": "Settings",
+        "expandMenu": "Expand menu"
+    },
+    "filters": {
+        "weekday": "Weekday",
+        "anyWeekday": "Any weekday",
+        "weekdays": {
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday"
+        },
+        "timeOfDay": "Time of day",
+        "scaryOrRegularIncidents": "Scary / Regular Incidents",
+        "scaryIncidents": "Scary Incidents",
+        "regularIncidents": "Regular Incidents",
+        "chooseAtLeastOne": "You have to choose at least one of these options",
+        "incidentType": "Incident Type",
+        "incidentTypeAny": "Any type",
+        "incidentParticipant": "Incident Participant",
+        "incidentParticipantAny": "Any participant",
+        "resetFilters": "Reset filters"
+    },
+    "legend": {
+        "ridesBicyclists": "Bicyclists per street segment",
+        "scaryIncident": "Scary Incident",
+        "regularIncident": "Regular Incident",
+        "combinedIncidents": "Incidents per street segment (color)",
+        "combinedBicyclists": "Bicyclists per street segment (line width)"
+    },
+    "map": {
+        "loadingMapData": "Loading Map Data"
+    },
+    "ride": {
+        "density": "Density",
+        "originalRides": "Original Rides"
+    },
+    "incident": {
+        "start": "Start",
+        "end": "End - {0} km in {1}{2} min"
+    }
+}

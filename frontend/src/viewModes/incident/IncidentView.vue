@@ -23,11 +23,11 @@
             <l-geo-json :geojson="rideHighlighted" :options="rideHighlightedStyle" @ready="$emit('fit-in-view', $event)"/>
 
             <l-marker :lat-lng="rideHighlightedStart" :icon="rideHighlightedStartIcon">
-                <l-tooltip :options="{direction: 'bottom'}"><strong>Start</strong></l-tooltip>
+                <l-tooltip :options="{direction: 'bottom'}"><strong>{{ $t('incident.start') }}</strong></l-tooltip>
             </l-marker>
             <l-marker :lat-lng="rideHighlightedEnd" :icon="rideHighlightedEndIcon">
                 <l-tooltip :options="{direction: 'bottom'}">
-                    <strong>End - {{ (rideHighlighted.properties.distance / 1000).toFixed(1) }} km in {{ rideHighlighted.properties.duration >= 60 ? Math.floor(rideHighlighted.properties.duration / 60) + " h " : "" }}{{ Math.floor(rideHighlighted.properties.duration % 60) }} min</strong>
+                    <strong>{{ $t('incident.end', [(rideHighlighted.properties.distance / 1000).toFixed(1), (rideHighlighted.properties.duration >= 60 ? Math.floor(rideHighlighted.properties.duration / 60) + " h " : ""), (Math.floor(rideHighlighted.properties.duration % 60))]) }}</strong>
                 </l-tooltip>
             </l-marker>
 

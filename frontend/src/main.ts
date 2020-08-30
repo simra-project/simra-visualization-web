@@ -10,6 +10,7 @@ import Buefy from "buefy";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css"; // Re-uses images from ~leaflet package
 import "leaflet-defaulticon-compatibility";
 
+import i18n from './i18n';
 
 Vue.config.productionTip = false;
 
@@ -20,5 +21,6 @@ Vue.use(VueWorker);
 
 new Vue({
     router,
+    i18n,
     render: h => h(App),
 }).$mount("#app");
