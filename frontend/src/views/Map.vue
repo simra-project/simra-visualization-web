@@ -69,6 +69,11 @@
                         />
                     </div>
                     <div>
+                        <SurfaceQualityView v-if="viewMode === config.viewModes.SURFACE_QUALITY" ref="surfaceQualityView"
+                                            @on-progress="updateLoadingView"
+                        />
+                    </div>
+                    <div>
                         <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
                                          :mapLayer="boxAnalysisMapLayer"
                                          @on-progress="updateLoadingView"
@@ -98,6 +103,7 @@ import Sidebar from "@/components/Sidebar";
 
 import RideView from "@/viewModes/ride/RideView";
 import IncidentView from "@/viewModes/incident/IncidentView";
+import SurfaceQualityView from "@/viewModes/surfaceQuality/SurfaceQualityView";
 import BoxAnalysisView from "@/viewModes/boxAnalysis/BoxAnalysisView";
 import ToolsView from "@/viewModes/tools/ToolsView";
 
@@ -115,6 +121,7 @@ export default {
         // View Modes
         RideView,
         IncidentView,
+        SurfaceQualityView,
         BoxAnalysisView,
         ToolsView,
     },

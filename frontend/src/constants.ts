@@ -4,8 +4,9 @@ let viewModes = {
     RIDES: 1,
     INCIDENTS: 2,
     COMBINED: 3,
-    BOX_ANALYSIS: 4,
-    TOOLS: 5,
+    SURFACE_QUALITY: 4,
+    BOX_ANALYSIS: 5,
+    TOOLS: 6,
 }
 
 let subViewModes = {
