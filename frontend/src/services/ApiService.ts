@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class ApiService {
-    static URL_BACKEND: string = process.env.VUE_APP_BACKEND_URL;
+    static URL_BACKEND: string = process.env.VUE_APP_BACKEND_URL!;
 
     static async loadRoutesMatched(lat: Number, lon: Number) {
         console.log(`${ this.URL_BACKEND }/legs/area?bottomleft=13,52&topright=14,53&minWeight=1`);
