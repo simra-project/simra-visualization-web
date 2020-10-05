@@ -1,0 +1,65 @@
+{
+    "navigation": {
+        "downloadApp": "App herunterladen",
+        "mapStyle": "Kartenstil: {0}",
+        "selected": " (ausgewählt)",
+        "lang": {
+            "english": "Englisch",
+            "german": "Deutsch"
+        }
+    },
+    "sidebar": {
+        "rides": "Fahrten",
+        "incidents": "Ereignisse",
+        "combined": "Kombiniert",
+        "surfaceQuality": "Oberflächen-Analyse",
+        "surfaceQualityDescription": "Zeigt die Qualität der Fahrbahnoberfläche auf.",
+        "boxAnalysis": "Box-Analyse",
+        "boxAnalysisDescription": "Zeichne eine Form auf der Karte um zu sehen welche Fahrten durch diese gingen. Klicke auf die Form um eine neue zu zeichnen.",
+        "tools": "Tools",
+        "toolsDescription": "Lade eine Fahrt hoch um sie zu analysieren (ziehe die Datei auf die Karte).",
+        "settings": "Einstellungen",
+        "expandMenu": "Menü ausklappen"
+    },
+    "filters": {
+        "weekday": "Wochentag",
+        "anyWeekday": "Beliebig",
+        "weekdays": {
+            "monday": "Montag",
+            "tuesday": "Dienstag",
+            "wednesday": "Mittwoch",
+            "thursday": "Donnerstag",
+            "friday": "Freitag",
+            "saturday": "Samstag",
+            "sunday": "Sonntag"
+        },
+        "timeOfDay": "Tageszeit",
+        "scaryOrRegularIncidents": "Scary / Normale Ereignisse",
+        "scaryIncidents": "Scary Ereignisse",
+        "regularIncidents": "Normale Ereignisse",
+        "chooseAtLeastOne": "Du musst mindestens eine dieser Optionen wählen",
+        "incidentType": "Ereignis-Typ",
+        "incidentTypeAny": "Beliebig",
+        "incidentParticipant": "Ereignis-Teilnehmer",
+        "incidentParticipantAny": "Beliebig",
+        "resetFilters": "Filter zurücksetzen"
+    },
+    "legend": {
+        "ridesBicyclists": "Fahrradfahrer pro Straßensegment",
+        "scaryIncident": "Scary Ereignis",
+        "regularIncident": "Normales Ereignis",
+        "combinedIncidents": "Ereignisse pro Straßensegment (Farbe)",
+        "combinedBicyclists": "Fahrradfahrer pro Straßensegment (Liniendicke)"
+    },
+    "map": {
+        "loadingMapData": "Lade Kartendaten"
+    },
+    "ride": {
+        "density": "Dichte",
+        "originalRides": "Originalfahrten"
+    },
+    "incident": {
+        "start": "Start",
+        "end": "Ende - {0} km in {1}{2} min"
+    }
+}

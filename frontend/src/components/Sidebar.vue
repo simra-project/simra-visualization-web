@@ -1,7 +1,7 @@
 <template>
     <div class="sidebar" :class="{'small': small, 'resizable': !small}">
         <div class="entries">
-            <SidebarEntry title="Rides"
+            <SidebarEntry :title="$t('sidebar.rides')"
                           icon="fa-biking"
                           :icon-color="'#156ec7'"
                           :is-small="small"
@@ -10,7 +10,7 @@
                 <MapFilters :view-mode="0" ref="filterRides" @rides-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
-            <SidebarEntry title="Incidents"
+            <SidebarEntry :title="$t('sidebar.incidents')"
                           icon="fa-car-crash"
                           :icon-color="'#1d917c'"
                           :is-small="small"
@@ -19,7 +19,7 @@
                 <MapFilters :view-mode="1" ref="filterIncidents" @incidents-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
-            <SidebarEntry title="Combined"
+            <SidebarEntry :title="$t('sidebar.combined')"
                           icon="fa-layer-group"
                           :icon-color="'#d63e12'"
                           :is-small="small"
@@ -28,50 +28,50 @@
                 <MapFilters :view-mode="2" ref="filterCombined" @rides-changed="$emit('filters-changed')"></MapFilters>
             </SidebarEntry>
 
-            <SidebarEntry title="Surface Quality"
+            <SidebarEntry :title="$t('sidebar.surfaceQuality')"
                           icon="fa-road"
                           :icon-color="'#156ec7'"
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.SURFACE_QUALITY}"
                           @entryClicked="switchToView(config.viewModes.SURFACE_QUALITY)">
                 <div class="entry-subtext">
-                    Shows the quality of the road / bike lane surface.
+                    {{ $t('sidebar.surfaceQualityDescription') }}
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry title="Box-Analysis"
+            <SidebarEntry :title="$t('sidebar.boxAnalysis')"
                           icon="fa-draw-polygon"
                           :icon-color="'#1d917c'"
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.BOX_ANALYSIS}"
                           @entryClicked="switchToView(config.viewModes.BOX_ANALYSIS)">
                 <div class="entry-subtext">
-                    Draw a shape on the map to see what bike rides went through it. Click on the shape to draw a new one.
+                    {{ $t('sidebar.boxAnalysisDescription') }}
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry :title="'Tools'"
+            <SidebarEntry :title="$t('sidebar.tools')"
                           :icon="'fa-tools'"
                           :icon-color="'#d63e12'"
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.TOOLS}"
                           @entryClicked="switchToView(config.viewModes.TOOLS)">
                 <div class="entry-subtext">
-                    Upload a ride to analyze it (drag the file on the map).
+                    {{ $t('sidebar.toolsDescription') }}
                 </div>
             </SidebarEntry>
         </div>
 
-        <div class="bottom-expand-button" @click="small = false" title="Expand menu">
+        <div class="bottom-expand-button" @click="small = false" :title="$t('sidebar.expandMenu')">
             <i class="fas fa-lg fa-angle-double-right"></i>
         </div>
         <div class="bottom">
-            <div class="bottom-settings" :title="small ? 'Settings' : ''">
+            <div class="bottom-settings" :title="small ? $t('sidebar.settings') : ''">
                 <div class="bottom-icon">
                     <i class="fas fa-lg fa-cogs"></i>
                 </div>
                 <div class="bottom-text">
-                    Settings
+                    {{ $t('sidebar.settings') }}
                 </div>
             </div>
             <div class="bottom-reduce-button" @click="small = true">
