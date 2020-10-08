@@ -14,6 +14,8 @@
         "combined": "Combined",
         "surfaceQuality": "Surface Quality",
         "surfaceQualityDescription": "Shows the quality of the road / bike lane surface.",
+        "stopTimes": "Stop Times",
+        "stopTimesDescription": "Shows the average stop times for each intersection.",
         "boxAnalysis": "Box-Analysis",
         "boxAnalysisDescription": "Draw a shape on the map to see what bike rides went through it. Click on the shape to draw a new one.",
         "tools": "Tools",

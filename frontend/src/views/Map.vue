@@ -74,6 +74,11 @@
                         />
                     </div>
                     <div>
+                        <StopTimesView v-if="viewMode === config.viewModes.STOP_TIMES" ref="stopTimesView"
+                                       @on-progress="updateLoadingView"
+                        />
+                    </div>
+                    <div>
                         <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
                                          :mapLayer="boxAnalysisMapLayer"
                                          @on-progress="updateLoadingView"
@@ -104,6 +109,7 @@ import Sidebar from "@/components/Sidebar";
 import RideView from "@/viewModes/ride/RideView";
 import IncidentView from "@/viewModes/incident/IncidentView";
 import SurfaceQualityView from "@/viewModes/surfaceQuality/SurfaceQualityView";
+import StopTimesView from "@/viewModes/stopTimes/StopTImesView";
 import BoxAnalysisView from "@/viewModes/boxAnalysis/BoxAnalysisView";
 import ToolsView from "@/viewModes/tools/ToolsView";
 
@@ -122,6 +128,7 @@ export default {
         RideView,
         IncidentView,
         SurfaceQualityView,
+        StopTimesView,
         BoxAnalysisView,
         ToolsView,
     },

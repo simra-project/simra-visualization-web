@@ -14,6 +14,8 @@
         "combined": "Kombiniert",
         "surfaceQuality": "Oberflächen-Analyse",
         "surfaceQualityDescription": "Zeigt die Qualität der Fahrbahnoberfläche auf.",
+        "stopTimes": "Wartezeiten",
+        "stopTimesDescription": "Zeigt die durchschnittlichen Wartenzeiten pro Kreuzung an.",
         "boxAnalysis": "Box-Analyse",
         "boxAnalysisDescription": "Zeichne eine Form auf der Karte um zu sehen welche Fahrten durch diese gingen. Klicke auf die Form um eine neue zu zeichnen.",
         "tools": "Tools",
