@@ -76,6 +76,25 @@
                 <div class="entry-subtext">
                     {{ $t('sidebar.boxAnalysisDescription') }}
                 </div>
+
+                <div class="field" style="margin-top: 10px">
+                    <b-radio v-model="computedSubViewMode"
+                             :native-value="config.subViewModes.BOX_ANALYSIS_START">
+                        {{ $t('boxAnalysis.start') }}
+                    </b-radio>
+                </div>
+                <div class="field">
+                    <b-radio v-model="computedSubViewMode"
+                             :native-value="config.subViewModes.BOX_ANALYSIS_CONTAINS">
+                        {{ $t('boxAnalysis.contains') }}
+                    </b-radio>
+                </div>
+                <div class="field">
+                    <b-radio v-model="computedSubViewMode"
+                             :native-value="config.subViewModes.BOX_ANALYSIS_STOP">
+                        {{ $t('boxAnalysis.end') }}
+                    </b-radio>
+                </div>
             </SidebarEntry>
 
             <SidebarEntry :title="$t('sidebar.tools')"

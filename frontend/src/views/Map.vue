@@ -85,7 +85,9 @@
                     <div>
                         <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
                                          :mapLayer="boxAnalysisMapLayer"
+                                         :sub-view-mode="subViewMode"
                                          @on-progress="updateLoadingView"
+                                         @update:sub-view-mode="subViewMode = $event"
                         />
                     </div>
                     <div>

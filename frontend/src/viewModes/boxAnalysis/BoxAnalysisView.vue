@@ -1,6 +1,14 @@
 <template>
     <div>
         <l-geo-json v-if="polygonResult" :geojson="polygonResult" :options="rideStyle" />
+        <svg>
+            <defs>
+                <linearGradient id="boxGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="lightgreen"></stop>
+                    <stop offset="100%" stop-color="darkgreen"></stop>
+                </linearGradient>
+            </defs>
+        </svg>
     </div>
 </template>
 
@@ -20,18 +28,20 @@ export default {
     },
     props: {
         mapLayer: { default: {} },
+        subViewMode: Number,
     },
     data() {
         return {
             config: Config,
+            polygon: null,
             polygonResult: [],
             polygonResultLoaded: false,
             polygonTool: null,
             rideStyle: {
                 style: feature => {
                     return {
-                        color: "#178a00",
-                        weight: 1,
+                        color: "url(#boxGradient)",
+                        weight: 2,
                         opacity: 0.8,
                     };
                 },
@@ -63,18 +73,24 @@ export default {
                 this.mapLayer.clearLayers();
                 this.mapLayer.addLayer(e.layer);
 
-                let coordinates = e.layer._latlngs[0].flatMap(x => [x.lng, x.lat])
-                this.apiWorker.postMessage(["polygon", coordinates]);
+                this.polygon = e.layer._latlngs[0].flatMap(x => `${x.lng}+${x.lat}`);
+                this.polygon.push(this.polygon[0]);
+                this.loadRides();
 
-                console.log("User selected polygon area: " + coordinates);
+                console.log("User selected polygon area: " + this.polygon);
             });
 
             // Removing polygon and rides on click
             this.mapLayer.on('click', () => {
+                this.polygon = null;
                 this.polygonResult = [];
                 this.mapLayer.clearLayers();
                 this.polygonTool.enable();
             });
+        },
+        loadRides() {
+            let mode = ["containsStart", "contains", "containsEnd"][this.subViewMode];
+            this.apiWorker.postMessage(["polygon", this.polygon, mode]);
         },
         handleWorkerMessage(message) {
             switch (message.data[0]) {
@@ -82,21 +98,27 @@ export default {
                     this.$emit('on-progress', message.data[1], message.data[2])
                     break;
                 case "polygon":
-                    this.polygonResult = {
-                        "type": "FeatureCollection",
-                        "features": message.data[1]
-                    };
+                    this.polygonResult = message.data[1];
                     break;
             }
+        },
+        initLeafletDrawTranslations() {
+            L.drawLocal.draw.handlers.polygon.tooltip.start = this.$t('boxAnalysis.draw.polygonStart');
+            L.drawLocal.draw.handlers.polygon.tooltip.cont = this.$t('boxAnalysis.draw.polygonContinue');
+            L.drawLocal.draw.handlers.polygon.tooltip.end = this.$t('boxAnalysis.draw.polygonEnd');
         },
     },
     async mounted() {
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
         this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
+        this.initLeafletDrawTranslations();
 
         this.$nextTick(() => {
-            this.initPolygonSelection(this.$parent.mapObject);
+            // Awkwardly waiting for the map layer object to be created
+            setTimeout(() => {
+                this.initPolygonSelection(this.$parent.mapObject);
+            }, 500);
         });
     },
     beforeDestroy() {
@@ -106,6 +128,14 @@ export default {
 
         this.mapLayer.off('click');
         this.mapLayer.clearLayers();
+    },
+    watch: {
+        subViewMode: function (newValue, oldValue) {
+            if (newValue !== oldValue && this.polygon !== null) this.loadRides();
+        },
+        $i18n: function (newValue, oldValue) {
+            if (newValue !== oldValue) this.initLeafletDrawTranslations();
+        }
     }
 };
 </script>

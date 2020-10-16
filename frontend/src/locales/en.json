@@ -70,5 +70,15 @@
     "surfaceQuality": {
         "aggregated": "Aggregated",
         "singleRides": "Single Rides"
+    },
+    "boxAnalysis": {
+        "start": "Starting in Box",
+        "contains": "Going through Box",
+        "end": "Ending in Box",
+        "draw": {
+            "polygonStart": "Click to start drawing shape.",
+            "polygonContinue": "Click to continue drawing shape.",
+            "polygonEnd": "Click first point to close this shape."
+        }
     }
 }

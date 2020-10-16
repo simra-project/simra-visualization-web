@@ -25,7 +25,7 @@ self.onmessage = function (event) {
         case "route":
             break;
         case "polygon":
-            loadPolygon(event.data[1]);
+            loadPolygon(event.data[1], event.data[2]);
             break;
     }
 };
@@ -209,9 +209,9 @@ function loadIncidents(coords, filter) {
     }
 }
 
-function loadPolygon(polygon) {
+function loadPolygon(polygon, mode) {
     startLoading();
-    let url = `${URL_BACKEND}/rides/polygon?coords=${polygon.join(',')}`;
+    let url = `http://207.180.205.80:8000/api/rides?${mode}=POLYGON%28%28${polygon.join('%2C')}%29%29&format=json`;
     console.log(url);
     fetch(url).then(r => r.json()).then(result => {
         self.postMessage(["polygon", result]);

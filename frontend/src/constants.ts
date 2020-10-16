@@ -18,6 +18,9 @@ let subViewModes = {
     RIDES_ORIGINAL: 1,
     SURFACE_QUALITY_AGGREGATED: 0,
     SURFACE_QUALITY_SINGLE: 1,
+    BOX_ANALYSIS_START: 0,
+    BOX_ANALYSIS_CONTAINS: 1,
+    BOX_ANALYSIS_STOP: 2,
 }
 
 let osmAttribution = " &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors";
