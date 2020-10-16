@@ -66,5 +66,9 @@
     "incident": {
         "start": "Start",
         "end": "End - {0} km in {1}{2} min"
+    },
+    "surfaceQuality": {
+        "aggregated": "Aggregated",
+        "singleRides": "Single Rides"
     }
 }

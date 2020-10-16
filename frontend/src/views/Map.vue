@@ -72,7 +72,9 @@
                     </div>
                     <div>
                         <SurfaceQualityView v-if="viewMode === config.viewModes.SURFACE_QUALITY" ref="surfaceQualityView"
+                                            :sub-view-mode="subViewMode"
                                             @on-progress="updateLoadingView"
+                                            @update:sub-view-mode="subViewMode = $event"
                         />
                     </div>
                     <div>

@@ -16,6 +16,8 @@ let subViewModes = {
     RIDES_DENSITY_RUSHHOUR: 2,
     RIDES_DENSITY_WEEKDAY: 3,
     RIDES_ORIGINAL: 1,
+    SURFACE_QUALITY_AGGREGATED: 0,
+    SURFACE_QUALITY_SINGLE: 1,
 }
 
 let osmAttribution = " &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors";
