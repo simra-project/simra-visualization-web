@@ -113,7 +113,7 @@ import Sidebar from "@/components/Sidebar";
 import RideView from "@/viewModes/ride/RideView";
 import IncidentView from "@/viewModes/incident/IncidentView";
 import SurfaceQualityView from "@/viewModes/surfaceQuality/SurfaceQualityView";
-import StopTimesView from "@/viewModes/stopTimes/StopTImesView";
+import StopTimesView from "@/viewModes/stopTimes/StopTimesView";
 import BoxAnalysisView from "@/viewModes/boxAnalysis/BoxAnalysisView";
 import ToolsView from "@/viewModes/tools/ToolsView";
 
