@@ -7,7 +7,24 @@
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.RIDES}"
                           @entryClicked="switchToView(config.viewModes.RIDES)">
-                <MapFilters :view-mode="0" ref="filterRides" @rides-changed="$emit('filters-changed')"></MapFilters>
+                <div class="field">
+                    <b-radio v-model="computedSubViewMode"
+                             :native-value="subViewMode === config.subViewModes.RIDES_ORIGINAL ? config.subViewModes.RIDES_ORIGINAL : config.subViewModes.RIDES_DENSITY_ALL">
+                        {{ $t('ride.all') }}
+                    </b-radio>
+                </div>
+                <div class="field">
+                    <b-radio v-model="computedSubViewMode"
+                             :native-value="config.subViewModes.RIDES_DENSITY_RUSHHOUR">
+                        {{ $t('ride.rushHour') }}
+                    </b-radio>
+                </div>
+                <div class="field">
+                    <b-radio v-model="computedSubViewMode"
+                             :native-value="config.subViewModes.RIDES_DENSITY_WEEKDAY">
+                        {{ $t('ride.weekday') }}
+                    </b-radio>
+                </div>
             </SidebarEntry>
 
             <SidebarEntry :title="$t('sidebar.incidents')"
@@ -102,6 +119,7 @@ export default {
     components: { SidebarEntry, MapFilters },
     props: [
         'value',
+        'subViewMode',
     ],
     data() {
         return {
@@ -121,6 +139,16 @@ export default {
     watch: {
         small: function (newValue, oldValue) {
             if (newValue !== oldValue) this.$emit('size-changed');
+        },
+    },
+    computed: {
+        computedSubViewMode: {
+            get() {
+                return this.subViewMode;
+            },
+            set(value) {
+                this.$emit('update:sub-view-mode', value);
+            }
         }
     }
 };

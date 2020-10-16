@@ -12,7 +12,9 @@ let viewModes = {
 
 let subViewModes = {
     DEFAULT: 0,
-    RIDES_DENSITY: 0,
+    RIDES_DENSITY_ALL: 0,
+    RIDES_DENSITY_RUSHHOUR: 2,
+    RIDES_DENSITY_WEEKDAY: 3,
     RIDES_ORIGINAL: 1,
 }
 

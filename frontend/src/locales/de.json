@@ -58,7 +58,10 @@
     },
     "ride": {
         "density": "Dichte",
-        "originalRides": "Originalfahrten"
+        "originalRides": "Originalfahrten",
+        "all": "Alle",
+        "rushHour": "Rush Hour",
+        "weekday": "Wochentags"
     },
     "incident": {
         "start": "Start",

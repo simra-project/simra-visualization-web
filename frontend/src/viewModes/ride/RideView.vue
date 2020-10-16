@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="leaflet-control topcenter rides-submode-switcher" v-if="viewMode === config.viewModes.RIDES">
+        <div class="leaflet-control topcenter rides-submode-switcher" v-if="viewMode === config.viewModes.RIDES && (subViewMode === config.subViewModes.RIDES_DENSITY_ALL || subViewMode === config.subViewModes.RIDES_ORIGINAL)">
             <b-tabs type="is-toggle-rounded"
                     :value="subViewMode"
                     @change="$emit('update:sub-view-mode', $event)"
@@ -16,8 +16,10 @@
 <!--                    :options="styleRides"-->
 <!--        />-->
 
-        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY" url="http://207.180.205.80:1337/tiles/simra_rides_density/{z}/{x}/{y}.png"/>
-        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/simra_rides_original/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_ALL" url="http://207.180.205.80:1337/tiles/rides-density_all/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOUR" url="http://207.180.205.80:1337/tiles/rides-density_rushhour/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_WEEKDAY" url="http://207.180.205.80:1337/tiles/rides-density_weekday/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/rides-original/{z}/{x}/{y}.png"/>
 
         <l-tile-layer v-if="viewMode === config.viewModes.COMBINED" url="http://207.180.205.80:1337/tiles/simra_combined/{z}/{x}/{y}.png"/>
     </div>
