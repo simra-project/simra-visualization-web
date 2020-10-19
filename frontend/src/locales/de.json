@@ -61,7 +61,7 @@
         "originalRides": "Originalfahrten",
         "all": "Alle",
         "rushHour": "Rush Hour",
-        "weekday": "Wochentags"
+        "weekend": "Wochenende"
     },
     "incident": {
         "start": "Start",

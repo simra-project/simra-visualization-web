@@ -21,8 +21,8 @@
                 </div>
                 <div class="field">
                     <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.RIDES_DENSITY_WEEKDAY">
-                        {{ $t('ride.weekday') }}
+                             :native-value="config.subViewModes.RIDES_DENSITY_WEEKEND">
+                        {{ $t('ride.weekend') }}
                     </b-radio>
                 </div>
             </SidebarEntry>
