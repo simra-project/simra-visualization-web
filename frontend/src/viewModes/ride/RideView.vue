@@ -17,7 +17,8 @@
 <!--        />-->
 
         <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_ALL" url="http://207.180.205.80:1337/tiles/rides-density_all/{z}/{x}/{y}.png"/>
-        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOUR" url="http://207.180.205.80:1337/tiles/rides-density_rushhour/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOURMORNING" url="http://207.180.205.80:1337/tiles/rides-density_rushhourmorning/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOUREVENING" url="http://207.180.205.80:1337/tiles/rides-density_rushhourevening/{z}/{x}/{y}.png"/>
         <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_WEEKEND" url="http://207.180.205.80:1337/tiles/rides-density_weekend/{z}/{x}/{y}.png"/>
         <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/rides-original/{z}/{x}/{y}.png"/>
 

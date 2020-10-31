@@ -15,8 +15,14 @@
                 </div>
                 <div class="field">
                     <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.RIDES_DENSITY_RUSHHOUR">
-                        {{ $t('ride.rushHour') }}
+                             :native-value="config.subViewModes.RIDES_DENSITY_RUSHHOURMORNING">
+                        {{ $t('ride.rushHourMorning') }}
+                    </b-radio>
+                </div>
+                <div class="field">
+                    <b-radio v-model="computedSubViewMode"
+                             :native-value="config.subViewModes.RIDES_DENSITY_RUSHHOUREVENING">
+                        {{ $t('ride.rushHourEvening') }}
                     </b-radio>
                 </div>
                 <div class="field">

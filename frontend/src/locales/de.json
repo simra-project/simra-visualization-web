@@ -60,7 +60,8 @@
         "density": "Dichte",
         "originalRides": "Originalfahrten",
         "all": "Alle",
-        "rushHour": "Rush Hour",
+        "rushHourMorning": "Rush Hour (morgens)",
+        "rushHourEvening": "Rush Hour (abends)",
         "weekend": "Wochenende"
     },
     "incident": {
