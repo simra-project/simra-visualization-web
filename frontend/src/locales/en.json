@@ -14,6 +14,8 @@
         "combined": "Combined",
         "surfaceQuality": "Surface Quality",
         "surfaceQualityDescription": "Shows the quality of the road / bike lane surface.",
+        "relativeSpeed": "Relative Speed",
+        "relativeSpeedDescription": "Shows the average speed for each street segments (relative to the speed of the individual bicyclists).",
         "stopTimes": "Stop Times",
         "stopTimesDescription": "Shows the average stop times for each intersection.",
         "boxAnalysis": "Box-Analysis",

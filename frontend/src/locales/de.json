@@ -14,6 +14,8 @@
         "combined": "Kombiniert",
         "surfaceQuality": "Oberflächen-Analyse",
         "surfaceQualityDescription": "Zeigt die Qualität der Fahrbahnoberfläche auf.",
+        "relativeSpeed": "Relative Geschwindigkeit",
+        "relativeSpeedDescription": "Zeigt die durchschnittliche Geschwindigkeit pro Straßensegment an (relativ zu der Geschwindigkeit der einzelnen Fahrradfahrer).",
         "stopTimes": "Wartezeiten",
         "stopTimesDescription": "Zeigt die durchschnittlichen Wartenzeiten pro Kreuzung an.",
         "boxAnalysis": "Box-Analyse",

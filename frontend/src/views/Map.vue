@@ -78,6 +78,11 @@
                         />
                     </div>
                     <div>
+                        <RelativeSpeedView v-if="viewMode === config.viewModes.RELATIVE_SPEED" ref="relativeSpeedView"
+                                           @on-progress="updateLoadingView"
+                        />
+                    </div>
+                    <div>
                         <StopTimesView v-if="viewMode === config.viewModes.STOP_TIMES" ref="stopTimesView"
                                        @on-progress="updateLoadingView"
                         />
@@ -115,6 +120,7 @@ import Sidebar from "@/components/Sidebar";
 import RideView from "@/viewModes/ride/RideView";
 import IncidentView from "@/viewModes/incident/IncidentView";
 import SurfaceQualityView from "@/viewModes/surfaceQuality/SurfaceQualityView";
+import RelativeSpeedView from "@/viewModes/relativeSpeed/RelativeSpeedView";
 import StopTimesView from "@/viewModes/stopTimes/StopTimesView";
 import BoxAnalysisView from "@/viewModes/boxAnalysis/BoxAnalysisView";
 import ToolsView from "@/viewModes/tools/ToolsView";
@@ -134,6 +140,7 @@ export default {
         RideView,
         IncidentView,
         SurfaceQualityView,
+        RelativeSpeedView,
         StopTimesView,
         BoxAnalysisView,
         ToolsView,

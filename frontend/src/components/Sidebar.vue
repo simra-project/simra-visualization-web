@@ -62,9 +62,20 @@
                 </div>
             </SidebarEntry>
 
+            <SidebarEntry :title="$t('sidebar.relativeSpeed')"
+                          icon="fa-tachometer-alt"
+                          :icon-color="'#1d917c'"
+                          :is-small="small"
+                          :class="{'selected': value === config.viewModes.RELATIVE_SPEED}"
+                          @entryClicked="switchToView(config.viewModes.RELATIVE_SPEED)">
+                <div class="entry-subtext">
+                    {{ $t('sidebar.relativeSpeedDescription') }}
+                </div>
+            </SidebarEntry>
+
             <SidebarEntry :title="$t('sidebar.stopTimes')"
                           icon="fa-traffic-light"
-                          :icon-color="'#1d917c'"
+                          :icon-color="'#d63e12'"
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.STOP_TIMES}"
                           @entryClicked="switchToView(config.viewModes.STOP_TIMES)">
@@ -75,7 +86,7 @@
 
             <SidebarEntry :title="$t('sidebar.boxAnalysis')"
                           icon="fa-draw-polygon"
-                          :icon-color="'#d63e12'"
+                          :icon-color="'#156ec7'"
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.BOX_ANALYSIS}"
                           @entryClicked="switchToView(config.viewModes.BOX_ANALYSIS)">
@@ -105,7 +116,7 @@
 
             <SidebarEntry :title="$t('sidebar.tools')"
                           :icon="'fa-tools'"
-                          :icon-color="'#156ec7'"
+                          :icon-color="'#1d917c'"
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.TOOLS}"
                           @entryClicked="switchToView(config.viewModes.TOOLS)">

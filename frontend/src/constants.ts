@@ -5,9 +5,10 @@ let viewModes = {
     INCIDENTS: 2,
     COMBINED: 3,
     SURFACE_QUALITY: 4,
-    STOP_TIMES: 5,
-    BOX_ANALYSIS: 6,
-    TOOLS: 7,
+    RELATIVE_SPEED: 5,
+    STOP_TIMES: 6,
+    BOX_ANALYSIS: 7,
+    TOOLS: 8,
 }
 
 let subViewModes = {
