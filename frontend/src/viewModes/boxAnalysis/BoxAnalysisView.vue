@@ -1,15 +1,5 @@
 <template>
-    <div>
-        <l-geo-json v-if="polygonResult" :geojson="polygonResult" :options="rideStyle" />
-        <svg>
-            <defs>
-                <linearGradient id="boxGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="lightgreen"></stop>
-                    <stop offset="100%" stop-color="darkgreen"></stop>
-                </linearGradient>
-            </defs>
-        </svg>
-    </div>
+    <l-geo-json v-if="polygonResult" :geojson="polygonResult" :options="rideStyle" />
 </template>
 
 <script>
@@ -40,12 +30,13 @@ export default {
             rideStyle: {
                 style: feature => {
                     return {
-                        color: "url(#boxGradient)",
+                        color: ['#90ee90', '#6ccc6c', '#48a948', '#248724', '#006400'][(this.rideStyleHelperCounter++ % 5)],
                         weight: 2,
                         opacity: 0.8,
                     };
                 },
             },
+            rideStyleHelperCounter: 0,
         }
     },
     methods: {
