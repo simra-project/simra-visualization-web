@@ -48,7 +48,9 @@
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.COMBINED}"
                           @entryClicked="switchToView(config.viewModes.COMBINED)">
-                <MapFilters :view-mode="2" ref="filterCombined" @rides-changed="$emit('filters-changed')"></MapFilters>
+                <div class="entry-subtext">
+                    {{ $t('sidebar.combinedDescription') }}
+                </div>
             </SidebarEntry>
 
             <SidebarEntry :title="$t('sidebar.surfaceQuality')"

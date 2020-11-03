@@ -12,6 +12,7 @@
         "rides": "Fahrten",
         "incidents": "Ereignisse",
         "combined": "Kombiniert",
+        "combinedDescription": "Zeigt die Gefährlichkeit pro Straßensegment an indem Standorte und Schwere von Ereignissen analysiert werden.",
         "surfaceQuality": "Oberflächen-Analyse",
         "surfaceQualityDescription": "Zeigt die Qualität der Fahrbahnoberfläche auf.",
         "relativeSpeed": "Relative Geschwindigkeit",

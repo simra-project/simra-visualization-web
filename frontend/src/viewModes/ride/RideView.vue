@@ -22,7 +22,7 @@
         <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_DENSITY_WEEKEND" url="http://207.180.205.80:1337/tiles/rides-density_weekend/{z}/{x}/{y}.png"/>
         <l-tile-layer v-if="viewMode === config.viewModes.RIDES && subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/rides-original/{z}/{x}/{y}.png"/>
 
-        <l-tile-layer v-if="viewMode === config.viewModes.COMBINED" url="http://207.180.205.80:1337/tiles/simra_combined/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="viewMode === config.viewModes.COMBINED" url="http://207.180.205.80:1337/tiles/incident-combined/{z}/{x}/{y}.png"/>
     </div>
 </template>
 
