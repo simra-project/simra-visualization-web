@@ -11,8 +11,7 @@
     "sidebar": {
         "rides": "Fahrten",
         "incidents": "Ereignisse",
-        "combined": "Kombiniert",
-        "combinedDescription": "Zeigt die Gefährlichkeit pro Straßensegment an indem Standorte und Schwere von Ereignissen analysiert werden.",
+        "incidentsDescription": "Zeigt die Gefährlichkeit pro Straßensegment an indem Standorte und Schwere von Ereignissen analysiert werden. Zoome herein um alle Ereignisse zu sehen.",
         "surfaceQuality": "Oberflächen-Analyse",
         "surfaceQualityDescription": "Zeigt die Qualität der Fahrbahnoberfläche auf.",
         "relativeSpeed": "Relative Geschwindigkeit",

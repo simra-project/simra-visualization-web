@@ -51,7 +51,7 @@
 
                     <!-- Because of a Vue/DOM problem, view modes have to be declared this way ... (wrapped in a tag) -->
                     <div>
-                        <RideView v-if="viewMode === config.viewModes.RIDES || viewMode === config.viewModes.COMBINED" ref="rideView"
+                        <RideView v-if="viewMode === config.viewModes.RIDES" ref="rideView"
                                   :zoom="zoom"
                                   :bounds="bounds"
                                   :view-mode="viewMode"
@@ -192,8 +192,8 @@ export default {
                 this.$refs.incidentView.clickedOnMap(event);
             }
         },
-        forwardChangedFilters() {
-            if (this.viewMode === Config.viewModes.RIDES || this.viewMode === Config.viewModes.COMBINED) {
+        forwardChangedFilters() { // TODO
+            if (this.viewMode === Config.viewModes.RIDES) {
                 this.$refs.rideView.loadMatchedRoutes(false);
             }
             if (this.viewMode === Config.viewModes.INCIDENTS) {
@@ -211,13 +211,13 @@ export default {
                 setTimeout(() => this.loadingProgress = null, 1200);
             }
         },
-        getFiltersRide() {
-            if (this.viewMode === Config.viewModes.COMBINED) {
-                return this.$refs.sidebar.$refs.filterCombined.getRideFilters();
-            }
+        getFiltersRide() { // TODO
+            // if (this.viewMode === Config.viewModes.COMBINED) {
+            //     return this.$refs.sidebar.$refs.filterCombined.getRideFilters();
+            // }
             return this.$refs.sidebar.$refs.filterRides.getRideFilters();
         },
-        getFiltersIncident() {
+        getFiltersIncident() { // TODO
             return this.$refs.sidebar.$refs.filterIncidents.getIncidentFilters();
         },
     },

@@ -11,8 +11,7 @@
     "sidebar": {
         "rides": "Rides",
         "incidents": "Incidents",
-        "combined": "Combined",
-        "combinedDescription": "Shows the dangerousness for each street segment by analyzing the location and severity of incidents.",
+        "incidentsDescription": "Shows the dangerousness for each street segment by analyzing the location and severity of incidents. Zoom in to see each incident.",
         "surfaceQuality": "Surface Quality",
         "surfaceQualityDescription": "Shows the quality of the road / bike lane surface.",
         "relativeSpeed": "Relative Speed",

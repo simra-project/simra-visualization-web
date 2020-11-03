@@ -3,12 +3,11 @@ let viewModes = {
     NONE: 0,
     RIDES: 1,
     INCIDENTS: 2,
-    COMBINED: 3,
-    SURFACE_QUALITY: 4,
-    RELATIVE_SPEED: 5,
-    STOP_TIMES: 6,
-    BOX_ANALYSIS: 7,
-    TOOLS: 8,
+    SURFACE_QUALITY: 3,
+    RELATIVE_SPEED: 4,
+    STOP_TIMES: 5,
+    BOX_ANALYSIS: 6,
+    TOOLS: 7,
 }
 
 let subViewModes = {
@@ -93,7 +92,8 @@ export default {
     viewModes: viewModes,
     subViewModes: subViewModes,
     viewModeHasLegend(viewMode: number) {
-        return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS || viewMode === viewModes.COMBINED;
+        // TODO !!!
+        return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS;// || viewMode === viewModes.COMBINED;
     },
     mapStyles: mapStyles,
 }

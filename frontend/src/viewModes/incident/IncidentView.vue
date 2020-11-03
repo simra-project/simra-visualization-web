@@ -1,18 +1,10 @@
 <template>
     <div>
         <template v-if="rideHighlighted === null">
-            <Vue2LeafletHeatmap
-                v-if="zoom <= heatmapMaxZoom && incident_heatmap.length !== 0"
-                :lat-lng="incident_heatmap"
-                :radius="heatmapRadius"
-                :min-opacity="heatmapMinOpacity"
-                :max-zoom="10" :blur="heatmapBlur"
-                :max="heatmapMaxPointIntensity"/>
+            <l-tile-layer url="http://207.180.205.80:1337/tiles/incident-combined/{z}/{x}/{y}.png"/>
 
-            <l-geo-json v-else
-                        v-for="incident in incidents"
-                        :key="incident.key"
-                        :geojson="incident"
+            <l-geo-json v-if="zoom > 15 && incidents"
+                        :geojson="incidents"
                         :options="markerStyle">
                 <l-popup/>
             </l-geo-json>
@@ -43,7 +35,7 @@
 
 <script>
 import Vue from "vue";
-import { LGeoJson, LTooltip, LMarker } from "vue2-leaflet";
+import { LGeoJson, LTooltip, LMarker, LTileLayer } from "vue2-leaflet";
 import Vue2LeafletHeatmap from "@/components/Vue2LeafletHeatmap";
 import { ExtraMarkers } from "leaflet-extra-markers";
 
@@ -58,6 +50,7 @@ export default {
         LGeoJson,
         LTooltip,
         LMarker,
+        LTileLayer,
     },
     props: {
         zoom: Number,
@@ -66,17 +59,8 @@ export default {
     },
     data() {
         return {
-            incidents: [],
-
-            // Heatmap
-            incident_heatmap: [],
-            heatmapMaxZoom: 15,
-            heatmapMinOpacity: 0.75,
-            heatmapMaxPointIntensity: 1.0,
-            heatmapRadius: 20,
-            heatmapBlur: 30,
-
             // Markers
+            incidents: [],
             markerStyle: {
                 pointToLayer: (feature, latlng) => L.marker(latlng, {
                     icon: ExtraMarkers.icon({
@@ -90,7 +74,7 @@ export default {
                         propsData: {
                             incident: feature.properties,
                             showRouteEnabled: this.rideHighlighted === null,
-                            showRoute: () => { this.highlightRide(feature.properties.rideId) },
+                            showRoute: () => { this.highlightRide(feature.properties.rideId) }, // TODO
                         },
                     });
                     return mapPopup.$mount().$el;
@@ -125,17 +109,14 @@ export default {
             let max_y = Math.floor(this.bounds._northEast.lat * 100) + 1;
             let max_x = Math.floor(this.bounds._northEast.lng * 100) + 1;
             let min_x = Math.floor(this.bounds._southWest.lng * 100) - 1;
-            console.log([[min_x, min_y], [max_x, max_y]]);
+            let bottomLeft = [min_x, min_y];
+            let bottomRight = [max_x, min_y];
+            let topLeft = [min_x, max_y];
+            let topRight = [max_x, max_y];
+            let polygon = [bottomLeft, bottomRight, topRight, topLeft, bottomLeft];
+            console.log(polygon);
 
-            this.apiWorker.postMessage(["incidents", [[min_x, min_y], [max_x, max_y]], this.getFilters()]);
-        },
-        processIncidentsForHeatmap() {
-            while (this.incident_heatmap.length > 0) {
-                this.incident_heatmap.pop();
-            }
-            for (let i = 0; i < this.incidents.length; i++) {
-                this.incident_heatmap.push([this.incidents[i].geometry.coordinates[1], this.incidents[i].geometry.coordinates[0], 1]);
-            }
+            this.apiWorker.postMessage(["incidents", polygon]);
         },
         highlightRide(rideId) {
             ApiService.loadRide(rideId).then(response => {
@@ -174,7 +155,6 @@ export default {
                     break;
                 case "incidents":
                     this.incidents = message.data[1];
-                    this.processIncidentsForHeatmap();
                     break;
             }
         },
@@ -183,13 +163,11 @@ export default {
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
         this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
-        this.loadIncidents();
     },
     watch: {
         bounds: function (newValue, oldValue) {
-            if (this.rideHighlighted === null && (this.zoom > this.heatmapMaxZoom || this.incident_heatmap.length === 0))
+            if (this.rideHighlighted === null && this.zoom > 15)
                 this.loadIncidents();
-            console.log(this.incident_heatmap.length);
         }
     }
 };

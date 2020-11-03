@@ -15,7 +15,7 @@
             <div class="text-box">{{ $t('legend.regularIncident') }}</div>
         </div>
 
-        <template v-else-if="viewMode === config.viewModes.COMBINED">
+        <template v-else-if="viewMode === 'config.viewModes.COMBINED'"> <!-- TODO -->
             <div class="legend-row viewModeRides">
                 <div class="color-box color-box-combined c1"></div>
                 <div class="color-box color-box-combined c2"></div>

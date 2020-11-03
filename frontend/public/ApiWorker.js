@@ -20,7 +20,7 @@ self.onmessage = function (event) {
             loadLegs();
             break;
         case "incidents":
-            loadIncidents(event.data[1], event.data[2]);
+            loadIncidents(event.data[1]);
             break;
         case "route":
             break;
@@ -175,37 +175,26 @@ async function loadLegs() {
 }
 
 var incidents = {};
-function loadIncidents(coords, filter) {
-    let filterElements = Object.entries(filter).filter(x => x[1] != null);
-    let filter_string = JSON.stringify(filter);
-
-    if (!incidents.hasOwnProperty(filter_string)) {
-        incidents[filter_string] = [];
-    }
-
-    if (!incidents[filter_string].hasOwnProperty(coords)) {
+function loadIncidents(polygon) {
+    if (!incidents.hasOwnProperty(polygon)) {
         startLoading();
 
-        let filtersQuery = filterElements.map(x => `${ x[0] }=${ x[1] }`).join("&");
+        let url = `http://207.180.205.80:8000/api/incidents?contains=POLYGON%28%28${polygon.map(coord => (coord[0] / 100.0) + '+' + (coord[1] / 100.0)).join('%2C')}%29%29&format=json`;
+        console.log(url);
+        fetch(url).then(r => r.json()).then(result => {
+                // for (let i = 0; i < result.length; i++) {
+                //     let seed = parseInt(result[i].properties.key + result[i].properties.ts);
+                //     result[i].geometry.coordinates[0] += getCoordinateOffset(seed);
+                //     result[i].geometry.coordinates[1] += getCoordinateOffset(seed + 1);
+                // }
 
-        console.log(coords);
-        console.log(`${URL_BACKEND}/incidents/filter?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&${filtersQuery}`);
-        fetch(`${URL_BACKEND}/incidents/filter?bottomleft=${coords[0][0] / 100},${coords[0][1] / 100}&topright=${coords[1][0] / 100},${coords[1][1] / 100}&${filtersQuery}`)
-            .then(r => r.json())
-            .then(result => {
-                for (let i = 0; i < result.length; i++) {
-                    let seed = parseInt(result[i].properties.key + result[i].properties.ts);
-                    result[i].geometry.coordinates[0] += getCoordinateOffset(seed);
-                    result[i].geometry.coordinates[1] += getCoordinateOffset(seed + 1);
-                }
-
-                incidents[filter_string][coords] = result;
+                incidents[polygon] = result;
                 self.postMessage(["incidents", result]);
                 finishLoading();
             });
     } else {
         console.log("cache hit!");
-        self.postMessage(["incidents", incidents[filter_string][coords]]);
+        self.postMessage(["incidents", incidents[polygon]]);
     }
 }
 
