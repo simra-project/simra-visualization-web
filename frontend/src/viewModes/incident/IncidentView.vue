@@ -36,7 +36,6 @@
 <script>
 import Vue from "vue";
 import { LGeoJson, LTooltip, LMarker, LTileLayer } from "vue2-leaflet";
-import Vue2LeafletHeatmap from "@/components/Vue2LeafletHeatmap";
 import { ExtraMarkers } from "leaflet-extra-markers";
 
 import { IncidentUtils } from "@/services/IncidentUtils";
@@ -46,7 +45,6 @@ import MapPopup from "@/components/MapPopup";
 export default {
     name: "IncidentView",
     components: {
-        Vue2LeafletHeatmap,
         LGeoJson,
         LTooltip,
         LMarker,
@@ -55,7 +53,6 @@ export default {
     props: {
         zoom: Number,
         bounds: Object,
-        getFilters: { default: {} },
     },
     data() {
         return {

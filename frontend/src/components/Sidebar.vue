@@ -139,13 +139,12 @@
 </template>
 
 <script>
-import MapFilters from "@/components/MapFilters";
 import SidebarEntry from "@/components/SidebarEntry";
 import Config from "@/constants";
 
 export default {
     name: "Sidebar",
-    components: { SidebarEntry, MapFilters },
+    components: { SidebarEntry },
     props: [
         'value',
         'subViewMode',

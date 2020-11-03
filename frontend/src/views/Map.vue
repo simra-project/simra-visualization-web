@@ -52,11 +52,7 @@
                     <!-- Because of a Vue/DOM problem, view modes have to be declared this way ... (wrapped in a tag) -->
                     <div>
                         <RideView v-if="viewMode === config.viewModes.RIDES" ref="rideView"
-                                  :zoom="zoom"
-                                  :bounds="bounds"
-                                  :view-mode="viewMode"
                                   :sub-view-mode="subViewMode"
-                                  :get-filters="getFiltersRide"
                                   @on-progress="updateLoadingView"
                                   @update:sub-view-mode="subViewMode = $event"
                         />
@@ -65,7 +61,6 @@
                         <IncidentView v-if="viewMode === config.viewModes.INCIDENTS" ref="incidentView"
                                       :zoom="zoom"
                                       :bounds="bounds"
-                                      :get-filters="getFiltersIncident"
                                       @on-progress="updateLoadingView"
                                       @fit-in-view="fitMapObjectIntoView"
                         />
@@ -192,14 +187,6 @@ export default {
                 this.$refs.incidentView.clickedOnMap(event);
             }
         },
-        forwardChangedFilters() { // TODO
-            if (this.viewMode === Config.viewModes.RIDES) {
-                this.$refs.rideView.loadMatchedRoutes(false);
-            }
-            if (this.viewMode === Config.viewModes.INCIDENTS) {
-                this.$refs.incidentView.loadIncidents();
-            }
-        },
         updateLoadingView(progress, expectedTotal) {
             if (expectedTotal === 0) return;
             let currentProgress = Math.min(Math.max(progress / expectedTotal, 0.0), 1.0);
@@ -210,15 +197,6 @@ export default {
             if (progress === expectedTotal) {
                 setTimeout(() => this.loadingProgress = null, 1200);
             }
-        },
-        getFiltersRide() { // TODO
-            // if (this.viewMode === Config.viewModes.COMBINED) {
-            //     return this.$refs.sidebar.$refs.filterCombined.getRideFilters();
-            // }
-            return this.$refs.sidebar.$refs.filterRides.getRideFilters();
-        },
-        getFiltersIncident() { // TODO
-            return this.$refs.sidebar.$refs.filterIncidents.getIncidentFilters();
         },
     },
     async mounted() {

@@ -25,29 +25,6 @@
         "settings": "Settings",
         "expandMenu": "Expand menu"
     },
-    "filters": {
-        "weekday": "Weekday",
-        "anyWeekday": "Any weekday",
-        "weekdays": {
-            "monday": "Monday",
-            "tuesday": "Tuesday",
-            "wednesday": "Wednesday",
-            "thursday": "Thursday",
-            "friday": "Friday",
-            "saturday": "Saturday",
-            "sunday": "Sunday"
-        },
-        "timeOfDay": "Time of day",
-        "scaryOrRegularIncidents": "Scary / Regular Incidents",
-        "scaryIncidents": "Scary Incidents",
-        "regularIncidents": "Regular Incidents",
-        "chooseAtLeastOne": "You have to choose at least one of these options",
-        "incidentType": "Incident Type",
-        "incidentTypeAny": "Any type",
-        "incidentParticipant": "Incident Participant",
-        "incidentParticipantAny": "Any participant",
-        "resetFilters": "Reset filters"
-    },
     "legend": {
         "ridesBicyclists": "Bicyclists per street segment",
         "scaryIncident": "Scary Incident",
