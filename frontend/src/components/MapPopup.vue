@@ -7,14 +7,14 @@
         Participant: <strong>{{ utils.getParticipant(incident) }}</strong><br>
         Bike Type: <strong>{{ utils.getBikeType(incident) }}</strong><br>
 
-        <div v-if="incident.child === true">
+        <div v-if="incident.childCheckbox === true">
             <i class="fa fa-caret-right"></i> Child involved
         </div>
-        <div v-if="incident.trailer === true">
+        <div v-if="incident.trailerCheckbox === true">
             <i class="fa fa-caret-right"></i> Bike with trailer
         </div>
 
-        <p v-if="incident.description !== null">{{ incident.description }}</p>
+        <p v-if="incident.desc !== null">{{ incident.desc }}</p>
 
         <template v-if="isDebug && false">
             <hr>Debug information: {{ incident }}<hr>
