@@ -18,15 +18,10 @@
                 <l-tooltip :options="{direction: 'bottom'}"><strong>{{ $t('incident.start') }}</strong></l-tooltip>
             </l-marker>
             <l-marker :lat-lng="rideHighlightedEnd" :icon="rideHighlightedEndIcon">
-                <l-tooltip :options="{direction: 'bottom'}">
-                    <strong>{{ $t('incident.end', [(rideHighlighted.properties.distance / 1000).toFixed(1), (rideHighlighted.properties.duration >= 60 ? Math.floor(rideHighlighted.properties.duration / 60) + " h " : ""), (Math.floor(rideHighlighted.properties.duration % 60))]) }}</strong>
-                </l-tooltip>
+                <l-tooltip :options="{direction: 'bottom'}"><strong>{{ $t('incident.end') }}</strong></l-tooltip>
             </l-marker>
 
-            <l-geo-json v-for="incident in rideHighlightedIncidents"
-                        :key="incident.key"
-                        :geojson="incident"
-                        :options="markerStyle">
+            <l-geo-json v-if="rideHighlightedIncidents" :geojson="rideHighlightedIncidents" :options="markerStyle">
                 <l-popup/>
             </l-geo-json>
         </template>
@@ -71,7 +66,7 @@ export default {
                         propsData: {
                             incident: feature.properties,
                             showRouteEnabled: this.rideHighlighted === null,
-                            showRoute: () => { this.highlightRide(feature.properties.rideId) }, // TODO
+                            showRoute: () => { this.highlightRide(feature.properties.ride_id) },
                         },
                     });
                     return mapPopup.$mount().$el;
@@ -122,7 +117,6 @@ export default {
                 if (ride.status !== 500 && incidents.status !== 500) {
                     console.log(ride);
                     console.log(incidents);
-                    ride.properties.duration = Math.floor((ride.properties.ts[ride.properties.ts.length - 1] - ride.properties.ts[0]) / (60 * 1000));
 
                     this.rideHighlightedStart = [ride.geometry.coordinates[0][1], ride.geometry.coordinates[0][0]];
                     this.rideHighlightedEnd = [ride.geometry.coordinates[ride.geometry.coordinates.length - 1][1], ride.geometry.coordinates[ride.geometry.coordinates.length - 1][0]];

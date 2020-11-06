@@ -9,7 +9,6 @@
         <div class="main-layout" style="display:flex;">
             <Sidebar v-model.sync="viewMode" ref="sidebar"
                      :sub-view-mode="subViewMode"
-                     @filters-changed="forwardChangedFilters"
                      @size-changed="mapObject.invalidateSize()"
                      @update:sub-view-mode="subViewMode = $event"
             />

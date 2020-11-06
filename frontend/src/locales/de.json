@@ -45,7 +45,7 @@
     },
     "incident": {
         "start": "Start",
-        "end": "Ende - {0} km in {1}{2} min"
+        "end": "Ende"
     },
     "surfaceQuality": {
         "aggregated": "Aggregiert",
