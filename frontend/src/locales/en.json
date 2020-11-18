@@ -60,5 +60,78 @@
             "polygonContinue": "Click to continue drawing shape.",
             "polygonEnd": "Click first point to close this shape."
         }
+    },
+    "statistics": {
+        "title": "Statistics for",
+        "toptext": {
+            "over": "Over",
+            "bicyclists": "bicyclists",
+            "cycled": "cycled",
+            "soFarReducingCO2EmissionsBy1": "so far reducing CO<sub>2</sub> emissions by",
+            "soFarReducingCO2EmissionsBy2": "."
+        },
+        "subtext": {
+            "1": "On average, one ride is {0} kilometers long and lasts {1} minutes.",
+            "2": "That's a speed of {0} km/h on average."
+        },
+        "incidents": {
+            "incidents": "Incidents",
+            "incidentTypes": "Incident Types",
+            "scaryIncidents": "Scary Incidents",
+            "scaryIncidentsHint": "A scary incident is one where the cyclist fears for their safety.",
+            "participants": "Participants",
+            "participantsHint": "The other participant in the incident.",
+            "notScary": "Not scary",
+            "scary": "Scary"
+        },
+        "users": {
+            "users": "Users",
+            "bikeTypes": "Bicycle Types",
+            "ageDistribution": "Age Distribution",
+            "gender": "Gender",
+            "genderList": {
+                "male": "Male",
+                "female": "Female",
+                "other": "Other"
+            }
+        },
+        "other": "Other"
+    },
+    "incidentTypes": {
+        "1": "Nothing",
+        "2": "Close pass",
+        "3": "Someone pulling in or out",
+        "4": "Near left or right hook",
+        "5": "Someone approaching head on",
+        "6": "Tailgating",
+        "7": "Near-Dooring",
+        "8": "Dodging an obstacle (e.g., a dog)",
+        "9": "Other",
+        "unknown": "Unknown"
+    },
+    "participantTypes": {
+        "1": "Bus/Coach",
+        "2": "Cyclist",
+        "3": "Pedestrian",
+        "4": "Delivery Van",
+        "5": "Lorry/Truck",
+        "6": "Motorcyclist",
+        "7": "Car",
+        "8": "Taxi/Cab",
+        "9": "Other",
+        "10": "Electric Scooter",
+        "unknown": "Unknown"
+    },
+    "bikeTypes": {
+        "0": "Not Chosen",
+        "1": "City-/Trekking Bike",
+        "2": "Road Racing Bike",
+        "3": "Tandem Bicycle",
+        "4": "E-Bike",
+        "5": "Freight Bicycle",
+        "6": "Recumbent Bicycle",
+        "7": "Mountain Bike",
+        "8": "Other",
+        "unknown": "Unknown"
     }
 }

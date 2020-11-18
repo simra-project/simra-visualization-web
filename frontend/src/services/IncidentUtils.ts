@@ -33,45 +33,45 @@ class IncidentUtils {
 
     static getTypes() {
         return [
-            { id: 0, name: "Nothing" },
-            { id: 1, name: "Close Pass" },
-            { id: 2, name: "Someone pulling in or out" },
-            { id: 3, name: "Near left or right hook" },
-            { id: 4, name: "Someone approaching head on" },
-            { id: 5, name: "Tailgating" },
-            { id: 6, name: "Near-Dooring" },
-            { id: 7, name: "Dodging an Obstacle" },
-            { id: 8, name: "Other" },
+            { id: 0, translationKey: "incidentTypes.1" },
+            { id: 1, translationKey: "incidentTypes.2" },
+            { id: 2, translationKey: "incidentTypes.3" },
+            { id: 3, translationKey: "incidentTypes.4" },
+            { id: 4, translationKey: "incidentTypes.5" },
+            { id: 5, translationKey: "incidentTypes.6" },
+            { id: 6, translationKey: "incidentTypes.7" },
+            { id: 7, translationKey: "incidentTypes.8" },
+            { id: 8, translationKey: "incidentTypes.9" },
         ];
     }
 
     static getParticipants() {
         return [
-            { id: 0, name: "Bus", icon: "fa-bus" },
-            { id: 1, name: "Cyclist", icon: "fa-bicycle" },
-            { id: 2, name: "Pedestrian", icon: "fa-walking" },
-            { id: 3, name: "Delivery Van", icon: "fa-shipping-fast" },
-            { id: 4, name: "Truck", icon: "fa-truck-moving" },
-            { id: 5, name: "Motorcycle", icon: "fa-motorcycle" },
-            { id: 6, name: "Car", icon: "fa-car" },
-            { id: 7, name: "Taxi", icon: "fa-taxi" },
-            { id: 8, name: "Other", icon: "fa-question" },
-            { id: 9, name: "E-Scooter", icon: "fa-bolt" },
-            { id: 10, name: "Unknown", icon: "fa-question" },
+            { id: 0, translationKey: "participantTypes.1", icon: "fa-bus" },
+            { id: 1, translationKey: "participantTypes.2", icon: "fa-bicycle" },
+            { id: 2, translationKey: "participantTypes.3", icon: "fa-walking" },
+            { id: 3, translationKey: "participantTypes.4", icon: "fa-shipping-fast" },
+            { id: 4, translationKey: "participantTypes.5", icon: "fa-truck-moving" },
+            { id: 5, translationKey: "participantTypes.6", icon: "fa-motorcycle" },
+            { id: 6, translationKey: "participantTypes.7", icon: "fa-car" },
+            { id: 7, translationKey: "participantTypes.8", icon: "fa-taxi" },
+            { id: 8, translationKey: "participantTypes.9", icon: "fa-question" },
+            { id: 9, translationKey: "participantTypes.10", icon: "fa-bolt" },
+            { id: 10, translationKey: "participantTypes.unknown", icon: "fa-question" },
         ];
     }
 
     static getBikeTypes() {
         return [
-            { id: 0, name: "Not Chosen" },
-            { id: 1, name: "City-/Trekking Bike" },
-            { id: 2, name: "Road Racing Bike" },
-            { id: 3, name: "E-Bike" },
-            { id: 4, name: "Recumbent Bicycle" },
-            { id: 5, name: "Freight Bicycle" },
-            { id: 6, name: "Tandem Bicycle" },
-            { id: 7, name: "Mountainbike" },
-            { id: 8, name: "Other" },
+            { id: 0, translationKey: "bikeTypes.0" },
+            { id: 1, translationKey: "bikeTypes.1" },
+            { id: 2, translationKey: "bikeTypes.2" },
+            { id: 3, translationKey: "bikeTypes.3" },
+            { id: 4, translationKey: "bikeTypes.4" },
+            { id: 5, translationKey: "bikeTypes.5" },
+            { id: 6, translationKey: "bikeTypes.6" },
+            { id: 7, translationKey: "bikeTypes.7" },
+            { id: 8, translationKey: "bikeTypes.8" },
         ];
     }
 

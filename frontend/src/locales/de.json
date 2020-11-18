@@ -60,5 +60,78 @@
             "polygonContinue": "Klicke um den nächsten Punkt der Form zu zeichnen.",
             "polygonEnd": "Klicke den ersten Punkt um die Form fertigzustellen."
         }
+    },
+    "statistics": {
+        "title": "Statistiken für",
+        "toptext": {
+            "over": "Über",
+            "bicyclists": "Fahrradfahrer",
+            "cycled": "fuhren bisher",
+            "soFarReducingCO2EmissionsBy1": "wodurch der CO<sub>2</sub>-Ausstoß um",
+            "soFarReducingCO2EmissionsBy2": "verringert wurde."
+        },
+        "subtext": {
+            "1": "Im Durchschnitt ist eine Fahrt {0} Kilometer lang und dauert {1} Minuten.",
+            "2": "Das entspricht einer Durchschnittsgeschwindigkeit von {0} km/h."
+        },
+        "incidents": {
+            "incidents": "Ereignisse",
+            "incidentTypes": "Art des Ereignisses",
+            "scaryIncidents": "Beängstigende Ereignisse",
+            "scaryIncidentsHint": "Ein beängstigendes Ereignis ist eines wo der Fahrradfahrer sich um seine Sicherheit fürchtet.",
+            "participants": "Verkehrsteilnehmer",
+            "participantsHint": "Der andere Verkehrsteilnehmer des Ereignisses.",
+            "notScary": "Normal",
+            "scary": "Beängstigend"
+        },
+        "users": {
+            "users": "Nutzer",
+            "bikeTypes": "Fahrradtypen",
+            "ageDistribution": "Altersverteilung",
+            "gender": "Geschlecht",
+            "genderList": {
+                "male": "Männlich",
+                "female": "Weiblich",
+                "other": "Divers"
+            }
+        },
+        "other": "Andere"
+    },
+    "incidentTypes": {
+        "1": "Nichts",
+        "2": "Zu dichtes Überholen",
+        "3": "Ein- oder ausparkendes Fahrzeug",
+        "4": "Beinahe-Abbiegeunfall",
+        "5": "Entgegenkommender Verkehrsteilnehmer",
+        "6": "Zu dichtes Auffahren",
+        "7": "Beinahe-Dooring",
+        "8": "Hindernis ausweichen (z.B. Hund)",
+        "9": "Sonstiges",
+        "unknown": "Unbekannt"
+    },
+    "participantTypes": {
+        "1": "Bus",
+        "2": "Fahrrad",
+        "3": "Fußgänger",
+        "4": "Lieferwagen",
+        "5": "LKW",
+        "6": "Motorrad",
+        "7": "PKW",
+        "8": "Taxi",
+        "9": "Sonstiges",
+        "10": "E-Scooter",
+        "unknown": "Unbekannt"
+    },
+    "bikeTypes": {
+        "0": "Nicht gewählt",
+        "1": "City-/Trekkingrad",
+        "2": "Rennrad",
+        "3": "E-Bike",
+        "4": "Lastenrad",
+        "5": "Liegerad",
+        "6": "Tandemrad",
+        "7": "Mountainbike",
+        "8": "Sonstiges",
+        "unknown": "Unbekannt"
     }
 }

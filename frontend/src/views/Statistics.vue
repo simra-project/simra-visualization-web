@@ -1,6 +1,6 @@
 <template>
     <div class="container content fcp-container">
-        <h2>Statistics for
+        <h2>{{ $t('statistics.title') }}
             <b-select v-model="selectedRegion" :loading="!dataLoaded" style="display: inline-block; position: absolute; margin-left: 13px; margin-top: -5px;">
                 <option v-for="region in regions" :value="region">
                     {{ region }}
@@ -10,42 +10,44 @@
 
         <div class="wrapper" v-if="statistics.r_meters != null">
             <div class="top-text">
-                Over
+                {{ $t('statistics.toptext.over') }}
                 <span class="highlight-text">
-                    <ICountUp :delay="100" :endVal="statistics.p_count"/> bikers
+                    <ICountUp :delay="100" :endVal="statistics.p_count"/> {{ $t('statistics.toptext.bicyclists') }}
                 </span>
-                in {{ selectedRegion }} cycled
+                in {{ selectedRegion }} {{ $t('statistics.toptext.cycled') }}
                 <span class="highlight-text">
                     <ICountUp :delay="400" :endVal="Math.floor(statistics.r_meters / 1000)"/> km
                 </span>
-                so far reducing CO<sub>2</sub> emissions by
+                <span v-html="$t('statistics.toptext.soFarReducingCO2EmissionsBy1')" />&nbsp;
                 <span class="highlight-text">
-                    <ICountUp :delay="700" :endVal="Math.floor(3781.43)"/> kg</span>.
+                    <ICountUp :delay="700" :endVal="Math.floor(3781.43)"/> kg
+                </span>
+                {{ $t('statistics.toptext.soFarReducingCO2EmissionsBy2') }}
             </div>
             <div class="top-subtext">
-                On average, one ride is {{ (statistics.r_avg_distance / 1000).toFixed(2) }} kilometers long and lasts {{ Math.floor(statistics.r_avg_duration / 60) }} minutes.
-                That's a speed of {{ statistics.r_avg_velocity.toFixed(1) }} km/h on average.
+                {{ $t('statistics.subtext.1', [(statistics.r_avg_distance / 1000).toFixed(2), Math.floor(statistics.r_avg_duration / 60)]) }}
+                {{ $t('statistics.subtext.2', [statistics.r_avg_velocity.toFixed(1)]) }}
             </div>
 
             <hr style="margin-bottom: 2.5rem;">
 
-            <h3>Incidents</h3>
+            <h3>{{ $t('statistics.incidents.incidents') }}</h3>
             <div class="columns incidents">
                 <div class="column">
-                    <h4>Incident Types</h4>
+                    <h4>{{ $t('statistics.incidents.incidentTypes') }}</h4>
                     <apexchart type=donut width=100% :options="incidentTypes.options" :series="incidentTypes.data"/>
                 </div>
                 <div class="column">
-                    <h4>Scary Incidents
-                        <b-tooltip label="A scary incident is one where the cyclist fears for their safety." type="is-light" style="vertical-align: bottom;">
+                    <h4>{{ $t('statistics.incidents.scaryIncidents') }}
+                        <b-tooltip :label="$t('statistics.incidents.scaryIncidentsHint')" type="is-light" style="vertical-align: bottom;">
                             <b-tag rounded>?</b-tag>
                         </b-tooltip>
                     </h4>
-                    <apexchart type=donut width=100% :options="{...chartOptions(['Not scary', 'Scary']), colors: ['#3f51b5', '#e52e71'] }" :series="[statistics.i_count, statistics.i_count_scary]"/>
+                    <apexchart type=donut width=100% :options="{...chartOptions([$t('statistics.incidents.notScary'), $t('statistics.incidents.scary')]), colors: ['#3f51b5', '#e52e71'] }" :series="[statistics.i_count, statistics.i_count_scary]"/>
                 </div>
                 <div class="column">
-                    <h4>Participants
-                        <b-tooltip label="The other participant in the incident." type="is-light" style="vertical-align: bottom;">
+                    <h4>{{ $t('statistics.incidents.participants') }}
+                        <b-tooltip :label="$t('statistics.incidents.participantsHint')" type="is-light" style="vertical-align: bottom;">
                             <b-tag rounded>?</b-tag>
                         </b-tooltip>
                     </h4>
@@ -55,11 +57,11 @@
 
             <hr>
 
-            <h3>Users</h3>
+            <h3>{{ $t('statistics.users.users') }}</h3>
             <div class="columns reset-columns">
-                <div class="column"><h4>Bike Types</h4></div>
-                <div class="column"><h4>Age Distribution</h4></div>
-                <div class="column"><h4>Gender</h4></div>
+                <div class="column"><h4>{{ $t('statistics.users.bikeTypes') }}</h4></div>
+                <div class="column"><h4>{{ $t('statistics.users.ageDistribution') }}</h4></div>
+                <div class="column"><h4>{{ $t('statistics.users.gender') }}</h4></div>
             </div>
 
             <div class="columns users">
@@ -70,7 +72,7 @@
                     <apexchart type=bar width=100% :options="ageDistributionOptions" :series="ageDistributionData"/>
                 </div>
                 <div class="column">
-                    <apexchart type=donut width=100% :options="chartOptions(['Male', 'Female', 'Other'])" :series="[statistics.p_gender_male, statistics.p_gender_female, statistics.p_gender_other]"/>
+                    <apexchart type=donut width=100% :options="chartOptions([$t('statistics.users.genderList.male'), $t('statistics.users.genderList.female'), $t('statistics.users.genderList.other')])" :series="[statistics.p_gender_male, statistics.p_gender_female, statistics.p_gender_other]"/>
                 </div>
             </div>
         </div>
@@ -149,19 +151,19 @@ export default {
                         this.statistics = r;
 
                         let incidentData = [r.i_incident_0, r.i_incident_1, r.i_incident_2, r.i_incident_3, r.i_incident_4, r.i_incident_5, r.i_incident_6, r.i_incident_7, r.i_incident_8];
-                        this.incidentTypes = this.processData(4, IncidentUtils.getTypes().map(x => x.name), incidentData);
+                        this.incidentTypes = this.processData(4, IncidentUtils.getTypes().map(x => this.$t(x.translationKey)), incidentData);
 
                         let participantData = [/*r.i_itype_0,*/ r.i_itype_1, r.i_itype_2, r.i_itype_3, r.i_itype_4, r.i_itype_5, r.i_itype_6, r.i_itype_7, r.i_itype_8, r.i_itype_9, r.i_itype_10];
-                        this.participantTypes = this.processData(4, IncidentUtils.getParticipants().map(x => x.name), participantData);
+                        this.participantTypes = this.processData(4, IncidentUtils.getParticipants().map(x => this.$t(x.translationKey)), participantData);
 
                         let bikeData = [r.i_biketype_0, r.i_biketype_1, r.i_biketype_2, r.i_biketype_3, r.i_biketype_4, r.i_biketype_5, r.i_biketype_6, r.i_biketype_7, r.i_biketype_8];
-                        this.bikeTypes = this.processData(4, IncidentUtils.getBikeTypes().map(x => x.name), bikeData);
+                        this.bikeTypes = this.processData(4, IncidentUtils.getBikeTypes().map(x => this.$t(x.translationKey)), bikeData);
 
                         this.ageDistributionOptions.xaxis.categories = ["> 2004", "2000–2004", "1995–1999", "1990–1994", "1985–1989", "1980–1984", "1975–1979", "1970–1974", "1965–1969", "1960–1964", "1955–1959", "1950–1954", "< 1950"];
                         this.ageDistributionData = [
-                            { name: "Male", data: [r.p_birth_1_male, r.p_birth_2_male, r.p_birth_3_male, r.p_birth_4_male, r.p_birth_5_male, r.p_birth_6_male, r.p_birth_7_male, r.p_birth_8_male, r.p_birth_9_male, r.p_birth_10_male, r.p_birth_11_male, r.p_birth_12_male, r.p_birth_13_male] },
-                            { name: "Female", data: [r.p_birth_1_female, r.p_birth_2_female, r.p_birth_3_female, r.p_birth_4_female, r.p_birth_5_female, r.p_birth_6_female, r.p_birth_7_female, r.p_birth_8_female, r.p_birth_9_female, r.p_birth_10_female, r.p_birth_11_female, r.p_birth_12_female, r.p_birth_13_female] },
-                            { name: "Other", data: [r.p_birth_1_other, r.p_birth_2_other, r.p_birth_3_other, r.p_birth_4_other, r.p_birth_5_other, r.p_birth_6_other, r.p_birth_7_other, r.p_birth_8_other, r.p_birth_9_other, r.p_birth_10_other, r.p_birth_11_other, r.p_birth_12_other, r.p_birth_13_other] },
+                            { name: this.$t('statistics.users.genderList.male'), data: [r.p_birth_1_male, r.p_birth_2_male, r.p_birth_3_male, r.p_birth_4_male, r.p_birth_5_male, r.p_birth_6_male, r.p_birth_7_male, r.p_birth_8_male, r.p_birth_9_male, r.p_birth_10_male, r.p_birth_11_male, r.p_birth_12_male, r.p_birth_13_male] },
+                            { name: this.$t('statistics.users.genderList.female'), data: [r.p_birth_1_female, r.p_birth_2_female, r.p_birth_3_female, r.p_birth_4_female, r.p_birth_5_female, r.p_birth_6_female, r.p_birth_7_female, r.p_birth_8_female, r.p_birth_9_female, r.p_birth_10_female, r.p_birth_11_female, r.p_birth_12_female, r.p_birth_13_female] },
+                            { name: this.$t('statistics.users.genderList.other'), data: [r.p_birth_1_other, r.p_birth_2_other, r.p_birth_3_other, r.p_birth_4_other, r.p_birth_5_other, r.p_birth_6_other, r.p_birth_7_other, r.p_birth_8_other, r.p_birth_9_other, r.p_birth_10_other, r.p_birth_11_other, r.p_birth_12_other, r.p_birth_13_other] },
                         ];
                     });
             }, 500);
@@ -198,7 +200,7 @@ export default {
             let restSum = data.reduce((a, b) => a + b, 0);
             if (restSum > 0) {
                 rData.push(restSum);
-                rLabels.push("Other");
+                rLabels.push(this.$t('statistics.other'));
             }
 
             return { labels: rLabels, data: rData, options: this.chartOptions(rLabels) };
