@@ -45,7 +45,16 @@
     },
     "incident": {
         "start": "Start",
-        "end": "End"
+        "end": "End",
+        "scary": "Scary",
+        "incident": "Incident",
+        "on": "on",
+        "incidentType": "Type",
+        "participant": "Participant",
+        "bikeType": "Bike Type",
+        "childInvolved": "Child involved",
+        "bikeWithTrailer": "Bike with trailer",
+        "showBikeRide": "Show Bike Ride"
     },
     "surfaceQuality": {
         "aggregated": "Aggregated",

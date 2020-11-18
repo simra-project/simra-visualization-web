@@ -67,6 +67,7 @@ export default {
                             incident: feature.properties,
                             showRouteEnabled: this.rideHighlighted === null,
                             showRoute: () => { this.highlightRide(feature.properties.ride_id) },
+                            t: (key) => { return this.$t(key) },
                         },
                     });
                     return mapPopup.$mount().$el;

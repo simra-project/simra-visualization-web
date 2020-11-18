@@ -10,19 +10,19 @@ class IncidentUtils {
     static getType(incident: any): string {
         const incidentTypes = this.getTypes();
 
-        return (incident.incident >= 0 && incident.incident < incidentTypes.length) ? incidentTypes[incident.incident]["name"] : "Unknown";
+        return (incident.incident >= 0 && incident.incident < incidentTypes.length) ? incidentTypes[incident.incident]["translationKey"] : 'incidentTypes.unknown';
     }
 
     static getParticipant(incident: any): string {
         const participants = this.getParticipants();
 
-        return (incident.iType >= 0 && incident.iType < participants.length) ? participants[incident.iType]["name"] : "Unknown";
+        return (incident.iType >= 0 && incident.iType < participants.length) ? participants[incident.iType]["translationKey"] : 'participantTypes.unknown';
     }
 
     static getBikeType(incident: any) {
         const bikeTypes = this.getBikeTypes();
 
-        return (incident.bikeType > 0 && incident.bikeType < bikeTypes.length) ? bikeTypes[incident.bikeType]["name"] : "Unknown";
+        return (incident.bikeType > 0 && incident.bikeType < bikeTypes.length) ? bikeTypes[incident.bikeType]["translationKey"] : 'bikeTypes.unknown';
     }
 
     static getIcon(incident: any): string {

@@ -45,7 +45,16 @@
     },
     "incident": {
         "start": "Start",
-        "end": "Ende"
+        "end": "Ende",
+        "scary": "Beängstigendes",
+        "incident": "Ereignis",
+        "on": "am",
+        "incidentType": "Typ",
+        "participant": "Verkehrsteilnehmer",
+        "bikeType": "Fahrradtyp",
+        "childInvolved": "Kind involviert",
+        "bikeWithTrailer": "Fahrrad mit Anhänger",
+        "showBikeRide": "Zeige Fahrradfahrt an"
     },
     "surfaceQuality": {
         "aggregated": "Aggregiert",
