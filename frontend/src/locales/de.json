@@ -22,7 +22,7 @@
         "boxAnalysisDescription": "Zeichne eine Form auf der Karte um zu sehen welche Fahrten durch diese gingen. Klicke auf die Form um eine neue zu zeichnen.",
         "tools": "Tools",
         "toolsDescription": "Lade eine Fahrt hoch um sie zu analysieren (ziehe die Datei auf die Karte).",
-        "settings": "Einstellungen",
+        "statistics": "Statistiken",
         "expandMenu": "Menü ausklappen"
     },
     "legend": {

@@ -8,6 +8,7 @@ let viewModes = {
     STOP_TIMES: 5,
     BOX_ANALYSIS: 6,
     TOOLS: 7,
+    STATISTICS: 99,
 }
 
 let subViewModes = {

@@ -22,7 +22,7 @@
         "boxAnalysisDescription": "Draw a shape on the map to see what bike rides went through it. Click on the shape to draw a new one.",
         "tools": "Tools",
         "toolsDescription": "Upload a ride to analyze it (drag the file on the map).",
-        "settings": "Settings",
+        "statistics": "Statistics",
         "expandMenu": "Expand menu"
     },
     "legend": {

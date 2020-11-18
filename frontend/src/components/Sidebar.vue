@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar" :class="{'small': small, 'resizable': !small}">
+    <div class="sidebar" :class="{'small': small}">
         <div class="entries">
             <SidebarEntry :title="$t('sidebar.rides')"
                           icon="fa-biking"
@@ -123,12 +123,15 @@
             <i class="fas fa-lg fa-angle-double-right"></i>
         </div>
         <div class="bottom">
-            <div class="bottom-settings" :title="small ? $t('sidebar.settings') : ''">
+            <div class="bottom-statistics"
+                 :title="small ? $t('sidebar.statistics') : ''"
+                 :class="{'selected': value === config.viewModes.STATISTICS}"
+                 @click="switchToView(config.viewModes.STATISTICS)">
                 <div class="bottom-icon">
-                    <i class="fas fa-lg fa-cogs"></i>
+                    <i class="fas fa-lg fa-chart-pie"></i>
                 </div>
                 <div class="bottom-text">
-                    {{ $t('sidebar.settings') }}
+                    {{ $t('sidebar.statistics') }}
                 </div>
             </div>
             <div class="bottom-reduce-button" @click="small = true">
@@ -189,15 +192,7 @@ export default {
         background-color: #fafafa;//#eaeaea;
         border-right: 1px solid rgba(0, 0, 0, 0.1);
         overflow-y: scroll;
-        height: calc(100vh - 3.25rem - 1px);
-
-        &.resizable {
-            min-width: 240px;
-            max-width: 50%;
-            resize: horizontal;
-            overflow-x: hidden;
-            overflow-y: hidden;
-        }
+        height: calc(100vh - 57px);
     }
 
     .entries {
@@ -214,7 +209,7 @@ export default {
         border-top: 1px solid rgba(0, 0, 0, 0.1);
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
-        .bottom-settings {
+        .bottom-statistics {
             display: flex;
             align-items: center;
             padding: 12px 8px;
@@ -230,6 +225,7 @@ export default {
                 flex-shrink: 0;
                 padding-right: 6px;
                 text-align: center;
+                color: slategray;
             }
 
             .bottom-text {
@@ -238,6 +234,22 @@ export default {
                 font-size: 18px;
                 font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
                 user-select: none;
+            }
+
+            &.selected {
+                font-weight: bold;
+                background-color: #dcdcdc !important;
+                border-bottom: 1px solid #e0e0e0;
+
+                &::before {
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, .2);
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                    width: 3px;
+                }
             }
         }
 
@@ -285,7 +297,7 @@ export default {
             }
         }
 
-        .bottom .bottom-settings .bottom-text {
+        .bottom .bottom-statistics .bottom-text {
             display: none;
         }
 

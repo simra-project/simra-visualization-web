@@ -1,11 +1,10 @@
 <template>
     <div class="container content fcp-container">
         <h2>Statistics for
-            <b-select v-model="selectedLocation" :loading="!dataLoaded" style="display: inline-block; position: absolute; margin-left: 13px; margin-top: -5px;">
-                <option v-for="location in locations" :value="location.name">
-                    {{ location.name }}
+            <b-select v-model="selectedRegion" :loading="!dataLoaded" style="display: inline-block; position: absolute; margin-left: 13px; margin-top: -5px;">
+                <option v-for="region in regions" :value="region">
+                    {{ region }}
                 </option>
-<!--                <option value="X">All cities (TODO)</option>-->
             </b-select>
         </h2>
 
@@ -15,7 +14,7 @@
                 <span class="highlight-text">
                     <ICountUp :delay="100" :endVal="statistics.p_count"/> bikers
                 </span>
-                in {{ selectedLocation }} cycled
+                in {{ selectedRegion }} cycled
                 <span class="highlight-text">
                     <ICountUp :delay="400" :endVal="Math.floor(statistics.r_meters / 1000)"/> km
                 </span>
@@ -24,7 +23,7 @@
                     <ICountUp :delay="700" :endVal="Math.floor(3781.43)"/> kg</span>.
             </div>
             <div class="top-subtext">
-                On average, one ride is {{ (statistics.r_avg_distance / 1000).toFixed(2) }} kilometers long and lasts {{ Math.floor(statistics.r_avg_duration / (1000 * 60)) }} minutes.
+                On average, one ride is {{ (statistics.r_avg_distance / 1000).toFixed(2) }} kilometers long and lasts {{ Math.floor(statistics.r_avg_duration / 60) }} minutes.
                 That's a speed of {{ statistics.r_avg_velocity.toFixed(1) }} km/h on average.
             </div>
 
@@ -75,7 +74,7 @@
                 </div>
             </div>
         </div>
-        <div class="wrapper" v-else style="height: 300px">
+        <div class="wrapper" v-else style="height: calc(100vh - 57px - 68px - 80px)">
             <b-loading :is-full-page="false" :active="true" :can-cancel="false"/>
         </div>
     </div>
@@ -93,12 +92,12 @@ export default {
         ICountUp,
     },
     props: {
-        locations: Array,
+        regions: Array,
     },
     data() {
         return {
             dataLoaded: false,
-            selectedLocation: "Berlin",
+            selectedRegion: null,
             statistics: {
                 incidentCount: 0,
                 incidentCountScary: 0,
@@ -139,11 +138,11 @@ export default {
     },
     methods: {
         loadData() {
+            if (this.selectedRegion === null) return;
             this.dataLoaded = false;
 
             setTimeout(() => {
-                // fetch(process.env.VUE_APP_BACKEND_URL + "/statistics?region=" + this.selectedLocation)
-                fetch("http://207.180.205.80:8000/api/statistics/ZES_Experimentell/")
+                fetch(`http://207.180.205.80:8000/api/statistics/${this.selectedRegion}/`)
                     .then(r => r.json())
                     .then(r => {
                         this.dataLoaded = true;
@@ -158,20 +157,7 @@ export default {
                         let bikeData = [r.i_biketype_0, r.i_biketype_1, r.i_biketype_2, r.i_biketype_3, r.i_biketype_4, r.i_biketype_5, r.i_biketype_6, r.i_biketype_7, r.i_biketype_8];
                         this.bikeTypes = this.processData(4, IncidentUtils.getBikeTypes().map(x => x.name), bikeData);
 
-                        this.ageDistributionOptions.xaxis.categories = [
-                            "> 2004",
-                            "2000–2004",
-                            "1995–1999",
-                            "1990–1994",
-                            "1985–1989",
-                            "1980–1984",
-                            "1975–1979",
-                            "1970–1974",
-                            "1965–1969",
-                            "1960–1964",
-                            "1955–1959",
-                            "1950–1954",
-                            "< 1950"];
+                        this.ageDistributionOptions.xaxis.categories = ["> 2004", "2000–2004", "1995–1999", "1990–1994", "1985–1989", "1980–1984", "1975–1979", "1970–1974", "1965–1969", "1960–1964", "1955–1959", "1950–1954", "< 1950"];
                         this.ageDistributionData = [
                             { name: "Male", data: [r.p_birth_1_male, r.p_birth_2_male, r.p_birth_3_male, r.p_birth_4_male, r.p_birth_5_male, r.p_birth_6_male, r.p_birth_7_male, r.p_birth_8_male, r.p_birth_9_male, r.p_birth_10_male, r.p_birth_11_male, r.p_birth_12_male, r.p_birth_13_male] },
                             { name: "Female", data: [r.p_birth_1_female, r.p_birth_2_female, r.p_birth_3_female, r.p_birth_4_female, r.p_birth_5_female, r.p_birth_6_female, r.p_birth_7_female, r.p_birth_8_female, r.p_birth_9_female, r.p_birth_10_female, r.p_birth_11_female, r.p_birth_12_female, r.p_birth_13_female] },
@@ -219,19 +205,37 @@ export default {
         },
     },
     watch: {
-        selectedLocation: function (val, oldVal) {
+        selectedRegion: function (val, oldVal) {
             if (val !== oldVal) this.loadData();
         },
+        regions: function (val, oldVal) {
+            if (val !== null) {
+                this.selectedRegion = val[0];
+            }
+        },
     },
-    mounted() {
-        this.loadData();
+    created() {
+        if (this.regions !== null) {
+            this.selectedRegion = this.regions[0];
+        }
     },
 };
 </script>
 
 <style lang="scss">
-    .container {
-        width: 100%;
+    .fcp-container {
+        padding: 20px;
+
+        & > .wrapper {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 16px 20px;
+            margin-bottom: 60px;
+
+            hr + h3 {
+                margin-top: 0;
+            }
+        }
     }
 
     .wrapper {

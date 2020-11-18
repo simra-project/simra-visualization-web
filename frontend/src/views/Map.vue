@@ -13,7 +13,7 @@
                      @update:sub-view-mode="subViewMode = $event"
             />
 
-            <section class="hero is-fullheight-with-navbar" style="width: 100%; border-top: none; min-height: calc(100vh - 3.25rem - 1px);">
+            <section class="hero is-fullheight-with-navbar viewmode-container">
                 <l-map ref="map"
                        style="width: 100%"
                        :zoom="zoom"
@@ -23,6 +23,7 @@
                        @update:center="center = $event; updateUrlQuery();"
                        @update:bounds="bounds = $event"
                        @click="clickedOnMap"
+                       :style="{'display: none': viewMode === config.viewModes.STATISTICS}"
                 >
                     <l-tile-layer :url="mapStyle.url" :class="{monochrome: false}" :attribution="mapStyle.attribution"/>
 
@@ -97,6 +98,10 @@
 
                     <l-tile-layer v-if="mapStyle.hasLabelLayer" :url="mapStyle.urlLabels" pane="overlayPane"/>
                 </l-map>
+
+                <div class="statistics-container" v-if="viewMode === config.viewModes.STATISTICS">
+                    <Statistics :regions="regions" ref="statisticsView"/>
+                </div>
             </section>
         </div>
     </div>
@@ -118,6 +123,7 @@ import RelativeSpeedView from "@/viewModes/relativeSpeed/RelativeSpeedView";
 import StopTimesView from "@/viewModes/stopTimes/StopTimesView";
 import BoxAnalysisView from "@/viewModes/boxAnalysis/BoxAnalysisView";
 import ToolsView from "@/viewModes/tools/ToolsView";
+import Statistics from "@/views/Statistics";
 
 export default {
     components: {
@@ -138,6 +144,7 @@ export default {
         StopTimesView,
         BoxAnalysisView,
         ToolsView,
+        Statistics,
     },
     data() {
         return {
@@ -146,7 +153,7 @@ export default {
             viewMode: parseInt(this.$route.query.m) || Config.viewModes.RIDES,
             subViewMode: parseInt(this.$route.query.sm) || Config.subViewModes.DEFAULT,
             loadingProgress: null,
-            devMonochromeMap: false,
+            regions: null,
 
             // Map
             mapObject: null,
@@ -199,6 +206,8 @@ export default {
         },
     },
     async mounted() {
+        fetch("http://207.180.205.80:8000/api/regions/").then(r => r.json()).then(r => this.regions = r);
+
         this.$nextTick(() => {
             this.mapObject = this.$refs.map.mapObject;
             this.zoom = this.mapObject.getZoom();
@@ -224,6 +233,12 @@ export default {
 </script>
 
 <style lang="scss">
+    .viewmode-container {
+        border-top: none;
+        min-height: calc(100vh - 57px) !important;
+        width: calc(100vw - 371px);
+    }
+
     .vue2leaflet-map {
         height: 100%;
         width: 100%;
@@ -315,6 +330,21 @@ export default {
 
         &.leaflet-control-zoom {
             display: none;
+        }
+    }
+
+    .statistics-container {
+        position: fixed;
+        max-height: 100%;
+        width: calc(100vw - 371px);
+        overflow-y: scroll;
+        z-index: 1000;
+        background: #f3f3f3;
+    }
+
+    .sidebar.small + .viewmode-container {
+        &, .statistics-container {
+            width: calc(100vw - 72px);
         }
     }
 </style>

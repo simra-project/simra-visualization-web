@@ -58,20 +58,4 @@ export default {
     // Import Bulma and Buefy styles
     @import "~bulma";
     @import "~buefy/src/scss/buefy";
-
-    .fcp-container {
-        h2 {
-            margin-top: 30px;
-        }
-
-        & > .wrapper {
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 16px 20px;
-
-            hr + h3 {
-                margin-top: 0;
-            }
-        }
-    }
 </style>
