@@ -222,8 +222,6 @@ export default {
         viewMode: function (newValue, oldValue) {
             this.updateUrlQuery();
             this.updateLoadingView(1, 1);
-
-            if (newValue !== oldValue) this.subViewMode = Config.subViewModes.DEFAULT;
         },
         subViewMode: function (newValue, oldValue) {
             this.updateUrlQuery();

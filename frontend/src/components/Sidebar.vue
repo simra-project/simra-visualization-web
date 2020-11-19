@@ -82,23 +82,23 @@
                           :icon-color="'#d63e12'"
                           :is-small="small"
                           :class="{'selected': value === config.viewModes.BOX_ANALYSIS}"
-                          @entryClicked="switchToView(config.viewModes.BOX_ANALYSIS)">
+                          @entryClicked="switchToView(config.viewModes.BOX_ANALYSIS, 1 << 0)">
                 <div class="entry-subtext">
                     {{ $t('sidebar.boxAnalysisDescription') }}
                 </div>
 
                 <div class="field" style="margin-top: 10px">
-                    <b-checkbox v-model="boxAnalysisHelper1">
+                    <b-checkbox v-model="computedBoxAnalysisHelper1">
                         {{ $t('boxAnalysis.start') }}
                     </b-checkbox>
                 </div>
                 <div class="field">
-                    <b-checkbox v-model="boxAnalysisHelper2">
+                    <b-checkbox v-model="computedBoxAnalysisHelper2">
                         {{ $t('boxAnalysis.contains') }}
                     </b-checkbox>
                 </div>
                 <div class="field">
-                    <b-checkbox v-model="boxAnalysisHelper3">
+                    <b-checkbox v-model="computedBoxAnalysisHelper3">
                         {{ $t('boxAnalysis.end') }}
                     </b-checkbox>
                 </div>
@@ -153,31 +153,23 @@ export default {
         return {
             config: Config,
             small: false,
-            boxAnalysisHelper1: false,
-            boxAnalysisHelper2: false,
-            boxAnalysisHelper3: false,
         }
     },
     methods: {
-        switchToView(viewId) {
+        switchToView(viewId, defaultSubViewMode = Config.subViewModes.DEFAULT) {
             if (this.value === viewId) {
                 this.$emit('input', Config.viewModes.NONE);
             } else {
                 this.$emit('input', viewId);
             }
+
+            this.$emit('update:sub-view-mode', defaultSubViewMode);
         },
-        calculateSubviewModeForBoxAnalysis() {
-            let sm = (this.boxAnalysisHelper1 ? 1 << 0 : 0) | (this.boxAnalysisHelper2 ? 1 << 1 : 0) | (this.boxAnalysisHelper3 ? 1 << 2 : 0);
-            this.$emit('update:sub-view-mode', sm);
-        }
     },
     watch: {
         small: function (newValue, oldValue) {
             if (newValue !== oldValue) this.$emit('size-changed');
         },
-        boxAnalysisHelper1: function() { this.calculateSubviewModeForBoxAnalysis() },
-        boxAnalysisHelper2: function() { this.calculateSubviewModeForBoxAnalysis() },
-        boxAnalysisHelper3: function() { this.calculateSubviewModeForBoxAnalysis() },
     },
     computed: {
         computedSubViewMode: {
@@ -187,7 +179,25 @@ export default {
             set(value) {
                 this.$emit('update:sub-view-mode', value);
             }
-        }
+        },
+        computedBoxAnalysisHelper1: {
+            get() { return (this.subViewMode & 1 << 0) > 0 },
+            set(value) {
+                this.$emit('update:sub-view-mode', value ? (this.subViewMode | 1 << 0) : (this.subViewMode & ~(1 << 0)));
+            }
+        },
+        computedBoxAnalysisHelper2: {
+            get() { return (this.subViewMode & 1 << 1) > 0 },
+            set(value) {
+                this.$emit('update:sub-view-mode', value ? (this.subViewMode | 1 << 1) : (this.subViewMode & ~(1 << 1)));
+            }
+        },
+        computedBoxAnalysisHelper3: {
+            get() { return (this.subViewMode & 1 << 2) > 0 },
+            set(value) {
+                this.$emit('update:sub-view-mode', value ? (this.subViewMode | 1 << 2) : (this.subViewMode & ~(1 << 2)));
+            }
+        },
     }
 };
 </script>
