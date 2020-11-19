@@ -45,14 +45,19 @@ function loadIncidents(polygon) {
     }
 }
 
-function loadPolygon(polygon, mode) {
-    startLoading();
-    let url = `http://207.180.205.80:8000/api/rides?${mode}=POLYGON%28%28${polygon.join('%2C')}%29%29&format=json`;
-    console.log(url);
-    fetch(url).then(r => r.json()).then(result => {
-        self.postMessage(["polygon", result]);
-        finishLoading();
-    });
+function loadPolygon(polygon, modes) {
+    let progress = 0;
+    updateLoadingProgress(0, modes.length);
+
+    for (const mode of modes) {
+        let url = `http://207.180.205.80:8000/api/rides?${mode}=POLYGON%28%28${polygon.join('%2C')}%29%29&format=json`;
+        console.log(url);
+        fetch(url).then(r => r.json()).then(result => {
+            self.postMessage(["polygon", result, mode]);
+            progress++;
+            updateLoadingProgress(progress, modes.length);
+        });
+    }
 }
 
 /**

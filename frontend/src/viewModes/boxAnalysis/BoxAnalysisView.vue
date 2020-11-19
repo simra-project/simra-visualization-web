@@ -25,12 +25,16 @@ export default {
             config: Config,
             polygon: null,
             polygonResult: [],
+            polygonResultStart: null,
+            polygonResultIntersect: null,
+            polygonResultEnd: null,
             polygonResultLoaded: false,
             polygonTool: null,
             rideStyle: {
                 style: feature => {
                     return {
-                        color: ['#90ee90', '#6ccc6c', '#48a948', '#248724', '#006400'][(this.rideStyleHelperCounter++ % 5)],
+                        // color: ['#90ee90', '#6ccc6c', '#48a948', '#248724', '#006400'][(this.rideStyleHelperCounter++ % 5)],
+                        color: ['#90ee90', '#6ccc6c', '#48a948', '#248724', '#006400'][feature.properties.color],
                         weight: 2,
                         opacity: 0.8,
                     };
@@ -61,6 +65,9 @@ export default {
                 if (e.layerType !== 'polygon') return;
 
                 this.polygonResult = [];
+                this.polygonResultStart = null;
+                this.polygonResultIntersect = null;
+                this.polygonResultEnd = null;
                 this.mapLayer.clearLayers();
                 this.mapLayer.addLayer(e.layer);
 
@@ -75,13 +82,20 @@ export default {
             this.mapLayer.on('click', () => {
                 this.polygon = null;
                 this.polygonResult = [];
+                this.polygonResultStart = null;
+                this.polygonResultIntersect = null;
+                this.polygonResultEnd = null;
                 this.mapLayer.clearLayers();
                 this.polygonTool.enable();
             });
         },
         loadRides() {
-            let mode = ["containsStart", "contains", "containsEnd"][this.subViewMode];
-            this.apiWorker.postMessage(["polygon", this.polygon, mode]);
+            let modes = [];
+            if (this.subViewMode & 1 << 0 && this.polygonResultStart === null) modes.push("containsStart");
+            if (this.subViewMode & 1 << 1 && this.polygonResultIntersect === null) modes.push("contains");
+            if (this.subViewMode & 1 << 2 && this.polygonResultEnd === null) modes.push("containsEnd");
+
+            if (modes.length > 0) this.apiWorker.postMessage(["polygon", this.polygon, modes]);
         },
         handleWorkerMessage(message) {
             switch (message.data[0]) {
@@ -89,8 +103,37 @@ export default {
                     this.$emit('on-progress', message.data[1], message.data[2])
                     break;
                 case "polygon":
-                    this.polygonResult = message.data[1];
+                    if (message.data[2] === "containsStart") this.polygonResultStart = message.data[1];
+                    if (message.data[2] === "contains") this.polygonResultIntersect = message.data[1];
+                    if (message.data[2] === "containsEnd") this.polygonResultEnd = message.data[1];
+                    this.mergeResults();
                     break;
+            }
+        },
+        mergeResults() {
+            let features = [];
+            let filenames = new Set();
+
+            let iterationFn = (bitFlag, partialResult) => {
+                if (this.subViewMode & bitFlag && partialResult !== null) {
+                    partialResult.features.forEach((f) => {
+                        if (!filenames.has(f.properties.filename)) {
+                            f.properties.color = parseInt(f.properties.filename.split("_")[1]) % 5;
+
+                            features.push(f);
+                            filenames.add(f.properties.filename);
+                        }
+                    });
+                }
+            }
+
+            iterationFn(1 << 0, this.polygonResultStart);
+            iterationFn(1 << 1, this.polygonResultIntersect);
+            iterationFn(1 << 2, this.polygonResultEnd);
+
+            this.polygonResult = {
+                type: "FeatureCollection",
+                features: features,
             }
         },
         initLeafletDrawTranslations() {
@@ -122,7 +165,10 @@ export default {
     },
     watch: {
         subViewMode: function (newValue, oldValue) {
-            if (newValue !== oldValue && this.polygon !== null) this.loadRides();
+            if (newValue !== oldValue && this.polygon !== null) {
+                this.loadRides();
+                this.mergeResults();
+            }
         },
         $i18n: function (newValue, oldValue) {
             if (newValue !== oldValue) this.initLeafletDrawTranslations();

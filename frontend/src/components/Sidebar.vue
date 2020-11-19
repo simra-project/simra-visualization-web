@@ -88,22 +88,19 @@
                 </div>
 
                 <div class="field" style="margin-top: 10px">
-                    <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.BOX_ANALYSIS_START">
+                    <b-checkbox v-model="boxAnalysisHelper1">
                         {{ $t('boxAnalysis.start') }}
-                    </b-radio>
+                    </b-checkbox>
                 </div>
                 <div class="field">
-                    <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.BOX_ANALYSIS_CONTAINS">
+                    <b-checkbox v-model="boxAnalysisHelper2">
                         {{ $t('boxAnalysis.contains') }}
-                    </b-radio>
+                    </b-checkbox>
                 </div>
                 <div class="field">
-                    <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.BOX_ANALYSIS_STOP">
+                    <b-checkbox v-model="boxAnalysisHelper3">
                         {{ $t('boxAnalysis.end') }}
-                    </b-radio>
+                    </b-checkbox>
                 </div>
             </SidebarEntry>
 
@@ -156,6 +153,9 @@ export default {
         return {
             config: Config,
             small: false,
+            boxAnalysisHelper1: false,
+            boxAnalysisHelper2: false,
+            boxAnalysisHelper3: false,
         }
     },
     methods: {
@@ -165,12 +165,19 @@ export default {
             } else {
                 this.$emit('input', viewId);
             }
+        },
+        calculateSubviewModeForBoxAnalysis() {
+            let sm = (this.boxAnalysisHelper1 ? 1 << 0 : 0) | (this.boxAnalysisHelper2 ? 1 << 1 : 0) | (this.boxAnalysisHelper3 ? 1 << 2 : 0);
+            this.$emit('update:sub-view-mode', sm);
         }
     },
     watch: {
         small: function (newValue, oldValue) {
             if (newValue !== oldValue) this.$emit('size-changed');
         },
+        boxAnalysisHelper1: function() { this.calculateSubviewModeForBoxAnalysis() },
+        boxAnalysisHelper2: function() { this.calculateSubviewModeForBoxAnalysis() },
+        boxAnalysisHelper3: function() { this.calculateSubviewModeForBoxAnalysis() },
     },
     computed: {
         computedSubViewMode: {
