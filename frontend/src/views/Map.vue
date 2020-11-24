@@ -157,7 +157,7 @@ export default {
 
             // Map
             mapObject: null,
-            mapStyle: Config.mapStyles[this.$route.query.style] || Config.mapStyles.OSM,
+            mapStyle: Config.mapStyles[this.$route.query.style] || Config.getDefaultMapStyle(),
             zoom: parseInt(this.$route.query.z) || 15,
             center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
             bounds: null,

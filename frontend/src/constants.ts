@@ -97,4 +97,11 @@ export default {
         return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS;// || viewMode === viewModes.COMBINED;
     },
     mapStyles: mapStyles,
+    getDefaultMapStyle: () => {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return mapStyles.CARTO_DARK_MATTER;
+        } else {
+            return mapStyles.CARTO_VOYAGER;
+        }
+    },
 }
