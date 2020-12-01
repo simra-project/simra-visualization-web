@@ -53,6 +53,7 @@ export default {
         return {
             // Markers
             incidents: [],
+            incidentRequestKey: null,
             markerStyle: {
                 pointToLayer: (feature, latlng) => L.marker(latlng, {
                     icon: ExtraMarkers.icon({
@@ -146,7 +147,11 @@ export default {
                     this.$emit('on-progress', message.data[1], message.data[2])
                     break;
                 case "incidents":
-                    this.incidents = message.data[1];
+                    if (this.incidentRequestKey === null || this.incidentRequestKey !== message.data[1]) {
+                        console.log("Setting incident variable with new data");
+                        this.incidentRequestKey = message.data[1];
+                        this.incidents = message.data[2];
+                    }
                     break;
             }
         },

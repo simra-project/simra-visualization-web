@@ -26,7 +26,7 @@ function loadIncidents(polygon) {
     if (!incidents.hasOwnProperty(polygon)) {
         startLoading();
 
-        let url = `http://207.180.205.80:8000/api/incidents?exclude_type=0&contains=POLYGON%28%28${polygon.map(coord => (coord[0] / 100.0) + '+' + (coord[1] / 100.0)).join('%2C')}%29%29&format=json`;
+        let url = `http://207.180.205.80:8000/api/incidents?contains=POLYGON%28%28${polygon.map(coord => (coord[0] / 100.0) + '+' + (coord[1] / 100.0)).join('%2C')}%29%29&format=json`;
         console.log(url);
         fetch(url).then(r => r.json()).then(result => {
                 // for (let i = 0; i < result.length; i++) {
@@ -36,12 +36,12 @@ function loadIncidents(polygon) {
                 // }
 
                 incidents[polygon] = result;
-                self.postMessage(["incidents", result]);
+                self.postMessage(["incidents", JSON.stringify(polygon), result]);
                 finishLoading();
             });
     } else {
         console.log("cache hit!");
-        self.postMessage(["incidents", incidents[polygon]]);
+        self.postMessage(["incidents", JSON.stringify(polygon), incidents[polygon]]);
     }
 }
 
