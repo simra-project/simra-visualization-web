@@ -74,7 +74,9 @@
                     </div>
                     <div>
                         <RelativeSpeedView v-if="viewMode === config.viewModes.RELATIVE_SPEED" ref="relativeSpeedView"
+                                           :sub-view-mode="subViewMode"
                                            @on-progress="updateLoadingView"
+                                           @update:sub-view-mode="subViewMode = $event"
                         />
                     </div>
                     <div>
