@@ -26,7 +26,7 @@
             </div>
             <div class="top-subtext">
                 {{ $t('statistics.subtext.1', [(statistics.r_avg_distance / 1000).toFixed(2), Math.floor(statistics.r_avg_duration / 60)]) }}
-                {{ $t('statistics.subtext.2', [statistics.r_avg_velocity.toFixed(1)]) }}
+                {{ $t('statistics.subtext.2', [(statistics.r_avg_velocity * 3.6).toFixed(1)]) }}
             </div>
 
             <hr style="margin-bottom: 2.5rem;">
