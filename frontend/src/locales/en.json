@@ -27,10 +27,17 @@
     },
     "legend": {
         "ridesBicyclists": "Bicyclists per street segment",
+        "ridesSingle": "Single bike rides",
+        "incidents": "Incidents",
         "scaryIncident": "Scary Incident",
         "regularIncident": "Regular Incident",
-        "combinedIncidents": "Incidents per street segment (color)",
-        "combinedBicyclists": "Bicyclists per street segment (line width)"
+        "incidentGradient": "Dangerousness per street segment",
+        "surfaceQualityGradientAggregated": "Surface quality per street segment",
+        "surfaceQualityGradientSingle": "Surface quality per bike ride",
+        "relativeSpeedFaster": "Speed faster than average",
+        "relativeSpeedAverage": "Average speed",
+        "relativeSpeedSlower": "Speed slower than average",
+        "stopTimes": "Wait times per intersection"
     },
     "map": {
         "loadingMapData": "Loading Map Data"

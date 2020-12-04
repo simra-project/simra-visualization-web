@@ -17,7 +17,7 @@
         "relativeSpeed": "Relative Geschwindigkeit",
         "relativeSpeedDescription": "Zeigt die durchschnittliche Geschwindigkeit pro Straßensegment an (relativ zu der Geschwindigkeit der einzelnen Fahrradfahrer).",
         "stopTimes": "Wartezeiten",
-        "stopTimesDescription": "Zeigt die durchschnittlichen Wartenzeiten pro Kreuzung an.",
+        "stopTimesDescription": "Zeigt die durchschnittlichen Wartenzeiten pro Straßenkreuzung an.",
         "boxAnalysis": "Box-Analyse",
         "boxAnalysisDescription": "Zeichne eine Form auf der Karte um zu sehen welche Fahrten durch diese gingen. Klicke auf die Form um eine neue zu zeichnen.",
         "tools": "Tools",
@@ -27,10 +27,17 @@
     },
     "legend": {
         "ridesBicyclists": "Fahrradfahrer pro Straßensegment",
-        "scaryIncident": "Scary Ereignis",
+        "ridesSingle": "Einzelne Fahrradfahrten",
+        "incidents": "Ereignisse",
+        "scaryIncident": "Beängstigendes Ereignis",
         "regularIncident": "Normales Ereignis",
-        "combinedIncidents": "Ereignisse pro Straßensegment (Farbe)",
-        "combinedBicyclists": "Fahrradfahrer pro Straßensegment (Liniendicke)"
+        "incidentGradient": "Gefährlichkeit pro Straßensegment",
+        "surfaceQualityGradientAggregated": "Oberflächenqualität pro Straßensegment",
+        "surfaceQualityGradientSingle": "Oberflächenqualität pro Fahrt",
+        "relativeSpeedFaster": "Schneller als der Durchschnitt",
+        "relativeSpeedAverage": "Durchschnittliche Geschwindigkeit",
+        "relativeSpeedSlower": "Langsamer als der Durchschnitt",
+        "stopTimes": "Wartezeiten pro Kreuzung"
     },
     "map": {
         "loadingMapData": "Lade Kartendaten"

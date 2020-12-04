@@ -46,7 +46,7 @@
                     </div>
 
                     <l-control position="bottomright" v-if="config.viewModeHasLegend(viewMode)">
-                        <MapLegend :view-mode="viewMode" class="is-hidden-mobile"/>
+                        <MapLegend :view-mode="viewMode" :sub-view-mode="subViewMode" :zoom="zoom" class="is-hidden-mobile"/>
                     </l-control>
 
                     <!-- Because of a Vue/DOM problem, view modes have to be declared this way ... (wrapped in a tag) -->
