@@ -55,8 +55,8 @@
 
             <div class="navbar-item">
                 <div class="buttons">
-                    <a class="button is-primary" href="https://www.mcc.tu-berlin.de/menue/forschung/projekte/simra/">
-                        <strong>{{ $t('navigation.downloadApp') }}</strong>
+                    <a class="button is-primary" @click="$emit('showAboutModal')">
+                        <strong>{{ $t('navigation.about') }}</strong>
                     </a>
                 </div>
             </div>

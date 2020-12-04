@@ -6,7 +6,12 @@
         "lang": {
             "english": "English",
             "german": "German"
-        }
+        },
+        "about": "About this project"
+    },
+    "about": {
+        "title": "About this project",
+        "close": "Close"
     },
     "sidebar": {
         "rides": "Rides",

@@ -3,6 +3,7 @@
         <Navigation :map-style="mapStyle"
                     :center="center"
                     :zoom="zoom"
+                    @showAboutModal="showAboutModal = true"
                     @update:map-style="mapStyle = $event; updateUrlQuery();"
         />
 
@@ -106,6 +107,10 @@
                 </div>
             </section>
         </div>
+
+        <b-modal :active="showAboutModal" @close="showAboutModal = false" style="z-index: 999">
+            <About />
+        </b-modal>
     </div>
 </template>
 
@@ -117,6 +122,7 @@ import Config from "@/constants";
 import MapLegend from "@/components/MapLegend";
 import Navigation from "@/components/Navigation";
 import Sidebar from "@/components/Sidebar";
+import About from "@/views/About";
 
 import RideView from "@/viewModes/ride/RideView";
 import IncidentView from "@/viewModes/incident/IncidentView";
@@ -147,6 +153,7 @@ export default {
         BoxAnalysisView,
         ToolsView,
         Statistics,
+        About,
     },
     data() {
         return {
@@ -156,6 +163,7 @@ export default {
             subViewMode: parseInt(this.$route.query.sm) || Config.subViewModes.DEFAULT,
             loadingProgress: null,
             regions: null,
+            showAboutModal: false,
 
             // Map
             mapObject: null,

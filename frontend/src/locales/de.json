@@ -6,7 +6,12 @@
         "lang": {
             "english": "Englisch",
             "german": "Deutsch"
-        }
+        },
+        "about": "Über dieses Projekt"
+    },
+    "about": {
+        "title": "Über dieses Projekt",
+        "close": "Schließen"
     },
     "sidebar": {
         "rides": "Fahrten",
