@@ -88,6 +88,8 @@
             "over": "Über",
             "bicyclists": "Fahrradfahrer",
             "cycled": "fuhren bisher",
+            "inRides1": "in",
+            "inRides2": "Fahrten",
             "soFarReducingCO2EmissionsBy1": "wodurch der CO<sub>2</sub>-Ausstoß um",
             "soFarReducingCO2EmissionsBy2": "verringert wurde."
         },
@@ -154,5 +156,9 @@
         "7": "Mountainbike",
         "8": "Sonstiges",
         "unknown": "Unbekannt"
+    },
+    "numberFormats": {
+        "decimalSeparator": ",",
+        "groupingSymbol": "."
     }
 }

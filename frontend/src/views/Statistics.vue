@@ -12,21 +12,23 @@
             <div class="top-text">
                 {{ $t('statistics.toptext.over') }}
                 <span class="highlight-text">
-                    <ICountUp :delay="100" :endVal="statistics.p_count"/> {{ $t('statistics.toptext.bicyclists') }}
+                    <ICountUp :delay="100" :endVal="statistics.p_count" :options="icountupOptions"/> {{ $t('statistics.toptext.bicyclists') }}
                 </span>
                 in {{ selectedRegion }} {{ $t('statistics.toptext.cycled') }}
                 <span class="highlight-text">
-                    <ICountUp :delay="400" :endVal="Math.floor(statistics.r_meters / 1000)"/> km
+                    <ICountUp :delay="400" :endVal="Math.floor(statistics.r_meters / 1000)" :options="icountupOptions"/> km
                 </span>
+                ({{ $t('statistics.toptext.inRides1') }}
+                <span class="highlight-text"><ICountUp :delay="400" :endVal="statistics.r_count" :options="icountupOptions"/> {{ $t('statistics.toptext.inRides2') }}</span>)
                 <span v-html="$t('statistics.toptext.soFarReducingCO2EmissionsBy1')" />&nbsp;
                 <span class="highlight-text">
-                    <ICountUp :delay="700" :endVal="Math.floor(3781.43)"/> kg
+                    <ICountUp :delay="700" :endVal="Math.floor(3781.43)" :options="icountupOptions"/> kg
                 </span>
                 {{ $t('statistics.toptext.soFarReducingCO2EmissionsBy2') }}
             </div>
             <div class="top-subtext">
-                {{ $t('statistics.subtext.1', [(statistics.r_avg_distance / 1000).toFixed(2), Math.floor(statistics.r_avg_duration / 60)]) }}
-                {{ $t('statistics.subtext.2', [(statistics.r_avg_velocity * 3.6).toFixed(1)]) }}
+                {{ $t('statistics.subtext.1', [formatFloat(statistics.r_avg_distance / 1000, 2), Math.floor(statistics.r_avg_duration / 60)]) }}
+                {{ $t('statistics.subtext.2', [formatFloat(statistics.r_avg_velocity * 3.6, 1)]) }}
             </div>
 
             <hr style="margin-bottom: 2.5rem;">
@@ -103,6 +105,12 @@ export default {
             statistics: {
                 incidentCount: 0,
                 incidentCountScary: 0,
+            },
+            icountupOptions: {
+                useEasing: true,
+                useGrouping: true,
+                separator: this.$t('numberFormats.groupingSymbol'),
+                decimal: this.$t('numberFormats.decimalSeparator'),
             },
             incidentTypes: { labels: [], data: [], options: {} },
             participantTypes: { labels: [], data: [], options: {} },
@@ -205,6 +213,9 @@ export default {
 
             return { labels: rLabels, data: rData, options: this.chartOptions(rLabels) };
         },
+        formatFloat(number, fractionDigits) {
+            return number.toFixed(fractionDigits).replaceAll('.', this.$t('numberFormats.decimalSeparator'));
+        }
     },
     watch: {
         selectedRegion: function (val, oldVal) {
