@@ -89,12 +89,12 @@
 
                 <div class="field" style="margin-top: 10px">
                     <b-checkbox v-model="computedBoxAnalysisHelper1">
-                        {{ $t('boxAnalysis.start') }}
+                        {{ $t('boxAnalysis.all') }}
                     </b-checkbox>
                 </div>
                 <div class="field">
                     <b-checkbox v-model="computedBoxAnalysisHelper2">
-                        {{ $t('boxAnalysis.contains') }}
+                        {{ $t('boxAnalysis.start') }}
                     </b-checkbox>
                 </div>
                 <div class="field">
@@ -203,8 +203,10 @@ export default {
 </script>
 
 <style lang="scss">
+    $sidebar-width: 304px;
+
     .sidebar {
-        width: 370px;//240px;
+        width: $sidebar-width;
         flex-shrink: 0;
         background-color: #fafafa;//#eaeaea;
         border-right: 1px solid rgba(0, 0, 0, 0.1);

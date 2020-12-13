@@ -73,9 +73,9 @@
         "singleRides": "Single Rides"
     },
     "boxAnalysis": {
-        "start": "Starting in Box",
-        "contains": "Going through Box",
-        "end": "Ending in Box",
+        "all": "All Rides in Box",
+        "start": "Only with Start Point in Box",
+        "end": "Only with End Point in Box",
         "draw": {
             "polygonStart": "Click to start drawing shape.",
             "polygonContinue": "Click to continue drawing shape.",

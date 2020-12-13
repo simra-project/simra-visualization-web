@@ -73,9 +73,9 @@
         "singleRides": "Einzelne Fahrten"
     },
     "boxAnalysis": {
-        "start": "Startpunkt in Box",
-        "contains": "Verläuft durch Box",
-        "end": "Endpunkt in Box",
+        "all": "Alle Fahrten in Box",
+        "start": "Nur mit Startpunkt in Box",
+        "end": "Nur mit Endpunkt in Box",
         "draw": {
             "polygonStart": "Klicke um eine neue Form zu zeichnen.",
             "polygonContinue": "Klicke um den nächsten Punkt der Form zu zeichnen.",

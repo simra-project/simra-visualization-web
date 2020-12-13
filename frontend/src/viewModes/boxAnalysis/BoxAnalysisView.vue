@@ -25,8 +25,8 @@ export default {
             config: Config,
             polygon: null,
             polygonResult: [],
+            polygonResultAll: null,
             polygonResultStart: null,
-            polygonResultIntersect: null,
             polygonResultEnd: null,
             polygonResultLoaded: false,
             polygonTool: null,
@@ -65,8 +65,8 @@ export default {
                 if (e.layerType !== 'polygon') return;
 
                 this.polygonResult = [];
+                this.polygonResultAll = null;
                 this.polygonResultStart = null;
-                this.polygonResultIntersect = null;
                 this.polygonResultEnd = null;
                 this.mapLayer.clearLayers();
                 this.mapLayer.addLayer(e.layer);
@@ -82,8 +82,8 @@ export default {
             this.mapLayer.on('click', () => {
                 this.polygon = null;
                 this.polygonResult = [];
+                this.polygonResultAll = null;
                 this.polygonResultStart = null;
-                this.polygonResultIntersect = null;
                 this.polygonResultEnd = null;
                 this.mapLayer.clearLayers();
                 this.polygonTool.enable();
@@ -91,8 +91,8 @@ export default {
         },
         loadRides() {
             let modes = [];
-            if (this.subViewMode & 1 << 0 && this.polygonResultStart === null) modes.push("containsStart");
-            if (this.subViewMode & 1 << 1 && this.polygonResultIntersect === null) modes.push("contains");
+            if (this.subViewMode & 1 << 0 && this.polygonResultAll === null) modes.push("contains");
+            if (this.subViewMode & 1 << 1 && this.polygonResultStart === null) modes.push("containsStart");
             if (this.subViewMode & 1 << 2 && this.polygonResultEnd === null) modes.push("containsEnd");
 
             if (modes.length > 0) this.apiWorker.postMessage(["polygon", this.polygon, modes]);
@@ -103,8 +103,8 @@ export default {
                     this.$emit('on-progress', message.data[1], message.data[2])
                     break;
                 case "polygon":
+                    if (message.data[2] === "contains") this.polygonResultAll = message.data[1];
                     if (message.data[2] === "containsStart") this.polygonResultStart = message.data[1];
-                    if (message.data[2] === "contains") this.polygonResultIntersect = message.data[1];
                     if (message.data[2] === "containsEnd") this.polygonResultEnd = message.data[1];
                     this.mergeResults();
                     break;
@@ -127,8 +127,8 @@ export default {
                 }
             }
 
-            iterationFn(1 << 0, this.polygonResultStart);
-            iterationFn(1 << 1, this.polygonResultIntersect);
+            iterationFn(1 << 0, this.polygonResultAll);
+            iterationFn(1 << 1, this.polygonResultStart);
             iterationFn(1 << 2, this.polygonResultEnd);
 
             this.polygonResult = {

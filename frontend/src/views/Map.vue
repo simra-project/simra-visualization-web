@@ -241,10 +241,12 @@ export default {
 </script>
 
 <style lang="scss">
+    $sidebar-width: 304px;
+
     .viewmode-container {
         border-top: none;
         min-height: calc(100vh - 57px) !important;
-        width: calc(100vw - 371px);
+        width: calc(100vw - #{$sidebar-width} - 1px);
     }
 
     .vue2leaflet-map {
@@ -344,7 +346,7 @@ export default {
     .statistics-container {
         position: fixed;
         max-height: 100%;
-        width: calc(100vw - 371px);
+        width: calc(100vw - #{$sidebar-width} - 1px);
         overflow-y: scroll;
         z-index: 1000;
         background: #f3f3f3;
