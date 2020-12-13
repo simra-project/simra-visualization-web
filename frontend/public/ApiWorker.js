@@ -9,8 +9,6 @@ self.onmessage = function (event) {
         case "incidents":
             loadIncidents(event.data[1]);
             break;
-        case "route":
-            break;
         case "polygon":
             loadPolygon(event.data[1], event.data[2]);
             break;
@@ -26,7 +24,7 @@ function loadIncidents(polygon) {
     if (!incidents.hasOwnProperty(polygon)) {
         startLoading();
 
-        let url = `http://207.180.205.80:8000/api/incidents?contains=POLYGON%28%28${polygon.map(coord => (coord[0] / 100.0) + '+' + (coord[1] / 100.0)).join('%2C')}%29%29&format=json`;
+        let url = `${URL_BACKEND}/api/incidents?contains=POLYGON%28%28${polygon.map(coord => (coord[0] / 100.0) + '+' + (coord[1] / 100.0)).join('%2C')}%29%29&format=json`;
         console.log(url);
         fetch(url).then(r => r.json()).then(result => {
                 // for (let i = 0; i < result.length; i++) {
@@ -50,7 +48,7 @@ function loadPolygon(polygon, modes) {
     updateLoadingProgress(0, modes.length);
 
     for (const mode of modes) {
-        let url = `http://207.180.205.80:8000/api/rides?${mode}=POLYGON%28%28${polygon.join('%2C')}%29%29&format=json`;
+        let url = `${URL_BACKEND}/api/rides?${mode}=POLYGON%28%28${polygon.join('%2C')}%29%29&format=json`;
         console.log(url);
         fetch(url).then(r => r.json()).then(result => {
             self.postMessage(["polygon", result, mode]);

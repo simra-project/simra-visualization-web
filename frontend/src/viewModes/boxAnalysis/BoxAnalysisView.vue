@@ -145,7 +145,7 @@ export default {
     async mounted() {
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
-        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
+        this.apiWorker.postMessage(["backendUrl", ApiService.URL_API]);
         this.initLeafletDrawTranslations();
 
         this.$nextTick(() => {

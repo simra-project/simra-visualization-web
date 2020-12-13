@@ -1,5 +1,5 @@
 <template>
-    <l-tile-layer url="http://207.180.205.80:1337/tiles/stoptimes/{z}/{x}/{y}.png"/>
+    <l-tile-layer :url="TILE_URL + '/tiles/stoptimes/{z}/{x}/{y}.png'"/>
 </template>
 
 <script>
@@ -9,6 +9,11 @@ export default {
     name: "StopTimesView",
     components: {
         LTileLayer,
+    },
+    computed: {
+        TILE_URL() {
+            return process.env.VUE_APP_TILE_URL;
+        },
     },
 }
 </script>

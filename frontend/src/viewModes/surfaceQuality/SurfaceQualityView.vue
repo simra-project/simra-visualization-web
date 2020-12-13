@@ -11,8 +11,8 @@
             </b-tabs>
         </div>
 
-        <l-tile-layer v-if="subViewMode === config.subViewModes.SURFACE_QUALITY_AGGREGATED" url="http://207.180.205.80:1337/tiles/surface-quality-aggregated/{z}/{x}/{y}.png"/>
-        <l-tile-layer v-if="subViewMode === config.subViewModes.SURFACE_QUALITY_SINGLE" url="http://207.180.205.80:1337/tiles/surface-quality-single/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.SURFACE_QUALITY_AGGREGATED" :url="TILE_URL + '/tiles/surface-quality-aggregated/{z}/{x}/{y}.png'"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.SURFACE_QUALITY_SINGLE" :url="TILE_URL + '/tiles/surface-quality-single/{z}/{x}/{y}.png'"/>
     </div>
 </template>
 
@@ -32,6 +32,11 @@ export default {
         return {
             config: Config
         }
+    },
+    computed: {
+        TILE_URL() {
+            return process.env.VUE_APP_TILE_URL;
+        },
     },
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div>
         <template v-if="rideHighlighted === null">
-            <l-tile-layer url="http://207.180.205.80:1337/tiles/incident-combined/{z}/{x}/{y}.png"/>
+            <l-tile-layer :url="TILE_URL + '/tiles/incident-combined/{z}/{x}/{y}.png'"/>
 
             <l-geo-json v-if="zoom > 15 && incidents"
                         :geojson="incidents"
@@ -96,6 +96,11 @@ export default {
             },
         }
     },
+    computed: {
+        TILE_URL() {
+            return process.env.VUE_APP_TILE_URL;
+        },
+    },
     methods: {
         loadIncidents() {
             console.log("loading incidents");
@@ -159,7 +164,7 @@ export default {
     async mounted() {
         this.apiWorker = new Worker("/ApiWorker.js");
         this.apiWorker.onmessage = this.handleWorkerMessage;
-        this.apiWorker.postMessage(["backendUrl", ApiService.URL_BACKEND]);
+        this.apiWorker.postMessage(["backendUrl", ApiService.URL_API]);
     },
     watch: {
         bounds: function (newValue, oldValue) {

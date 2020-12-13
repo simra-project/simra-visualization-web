@@ -11,11 +11,11 @@
             </b-tabs>
         </div>
 
-        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_ALL" url="http://207.180.205.80:1337/tiles/rides-density_all/{z}/{x}/{y}.png"/>
-        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOURMORNING" url="http://207.180.205.80:1337/tiles/rides-density_rushhourmorning/{z}/{x}/{y}.png"/>
-        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOUREVENING" url="http://207.180.205.80:1337/tiles/rides-density_rushhourevening/{z}/{x}/{y}.png"/>
-        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_WEEKEND" url="http://207.180.205.80:1337/tiles/rides-density_weekend/{z}/{x}/{y}.png"/>
-        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_ORIGINAL" url="http://207.180.205.80:1337/tiles/rides-original/{z}/{x}/{y}.png"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_ALL" :url="TILE_URL + '/tiles/rides-density_all/{z}/{x}/{y}.png'"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOURMORNING" :url="TILE_URL + '/tiles/rides-density_rushhourmorning/{z}/{x}/{y}.png'"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_RUSHHOUREVENING" :url="TILE_URL + '/tiles/rides-density_rushhourevening/{z}/{x}/{y}.png'"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_DENSITY_WEEKEND" :url="TILE_URL + '/tiles/rides-density_weekend/{z}/{x}/{y}.png'"/>
+        <l-tile-layer v-if="subViewMode === config.subViewModes.RIDES_ORIGINAL" :url="TILE_URL + '/tiles/rides-original/{z}/{x}/{y}.png'"/>
     </div>
 </template>
 
@@ -37,6 +37,11 @@ export default {
         return {
             config: Config,
         }
+    },
+    computed: {
+        TILE_URL() {
+            return process.env.VUE_APP_TILE_URL;
+        },
     },
 };
 </script>
