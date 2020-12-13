@@ -100,7 +100,7 @@
             "incidentTypes": "Incident Types",
             "scaryIncidents": "Scary Incidents",
             "scaryIncidentsHint": "A scary incident is one where the cyclist fears for their safety.",
-            "participants": "Participants",
+            "participants": "Other Participants",
             "participantsHint": "The other participant in the incident.",
             "notScary": "Not scary",
             "scary": "Scary"
