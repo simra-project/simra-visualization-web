@@ -47,17 +47,18 @@ class IncidentUtils {
 
     static getParticipants() {
         return [
-            { id: 0, translationKey: "participantTypes.1", icon: "fa-bus" },
-            { id: 1, translationKey: "participantTypes.2", icon: "fa-bicycle" },
-            { id: 2, translationKey: "participantTypes.3", icon: "fa-walking" },
-            { id: 3, translationKey: "participantTypes.4", icon: "fa-shipping-fast" },
-            { id: 4, translationKey: "participantTypes.5", icon: "fa-truck-moving" },
-            { id: 5, translationKey: "participantTypes.6", icon: "fa-motorcycle" },
-            { id: 6, translationKey: "participantTypes.7", icon: "fa-car" },
-            { id: 7, translationKey: "participantTypes.8", icon: "fa-taxi" },
-            { id: 8, translationKey: "participantTypes.9", icon: "fa-question" },
-            { id: 9, translationKey: "participantTypes.10", icon: "fa-bolt" },
-            { id: 10, translationKey: "participantTypes.unknown", icon: "fa-question" },
+            { id: 0, translationKey: "participantTypes.unknown", icon: "fa-question" },
+            { id: 1, translationKey: "participantTypes.1", icon: "fa-bus" },
+            { id: 2, translationKey: "participantTypes.2", icon: "fa-bicycle" },
+            { id: 3, translationKey: "participantTypes.3", icon: "fa-walking" },
+            { id: 4, translationKey: "participantTypes.4", icon: "fa-shipping-fast" },
+            { id: 5, translationKey: "participantTypes.5", icon: "fa-truck-moving" },
+            { id: 6, translationKey: "participantTypes.6", icon: "fa-motorcycle" },
+            { id: 7, translationKey: "participantTypes.7", icon: "fa-car" },
+            { id: 8, translationKey: "participantTypes.8", icon: "fa-taxi" },
+            { id: 9, translationKey: "participantTypes.9", icon: "fa-question" },
+            { id: 10, translationKey: "participantTypes.10", icon: "fa-bolt" },
+            { id: 11, translationKey: "participantTypes.unknown", icon: "fa-question" },
         ];
     }
 
