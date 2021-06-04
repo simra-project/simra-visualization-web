@@ -27,6 +27,8 @@
         "boxAnalysisDescription": "Draw a shape on the map to see what bike rides went through it. Click on the shape to draw a new one.",
         "tools": "Tools",
         "toolsDescription": "Upload a ride to analyze it (drag the file on the map).",
+        "popularity": "Popularity",
+        "popularityDescription": "Some fancy description for the popularity of street segments.",
         "statistics": "Statistics",
         "expandMenu": "Expand menu"
     },
@@ -42,7 +44,9 @@
         "relativeSpeedFaster": "Speed faster than average",
         "relativeSpeedAverage": "Average speed",
         "relativeSpeedSlower": "Speed slower than average",
-        "stopTimes": "Wait times per intersection"
+        "stopTimes": "Wait times per intersection",
+        "avoidedStreetSegments": "Avoided street segments",
+        "chosenStreetSegments": "Deliberately chosen street segments"
     },
     "map": {
         "loadingMapData": "Loading Map Data"
@@ -81,6 +85,11 @@
             "polygonContinue": "Click to continue drawing shape.",
             "polygonEnd": "Click first point to close this shape."
         }
+    },
+    "popularity": {
+        "avoided": "Avoided street segments",
+        "chosen": "Chosen street segements",
+        "combined": "Combined"
     },
     "statistics": {
         "title": "Statistics for",

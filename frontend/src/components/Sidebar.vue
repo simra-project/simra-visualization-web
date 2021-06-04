@@ -1,134 +1,225 @@
 <template>
-    <div class="sidebar" :class="{'small': small}">
+    <div class="sidebar" :class="{ small: small }">
         <div class="entries">
-            <SidebarEntry :title="$t('sidebar.rides')"
-                          icon="fa-biking"
-                          :icon-color="'#156ec7'"
-                          :is-small="small"
-                          :class="{'selected': value === config.viewModes.RIDES}"
-                          @entryClicked="switchToView(config.viewModes.RIDES)">
+            <!-- Rides -->
+            <SidebarEntry
+                :title="$t('sidebar.rides')"
+                icon="fa-biking"
+                :icon-color="'#156ec7'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.RIDES }"
+                @entryClicked="switchToView(config.viewModes.RIDES)"
+            >
                 <div class="field">
-                    <b-radio v-model="computedSubViewMode"
-                             :native-value="subViewMode === config.subViewModes.RIDES_ORIGINAL ? config.subViewModes.RIDES_ORIGINAL : config.subViewModes.RIDES_DENSITY_ALL">
-                        {{ $t('ride.all') }}
+                    <b-radio
+                        v-model="computedSubViewMode"
+                        :native-value="
+                            subViewMode === config.subViewModes.RIDES_ORIGINAL
+                                ? config.subViewModes.RIDES_ORIGINAL
+                                : config.subViewModes.RIDES_DENSITY_ALL
+                        "
+                    >
+                        {{ $t("ride.all") }}
                     </b-radio>
                 </div>
                 <div class="field">
-                    <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.RIDES_DENSITY_RUSHHOURMORNING">
-                        {{ $t('ride.rushHourMorning') }}
+                    <b-radio
+                        v-model="computedSubViewMode"
+                        :native-value="
+                            config.subViewModes.RIDES_DENSITY_RUSHHOURMORNING
+                        "
+                    >
+                        {{ $t("ride.rushHourMorning") }}
                     </b-radio>
                 </div>
                 <div class="field">
-                    <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.RIDES_DENSITY_RUSHHOUREVENING">
-                        {{ $t('ride.rushHourEvening') }}
+                    <b-radio
+                        v-model="computedSubViewMode"
+                        :native-value="
+                            config.subViewModes.RIDES_DENSITY_RUSHHOUREVENING
+                        "
+                    >
+                        {{ $t("ride.rushHourEvening") }}
                     </b-radio>
                 </div>
                 <div class="field">
-                    <b-radio v-model="computedSubViewMode"
-                             :native-value="config.subViewModes.RIDES_DENSITY_WEEKEND">
-                        {{ $t('ride.weekend') }}
+                    <b-radio
+                        v-model="computedSubViewMode"
+                        :native-value="
+                            config.subViewModes.RIDES_DENSITY_WEEKEND
+                        "
+                    >
+                        {{ $t("ride.weekend") }}
                     </b-radio>
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry :title="$t('sidebar.incidents')"
-                          icon="fa-car-crash"
-                          :icon-color="'#1d917c'"
-                          :is-small="small"
-                          :class="{'selected': value === config.viewModes.INCIDENTS}"
-                          @entryClicked="switchToView(config.viewModes.INCIDENTS)">
+            <!-- Incidents -->
+            <SidebarEntry
+                :title="$t('sidebar.incidents')"
+                icon="fa-car-crash"
+                :icon-color="'#1d917c'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.INCIDENTS }"
+                @entryClicked="switchToView(config.viewModes.INCIDENTS)"
+            >
                 <div class="entry-subtext">
-                    {{ $t('sidebar.incidentsDescription') }}
+                    {{ $t("sidebar.incidentsDescription") }}
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry :title="$t('sidebar.surfaceQuality')"
-                          icon="fa-road"
-                          :icon-color="'#d63e12'"
-                          :is-small="small"
-                          :class="{'selected': value === config.viewModes.SURFACE_QUALITY}"
-                          @entryClicked="switchToView(config.viewModes.SURFACE_QUALITY)">
+            <!-- Surface quality -->
+            <SidebarEntry
+                :title="$t('sidebar.surfaceQuality')"
+                icon="fa-road"
+                :icon-color="'#d63e12'"
+                :is-small="small"
+                :class="{
+                    selected: value === config.viewModes.SURFACE_QUALITY
+                }"
+                @entryClicked="switchToView(config.viewModes.SURFACE_QUALITY)"
+            >
                 <div class="entry-subtext">
-                    {{ $t('sidebar.surfaceQualityDescription') }}
+                    {{ $t("sidebar.surfaceQualityDescription") }}
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry :title="$t('sidebar.relativeSpeed')"
-                          icon="fa-tachometer-alt"
-                          :icon-color="'#156ec7'"
-                          :is-small="small"
-                          :class="{'selected': value === config.viewModes.RELATIVE_SPEED}"
-                          @entryClicked="switchToView(config.viewModes.RELATIVE_SPEED)">
+            <!-- Speed -->
+            <SidebarEntry
+                :title="$t('sidebar.relativeSpeed')"
+                icon="fa-tachometer-alt"
+                :icon-color="'#156ec7'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.RELATIVE_SPEED }"
+                @entryClicked="switchToView(config.viewModes.RELATIVE_SPEED)"
+            >
                 <div class="entry-subtext">
-                    {{ $t('sidebar.relativeSpeedDescription') }}
+                    {{ $t("sidebar.relativeSpeedDescription") }}
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry :title="$t('sidebar.stopTimes')"
-                          icon="fa-traffic-light"
-                          :icon-color="'#1d917c'"
-                          :is-small="small"
-                          :class="{'selected': value === config.viewModes.STOP_TIMES}"
-                          @entryClicked="switchToView(config.viewModes.STOP_TIMES)">
+            <!-- Stop times -->
+            <SidebarEntry
+                :title="$t('sidebar.stopTimes')"
+                icon="fa-traffic-light"
+                :icon-color="'#1d917c'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.STOP_TIMES }"
+                @entryClicked="switchToView(config.viewModes.STOP_TIMES)"
+            >
                 <div class="entry-subtext">
-                    {{ $t('sidebar.stopTimesDescription') }}
+                    {{ $t("sidebar.stopTimesDescription") }}
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry :title="$t('sidebar.boxAnalysis')"
-                          icon="fa-draw-polygon"
-                          :icon-color="'#d63e12'"
-                          :is-small="small"
-                          :class="{'selected': value === config.viewModes.BOX_ANALYSIS}"
-                          @entryClicked="switchToView(config.viewModes.BOX_ANALYSIS, 1 << 0)">
+            <!-- Box analysis -->
+            <SidebarEntry
+                :title="$t('sidebar.boxAnalysis')"
+                icon="fa-draw-polygon"
+                :icon-color="'#d63e12'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.BOX_ANALYSIS }"
+                @entryClicked="
+                    switchToView(config.viewModes.BOX_ANALYSIS, 1 << 0)
+                "
+            >
                 <div class="entry-subtext">
-                    {{ $t('sidebar.boxAnalysisDescription') }}
+                    {{ $t("sidebar.boxAnalysisDescription") }}
                 </div>
 
                 <div class="field" style="margin-top: 10px">
                     <b-checkbox v-model="computedBoxAnalysisHelper1">
-                        {{ $t('boxAnalysis.all') }}
+                        {{ $t("boxAnalysis.all") }}
                     </b-checkbox>
                 </div>
                 <div class="field">
                     <b-checkbox v-model="computedBoxAnalysisHelper2">
-                        {{ $t('boxAnalysis.start') }}
+                        {{ $t("boxAnalysis.start") }}
                     </b-checkbox>
                 </div>
                 <div class="field">
                     <b-checkbox v-model="computedBoxAnalysisHelper3">
-                        {{ $t('boxAnalysis.end') }}
+                        {{ $t("boxAnalysis.end") }}
                     </b-checkbox>
                 </div>
             </SidebarEntry>
 
-            <SidebarEntry :title="$t('sidebar.tools')"
-                          :icon="'fa-tools'"
-                          :icon-color="'#156ec7'"
-                          :is-small="small"
-                          :class="{'selected': value === config.viewModes.TOOLS}"
-                          @entryClicked="switchToView(config.viewModes.TOOLS)">
+            <!-- Tools -->
+            <SidebarEntry
+                :title="$t('sidebar.tools')"
+                :icon="'fa-tools'"
+                :icon-color="'#156ec7'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.TOOLS }"
+                @entryClicked="switchToView(config.viewModes.TOOLS)"
+            >
                 <div class="entry-subtext">
-                    {{ $t('sidebar.toolsDescription') }}
+                    {{ $t("sidebar.toolsDescription") }}
+                </div>
+            </SidebarEntry>
+
+            <!-- Popularity of street segments -->
+            <SidebarEntry
+                :title="$t('sidebar.popularity')"
+                :icon="'fa-tools'"
+                :icon-color="'#1d917c'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.POPULARITY }"
+                @entryClicked="switchToView(config.viewModes.POPULARITY)"
+            >
+                <div class="entry-subtext">
+                    {{ $t("sidebar.popularityDescription") }}
+                </div>
+
+                <!-- Aggregated street segments aggregated (avoided / chosen) -->
+                <div class="field" style="margin-top: 10px">
+                    <b-radio
+                        v-model="computedSubViewMode"
+                        :native-value="config.subViewModes.POPULARITY_COMBINED"
+                    >
+                        {{ $t("popularity.combined") }}
+                    </b-radio>
+                </div>
+                <!-- Density of avoided street segments -->
+                <div class="field">
+                    <b-radio
+                        v-model="computedSubViewMode"
+                        :native-value="config.subViewModes.POPULARITY_AVOIDED"
+                    >
+                        {{ $t("popularity.avoided") }}
+                    </b-radio>
+                </div>
+                <!-- Density of deliberately chosen street segments -->
+                <div class="field">
+                    <b-radio
+                        v-model="computedSubViewMode"
+                        :native-value="config.subViewModes.POPULARITY_CHOSEN"
+                    >
+                        {{ $t("popularity.chosen") }}
+                    </b-radio>
                 </div>
             </SidebarEntry>
         </div>
 
-        <div class="bottom-expand-button" @click="small = false" :title="$t('sidebar.expandMenu')">
+        <div
+            class="bottom-expand-button"
+            @click="small = false"
+            :title="$t('sidebar.expandMenu')"
+        >
             <i class="fas fa-lg fa-angle-double-right"></i>
         </div>
         <div class="bottom">
-            <div class="bottom-statistics"
-                 :title="small ? $t('sidebar.statistics') : ''"
-                 :class="{'selected': value === config.viewModes.STATISTICS}"
-                 @click="switchToView(config.viewModes.STATISTICS)">
+            <div
+                class="bottom-statistics"
+                :title="small ? $t('sidebar.statistics') : ''"
+                :class="{ selected: value === config.viewModes.STATISTICS }"
+                @click="switchToView(config.viewModes.STATISTICS)"
+            >
                 <div class="bottom-icon">
                     <i class="fas fa-lg fa-chart-pie"></i>
                 </div>
                 <div class="bottom-text">
-                    {{ $t('sidebar.statistics') }}
+                    {{ $t("sidebar.statistics") }}
                 </div>
             </div>
             <div class="bottom-reduce-button" @click="small = true">
@@ -145,31 +236,28 @@ import Config from "@/constants";
 export default {
     name: "Sidebar",
     components: { SidebarEntry },
-    props: [
-        'value',
-        'subViewMode',
-    ],
+    props: ["value", "subViewMode"],
     data() {
         return {
             config: Config,
-            small: false,
-        }
+            small: false
+        };
     },
     methods: {
         switchToView(viewId, defaultSubViewMode = Config.subViewModes.DEFAULT) {
             if (this.value === viewId) {
-                this.$emit('input', Config.viewModes.NONE);
+                this.$emit("input", Config.viewModes.NONE);
             } else {
-                this.$emit('input', viewId);
+                this.$emit("input", viewId);
             }
 
-            this.$emit('update:sub-view-mode', defaultSubViewMode);
-        },
+            this.$emit("update:sub-view-mode", defaultSubViewMode);
+        }
     },
     watch: {
-        small: function (newValue, oldValue) {
-            if (newValue !== oldValue) this.$emit('size-changed');
-        },
+        small: function(newValue, oldValue) {
+            if (newValue !== oldValue) this.$emit("size-changed");
+        }
     },
     computed: {
         computedSubViewMode: {
@@ -177,155 +265,183 @@ export default {
                 return this.subViewMode;
             },
             set(value) {
-                this.$emit('update:sub-view-mode', value);
+                this.$emit("update:sub-view-mode", value);
             }
         },
         computedBoxAnalysisHelper1: {
-            get() { return (this.subViewMode & 1 << 0) > 0 },
+            get() {
+                return (this.subViewMode & (1 << 0)) > 0;
+            },
             set(value) {
-                this.$emit('update:sub-view-mode', value ? (this.subViewMode | 1 << 0) : (this.subViewMode & ~(1 << 0)));
+                this.$emit(
+                    "update:sub-view-mode",
+                    value
+                        ? this.subViewMode | (1 << 0)
+                        : this.subViewMode & ~(1 << 0)
+                );
             }
         },
         computedBoxAnalysisHelper2: {
-            get() { return (this.subViewMode & 1 << 1) > 0 },
+            get() {
+                return (this.subViewMode & (1 << 1)) > 0;
+            },
             set(value) {
-                this.$emit('update:sub-view-mode', value ? (this.subViewMode | 1 << 1) : (this.subViewMode & ~(1 << 1)));
+                this.$emit(
+                    "update:sub-view-mode",
+                    value
+                        ? this.subViewMode | (1 << 1)
+                        : this.subViewMode & ~(1 << 1)
+                );
             }
         },
         computedBoxAnalysisHelper3: {
-            get() { return (this.subViewMode & 1 << 2) > 0 },
+            get() {
+                return (this.subViewMode & (1 << 2)) > 0;
+            },
             set(value) {
-                this.$emit('update:sub-view-mode', value ? (this.subViewMode | 1 << 2) : (this.subViewMode & ~(1 << 2)));
+                this.$emit(
+                    "update:sub-view-mode",
+                    value
+                        ? this.subViewMode | (1 << 2)
+                        : this.subViewMode & ~(1 << 2)
+                );
             }
-        },
+        }
     }
 };
 </script>
 
 <style lang="scss">
-    $sidebar-width: 304px;
+$sidebar-width: 304px;
 
-    .sidebar {
-        width: $sidebar-width;
-        flex-shrink: 0;
-        background-color: #fafafa;//#eaeaea;
-        border-right: 1px solid rgba(0, 0, 0, 0.1);
-        overflow-y: scroll;
-        height: calc(100vh - 57px);
-    }
+.sidebar {
+    width: $sidebar-width;
+    flex-shrink: 0;
+    background-color: #fafafa; //#eaeaea;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    overflow-y: scroll;
+    height: calc(100vh - 57px);
+}
 
-    .entries {
-        padding-top: 8px;
-        height: calc(100% - 53px);
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
+.entries {
+    padding-top: 8px;
+    height: calc(100% - 53px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
-    .bottom {
-        height: 52px;
+.bottom {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    .bottom-statistics {
         display: flex;
         align-items: center;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 12px 8px;
+        width: 100%;
 
-        .bottom-statistics {
-            display: flex;
-            align-items: center;
-            padding: 12px 8px;
-            width: 100%;
-
-            &:hover, &:active {
-                background-color: #eaeaea;
-                cursor: pointer;
-            }
-
-            .bottom-icon {
-                width: 60px;
-                flex-shrink: 0;
-                padding-right: 6px;
-                text-align: center;
-                color: slategray;
-            }
-
-            .bottom-text {
-                width: 100%;
-                color: black;
-                font-size: 18px;
-                font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-                user-select: none;
-            }
-
-            &.selected {
-                font-weight: bold;
-                background-color: #dcdcdc !important;
-                border-bottom: 1px solid #e0e0e0;
-
-                &::before {
-                    bottom: 0;
-                    background-color: rgba(0, 0, 0, .2);
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
-                    width: 3px;
-                }
-            }
+        &:hover,
+        &:active {
+            background-color: #eaeaea;
+            cursor: pointer;
         }
 
-        .bottom-reduce-button {
-            height: 100%;
+        .bottom-icon {
             width: 60px;
             flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding-right: 6px;
+            text-align: center;
+            color: slategray;
+        }
 
-            &:hover, &:active {
-                background-color: #eaeaea;
-                cursor: pointer;
-                color: #156ec7;
+        .bottom-text {
+            width: 100%;
+            color: black;
+            font-size: 18px;
+            font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system",
+                BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu,
+                Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+                "Segoe UI Symbol";
+            user-select: none;
+        }
+
+        &.selected {
+            font-weight: bold;
+            background-color: #dcdcdc !important;
+            border-bottom: 1px solid #e0e0e0;
+
+            &::before {
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.2);
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+                width: 3px;
             }
         }
     }
 
-    .bottom-expand-button {
-        height: 52px;
-        width: 70px;
-        display: none;
+    .bottom-reduce-button {
+        height: 100%;
+        width: 60px;
+        flex-shrink: 0;
+        display: flex;
         align-items: center;
         justify-content: center;
 
-        &:hover, &:active {
+        &:hover,
+        &:active {
             background-color: #eaeaea;
             cursor: pointer;
             color: #156ec7;
         }
     }
+}
 
-    .sidebar.small {
-        width: 71px;
-        overflow: hidden;
+.bottom-expand-button {
+    height: 52px;
+    width: 70px;
+    display: none;
+    align-items: center;
+    justify-content: center;
 
-        .entries {
-            height: calc(100% - 104px);
-        }
+    &:hover,
+    &:active {
+        background-color: #eaeaea;
+        cursor: pointer;
+        color: #156ec7;
+    }
+}
 
-        .entry {
-            .entry-label .entry-text, .entry-content {
-                display: none;
-            }
-        }
+.sidebar.small {
+    width: 71px;
+    overflow: hidden;
 
-        .bottom .bottom-statistics .bottom-text {
+    .entries {
+        height: calc(100% - 104px);
+    }
+
+    .entry {
+        .entry-label .entry-text,
+        .entry-content {
             display: none;
-        }
-
-        .bottom .bottom-reduce-button {
-            display: none;
-        }
-
-        .bottom-expand-button {
-            display: flex;
         }
     }
+
+    .bottom .bottom-statistics .bottom-text {
+        display: none;
+    }
+
+    .bottom .bottom-reduce-button {
+        display: none;
+    }
+
+    .bottom-expand-button {
+        display: flex;
+    }
+}
 </style>

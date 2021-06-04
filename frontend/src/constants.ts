@@ -8,6 +8,7 @@ let viewModes = {
     STOP_TIMES: 5,
     BOX_ANALYSIS: 6,
     TOOLS: 7,
+    POPULARITY: 8,
     STATISTICS: 99,
 }
 
@@ -25,6 +26,9 @@ let subViewModes = {
     BOX_ANALYSIS_ALL: 0,
     BOX_ANALYSIS_START: 1,
     BOX_ANALYSIS_STOP: 2,
+    POPULARITY_COMBINED: 0,
+    POPULARITY_AVOIDED: 1,
+    POPULARITY_CHOSEN: 2
 }
 
 let osmAttribution = " &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors";
