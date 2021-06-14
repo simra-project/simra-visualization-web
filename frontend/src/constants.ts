@@ -99,7 +99,7 @@ export default {
     viewModes: viewModes,
     subViewModes: subViewModes,
     viewModeHasLegend(viewMode: number) {
-        return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS || viewMode === viewModes.SURFACE_QUALITY || viewMode === viewModes.RELATIVE_SPEED || viewMode === viewModes.STOP_TIMES;
+        return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS || viewMode === viewModes.SURFACE_QUALITY || viewMode === viewModes.RELATIVE_SPEED || viewMode === viewModes.STOP_TIMES || viewMode === viewModes.POPULARITY;
     },
     mapStyles: mapStyles,
     getDefaultMapStyle: () => {
