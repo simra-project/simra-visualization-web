@@ -28,7 +28,8 @@ let subViewModes = {
     BOX_ANALYSIS_STOP: 2,
     POPULARITY_COMBINED: 0,
     POPULARITY_AVOIDED: 1,
-    POPULARITY_CHOSEN: 2
+    POPULARITY_CHOSEN: 2,
+    POPULARITY_SCORE: 3,
 }
 
 let osmAttribution = " &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors";

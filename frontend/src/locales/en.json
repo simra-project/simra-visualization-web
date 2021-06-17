@@ -28,7 +28,7 @@
         "tools": "Tools",
         "toolsDescription": "Upload a ride to analyze it (drag the file on the map).",
         "popularity": "Popularity",
-        "popularityDescription": "Some fancy description for the popularity of street segments.",
+        "popularityDescription": "The subjective popularity of street segments.",
         "statistics": "Statistics",
         "expandMenu": "Expand menu"
     },
@@ -45,8 +45,10 @@
         "relativeSpeedAverage": "Average speed",
         "relativeSpeedSlower": "Speed slower than average",
         "stopTimes": "Wait times per intersection",
+        "popularityCombined": "Popularity of a street segment",
         "avoidedStreetSegments": "Avoided street segments",
-        "chosenStreetSegments": "Deliberately chosen street segments"
+        "chosenStreetSegments": "Deliberately chosen street segments",
+        "popularityScore": "Popularity and safety of a street segment"
     },
     "map": {
         "loadingMapData": "Loading Map Data"
@@ -87,9 +89,10 @@
         }
     },
     "popularity": {
-        "avoided": "Avoided street segments",
-        "chosen": "Chosen street segements",
-        "combined": "Combined"
+        "avoided": "Avoided",
+        "chosen": "Chosen",
+        "combined": "Combined",
+        "score": "Score"
     },
     "statistics": {
         "title": "Statistics for",

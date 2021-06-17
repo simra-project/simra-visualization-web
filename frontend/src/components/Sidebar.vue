@@ -170,34 +170,6 @@
                 <div class="entry-subtext">
                     {{ $t("sidebar.popularityDescription") }}
                 </div>
-
-                <!-- Aggregated street segments aggregated (avoided / chosen) -->
-                <div class="field" style="margin-top: 10px">
-                    <b-radio
-                        v-model="computedSubViewMode"
-                        :native-value="config.subViewModes.POPULARITY_COMBINED"
-                    >
-                        {{ $t("popularity.combined") }}
-                    </b-radio>
-                </div>
-                <!-- Density of avoided street segments -->
-                <div class="field">
-                    <b-radio
-                        v-model="computedSubViewMode"
-                        :native-value="config.subViewModes.POPULARITY_AVOIDED"
-                    >
-                        {{ $t("popularity.avoided") }}
-                    </b-radio>
-                </div>
-                <!-- Density of deliberately chosen street segments -->
-                <div class="field">
-                    <b-radio
-                        v-model="computedSubViewMode"
-                        :native-value="config.subViewModes.POPULARITY_CHOSEN"
-                    >
-                        {{ $t("popularity.chosen") }}
-                    </b-radio>
-                </div>
             </SidebarEntry>
         </div>
 

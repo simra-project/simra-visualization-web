@@ -85,6 +85,39 @@
             </div>
             <div class="text-box">{{ $t('legend.stopTimes') }}</div>
         </template>
+
+        <!-- Popularity score p_score -->
+        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode === config.subViewModes.POPULARITY_COMBINED">
+            <div class="symbol-container">
+                <div class="symbol symbol-box gradient1"/>
+                <div class="symbol symbol-box gradient2" v-if="zoom <= 15"/>
+                <div class="symbol symbol-box gradient3"/>
+                <div class="symbol symbol-box gradient4"/>
+                <div class="symbol symbol-box gradient5"/>
+                <div class="symbol symbol-box gradient6" v-if="zoom <= 15"/>
+            </div>
+            <div class="text-box">{{ $t('legend.popularityCombined') }}</div>
+        </template>
+
+        <!-- Avoided street segment density -->
+        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode == config.subViewModes.POPULARITY_AVOIDED">
+            <div class="symbol-container">
+                <div class="symbol symbol-box red1 one-third"/>
+                <div class="symbol symbol-box red2 two-thirds"/>
+                <div class="symbol symbol-box red3"/>
+            </div>
+            <div class="text-box">{{ $t('legend.avoidedStreetSegments') }}</div>
+        </template>
+
+        <!-- Chosen street segment density -->
+        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode == config.subViewModes.POPULARITY_CHOSEN">
+            <div class="symbol-container">
+                <div class="symbol symbol-box blue1 one-third"/>
+                <div class="symbol symbol-box blue2 two-thirds"/>
+                <div class="symbol symbol-box blue3"/>
+            </div>
+            <div class="text-box">{{ $t('legend.chosenStreetSegments') }}</div>
+        </template>
     </div>
 </template>
 
@@ -162,6 +195,10 @@ export default {
         &.blue1 { background-color: hsl(190, 71%, 53%); opacity: 0.8; }
         &.blue2 { background-color: hsl(215, 71%, 53%); opacity: 0.9; }
         &.blue3 { background-color: hsl(240, 71%, 53%); }
+
+        &.red1 {background-color: hsl(80, 80%, 48%); }
+        &.red2 {background-color: hsl(55, 80%, 48%); }
+        &.red3 {background-color: hsl(30, 80%, 48%); }
 
         &.gradient1 { background-color: rgb(68, 153, 53); }
         &.gradient2 { background-color: rgb(142, 192, 84); }
