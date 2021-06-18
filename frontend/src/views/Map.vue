@@ -151,8 +151,11 @@
                             v-if="viewMode === config.viewModes.POPULARITY"
                             ref="popularityView"
                             :sub-view-mode="subViewMode"
+                            :zoom="zoom"
+                            :bounds="bounds"
                             @on-progress="updateLoadingView"
                             @update:sub-view-mode="subViewMode = $event"
+                            @fit-in-view="fitMapObjectIntoView"
                         />
                     </div>
 
@@ -278,6 +281,8 @@ export default {
         clickedOnMap(event) {
             if (this.viewMode === Config.viewModes.INCIDENTS) {
                 this.$refs.incidentView.clickedOnMap(event);
+            } else if (this.viewMode === Config.viewModes.POPULARITY) {
+                this.$refs.popularityView.clickedOnMap(event);
             }
         },
         updateLoadingView(progress, expectedTotal) {
