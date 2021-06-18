@@ -112,6 +112,20 @@
                 </div>
             </SidebarEntry>
 
+            <!-- Popularity of street segments -->
+            <SidebarEntry
+                :title="$t('sidebar.popularity')"
+                :icon="'fa-tools'"
+                :icon-color="'#1d917c'"
+                :is-small="small"
+                :class="{ selected: value === config.viewModes.POPULARITY }"
+                @entryClicked="switchToView(config.viewModes.POPULARITY)"
+            >
+                <div class="entry-subtext">
+                    {{ $t("sidebar.popularityDescription") }}
+                </div>
+            </SidebarEntry>
+
             <!-- Box analysis -->
             <SidebarEntry
                 :title="$t('sidebar.boxAnalysis')"
@@ -155,20 +169,6 @@
             >
                 <div class="entry-subtext">
                     {{ $t("sidebar.toolsDescription") }}
-                </div>
-            </SidebarEntry>
-
-            <!-- Popularity of street segments -->
-            <SidebarEntry
-                :title="$t('sidebar.popularity')"
-                :icon="'fa-tools'"
-                :icon-color="'#1d917c'"
-                :is-small="small"
-                :class="{ selected: value === config.viewModes.POPULARITY }"
-                @entryClicked="switchToView(config.viewModes.POPULARITY)"
-            >
-                <div class="entry-subtext">
-                    {{ $t("sidebar.popularityDescription") }}
                 </div>
             </SidebarEntry>
         </div>
