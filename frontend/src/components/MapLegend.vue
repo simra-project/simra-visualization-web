@@ -89,19 +89,61 @@
 
         <!-- Popularity score p_score -->
         <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode === config.subViewModes.POPULARITY_COMBINED">
+            <!--
+            Show different incident markes, depending on zoom level.
+                16 - 18 Drop formed markers with icons.
+                14 - 15 Grey and red dots.
+                   < 14 None.
+            -->
+            <template v-if="zoom >= 16">
+                <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
+
+                <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.regularIncident') }}</div>
+            </template>
+            <template v-else-if="zoom >= 14">
+                <div class="symbol-container">
+                    <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
+                    <div class="symbol symbol-circle" style="background-color: #777777"/>
+                </div>
+                <div class="text-box">{{ $t('legend.incidents') }}</div>
+            </template>
+
             <div class="symbol-container">
-                <div class="symbol symbol-box gradient1"/>
-                <div class="symbol symbol-box gradient2" v-if="zoom <= 15"/>
-                <div class="symbol symbol-box gradient3"/>
-                <div class="symbol symbol-box gradient4"/>
+                <div class="symbol symbol-box gradient6"/>
                 <div class="symbol symbol-box gradient5"/>
-                <div class="symbol symbol-box gradient6" v-if="zoom <= 15"/>
+                <div class="symbol symbol-box gradient4"/>
+                <div class="symbol symbol-box gradient3"/>
+                <div class="symbol symbol-box gradient2"/>
+                <div class="symbol symbol-box gradient1"/>
             </div>
             <div class="text-box">{{ $t('legend.popularityCombined') }}</div>
         </template>
 
         <!-- Avoided street segment density -->
         <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode == config.subViewModes.POPULARITY_AVOIDED">
+            <!--
+            Show different incident markes, depending on zoom level.
+                16 - 18 Drop formed markers with icons.
+                14 - 15 Grey and red dots.
+                   < 14 None.
+            -->
+            <template v-if="zoom >= 16">
+                <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
+
+                <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.regularIncident') }}</div>
+            </template>
+            <template v-else-if="zoom >= 14">
+                <div class="symbol-container">
+                    <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
+                    <div class="symbol symbol-circle" style="background-color: #777777"/>
+                </div>
+                <div class="text-box">{{ $t('legend.incidents') }}</div>
+            </template>
+
             <div class="symbol-container">
                 <div class="symbol symbol-box red1 one-third"/>
                 <div class="symbol symbol-box red2 two-thirds"/>
@@ -112,6 +154,27 @@
 
         <!-- Chosen street segment density -->
         <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode == config.subViewModes.POPULARITY_CHOSEN">
+            <!--
+            Show different incident markes, depending on zoom level.
+                16 - 18 Drop formed markers with icons.
+                14 - 15 Grey and red dots.
+                   < 14 None.
+            -->
+            <template v-if="zoom >= 16">
+                <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
+
+                <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.regularIncident') }}</div>
+            </template>
+            <template v-else-if="zoom >= 14">
+                <div class="symbol-container">
+                    <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
+                    <div class="symbol symbol-circle" style="background-color: #777777"/>
+                </div>
+                <div class="text-box">{{ $t('legend.incidents') }}</div>
+            </template>
+
             <div class="symbol-container">
                 <div class="symbol symbol-box blue1 one-third"/>
                 <div class="symbol symbol-box blue2 two-thirds"/>
@@ -122,15 +185,20 @@
 
         <!-- Mixed popularity score p_mscore -->
         <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode === config.subViewModes.POPULARITY_SCORE">
-            <!-- Show different incident markes, depending on zoom level. -->
-            <template v-if="zoom > 15">
+            <!--
+            Show different incident markes, depending on zoom level.
+                16 - 18 Drop formed markers with icons.
+                14 - 15 Grey and red dots.
+                   < 14 None.
+            -->
+            <template v-if="zoom >= 16">
                 <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
 
                 <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.regularIncident') }}</div>
             </template>
-            <template v-else>
+            <template v-else-if="zoom >= 14">
                 <div class="symbol-container">
                     <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
                     <div class="symbol symbol-circle" style="background-color: #777777"/>
@@ -139,12 +207,12 @@
             </template>
 
             <div class="symbol-container">
-                <div class="symbol symbol-box gradient1"/>
-                <div class="symbol symbol-box gradient2"/>
-                <div class="symbol symbol-box gradient3"/>
-                <div class="symbol symbol-box gradient4"/>
-                <div class="symbol symbol-box gradient5"/>
                 <div class="symbol symbol-box gradient6"/>
+                <div class="symbol symbol-box gradient5"/>
+                <div class="symbol symbol-box gradient4"/>
+                <div class="symbol symbol-box gradient3"/>
+                <div class="symbol symbol-box gradient2"/>
+                <div class="symbol symbol-box gradient1"/>
             </div>
             <div class="text-box">{{ $t('legend.popularityCombined') }}</div>
         </template>
@@ -160,6 +228,7 @@ export default {
         viewMode: Number,
         subViewMode: Number,
         zoom: Number,
+        incidentsVisible: Boolean,
     },
     data() {
         return {
