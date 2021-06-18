@@ -20,6 +20,7 @@
                 <div class="text-box">{{ $t('legend.regularIncident') }}</div>
         </template>
 
+        <!-- Incidents combined -->
         <template v-if="viewMode === config.viewModes.INCIDENTS">
             <template v-if="zoom > 15">
                 <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
@@ -117,6 +118,35 @@
                 <div class="symbol symbol-box blue3"/>
             </div>
             <div class="text-box">{{ $t('legend.chosenStreetSegments') }}</div>
+        </template>
+
+        <!-- Mixed popularity score p_mscore -->
+        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode === config.subViewModes.POPULARITY_SCORE">
+            <!-- Show different incident markes, depending on zoom level. -->
+            <template v-if="zoom > 15">
+                <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
+
+                <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
+                <div class="text-box">{{ $t('legend.regularIncident') }}</div>
+            </template>
+            <template v-else>
+                <div class="symbol-container">
+                    <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
+                    <div class="symbol symbol-circle" style="background-color: #777777"/>
+                </div>
+                <div class="text-box">{{ $t('legend.incidents') }}</div>
+            </template>
+
+            <div class="symbol-container">
+                <div class="symbol symbol-box gradient1"/>
+                <div class="symbol symbol-box gradient2"/>
+                <div class="symbol symbol-box gradient3"/>
+                <div class="symbol symbol-box gradient4"/>
+                <div class="symbol symbol-box gradient5"/>
+                <div class="symbol symbol-box gradient6"/>
+            </div>
+            <div class="text-box">{{ $t('legend.popularityCombined') }}</div>
         </template>
     </div>
 </template>
