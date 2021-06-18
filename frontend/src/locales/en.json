@@ -92,7 +92,8 @@
         "avoided": "Avoided",
         "chosen": "Chosen",
         "combined": "Combined",
-        "score": "Score"
+        "score": "Score",
+        "showIncidents": "Show Incident Markers"
     },
     "statistics": {
         "title": "Statistics for",

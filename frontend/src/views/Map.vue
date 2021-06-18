@@ -18,6 +18,7 @@
                 :sub-view-mode="subViewMode"
                 @size-changed="mapObject.invalidateSize()"
                 @update:sub-view-mode="subViewMode = $event"
+                @update:incidents-visible="incidentsVisible = $event"
             />
 
             <section class="hero is-fullheight-with-navbar viewmode-container">
@@ -80,6 +81,7 @@
                             :view-mode="viewMode"
                             :sub-view-mode="subViewMode"
                             :zoom="zoom"
+                            :incidents-visible="incidentsVisible"
                             class="is-hidden-mobile"
                         />
                     </l-control>
@@ -153,6 +155,7 @@
                             :sub-view-mode="subViewMode"
                             :zoom="zoom"
                             :bounds="bounds"
+                            :incidents-visible="incidentsVisible"
                             @on-progress="updateLoadingView"
                             @update:sub-view-mode="subViewMode = $event"
                             @fit-in-view="fitMapObjectIntoView"
@@ -252,7 +255,10 @@ export default {
             bounds: null,
 
             // Extras for view modes
-            boxAnalysisMapLayer: null
+            boxAnalysisMapLayer: null,
+
+            // Whether incidents should be visible as an overlay or not
+            incidentsVisible: false,
         };
     },
     methods: {

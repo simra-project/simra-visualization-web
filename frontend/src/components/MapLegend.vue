@@ -95,14 +95,14 @@
                 14 - 15 Grey and red dots.
                    < 14 None.
             -->
-            <template v-if="zoom >= 16">
+            <template v-if="zoom >= 16 && incidentsVisible">
                 <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
 
                 <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.regularIncident') }}</div>
             </template>
-            <template v-else-if="zoom >= 14">
+            <template v-else-if="zoom >= 14 && incidentsVisible">
                 <div class="symbol-container">
                     <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
                     <div class="symbol symbol-circle" style="background-color: #777777"/>
@@ -129,14 +129,14 @@
                 14 - 15 Grey and red dots.
                    < 14 None.
             -->
-            <template v-if="zoom >= 16">
+            <template v-if="zoom >= 16 && incidentsVisible">
                 <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
 
                 <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.regularIncident') }}</div>
             </template>
-            <template v-else-if="zoom >= 14">
+            <template v-else-if="zoom >= 14 && incidentsVisible">
                 <div class="symbol-container">
                     <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
                     <div class="symbol symbol-circle" style="background-color: #777777"/>
@@ -160,14 +160,14 @@
                 14 - 15 Grey and red dots.
                    < 14 None.
             -->
-            <template v-if="zoom >= 16">
+            <template v-if="zoom >= 16 && incidentsVisible">
                 <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
 
                 <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.regularIncident') }}</div>
             </template>
-            <template v-else-if="zoom >= 14">
+            <template v-else-if="zoom >= 14 && incidentsVisible">
                 <div class="symbol-container">
                     <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
                     <div class="symbol symbol-circle" style="background-color: #777777"/>
@@ -191,14 +191,14 @@
                 14 - 15 Grey and red dots.
                    < 14 None.
             -->
-            <template v-if="zoom >= 16">
+            <template v-if="zoom >= 16 && incidentsVisible">
                 <div class="symbol symbol-marker marker-scary"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.scaryIncident') }}</div>
 
                 <div class="symbol symbol-marker marker-regular"><i class="fa fa-car"/></div>
                 <div class="text-box">{{ $t('legend.regularIncident') }}</div>
             </template>
-            <template v-else-if="zoom >= 14">
+            <template v-else-if="zoom >= 14 && incidentsVisible">
                 <div class="symbol-container">
                     <div class="symbol symbol-circle" style="background-color: #9e1a16"/>
                     <div class="symbol symbol-circle" style="background-color: #777777"/>
@@ -233,6 +233,11 @@ export default {
     data() {
         return {
             config: Config,
+        }
+    },
+    watch: {
+        incidentsVisible() {
+            return this.incidentsVisible;
         }
     }
 };

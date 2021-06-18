@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!-- Leaflet control map switcher on top of the screen. -->
         <div class="leaflet-control topcenter rides-submode-switcher" v-if="subViewMode === config.subViewModes.POPULARITY_COMBINED || subViewMode === config.subViewModes.POPULARITY_AVOIDED || subViewMode === config.subViewModes.POPULARITY_CHOSEN || subViewMode === config.subViewModes.POPULARITY_SCORE">
             <b-tabs type="is-toggle-rounded"
                     :value="subViewMode"
@@ -34,7 +35,7 @@
             />
 
             <!-- Show all incidents -->
-            <l-geo-json v-if="zoom > 15 && incidents"
+            <l-geo-json v-if="zoom > 15 && incidents && incidentsVisible"
                     :geojson="incidents"
                     :options="markerStyle">
                 <l-popup/>
@@ -81,7 +82,8 @@ export default {
     props: {
         subViewMode: Number,
         zoom: Number,
-        bounds: Object
+        bounds: Object,
+        incidentsVisible: Boolean
     },
     data() {
         return {
@@ -206,6 +208,9 @@ export default {
         bounds: function (newValue, oldValue) {
             if (this.zoom > 15)
                 this.loadIncidents();
+        },
+        incidentsVisible() {
+            return this.incidentsVisible;
         }
     }
 };
