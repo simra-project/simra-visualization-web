@@ -27,6 +27,8 @@
         "boxAnalysisDescription": "Zeichne eine Form auf der Karte um zu sehen welche Fahrten durch diese gingen. Klicke auf die Form um eine neue zu zeichnen.",
         "tools": "Tools",
         "toolsDescription": "Lade eine Fahrt hoch um sie zu analysieren (ziehe die Datei auf die Karte).",
+        "popularity": "Beliebtheit",
+        "popularityDescription": "Die subjektiv wahrgenommene Beliebtheit von Straßensegmenten.",
         "statistics": "Statistiken",
         "expandMenu": "Menü ausklappen"
     },
@@ -42,7 +44,11 @@
         "relativeSpeedFaster": "Schneller als der Durchschnitt",
         "relativeSpeedAverage": "Durchschnittliche Geschwindigkeit",
         "relativeSpeedSlower": "Langsamer als der Durchschnitt",
-        "stopTimes": "Wartezeiten pro Kreuzung"
+        "stopTimes": "Wartezeiten pro Kreuzung",
+        "popularityCombined": "Beliebtheit von Straßenabschnitten",
+        "avoidedStreetSegments": "Vermiedene Straßenabschnitte",
+        "chosenStreetSegments": "Bewusst gewählte Straßenabschnitte",
+        "popularityScore": "Beliebtheit und Sicherheit von Straßensegmenten"
     },
     "map": {
         "loadingMapData": "Lade Kartendaten"
@@ -81,6 +87,13 @@
             "polygonContinue": "Klicke um den nächsten Punkt der Form zu zeichnen.",
             "polygonEnd": "Klicke den ersten Punkt um die Form fertigzustellen."
         }
+    },
+    "popularity": {
+        "avoided": "Vermieden",
+        "chosen": "Gewählt",
+        "combined": "Kombiniert",
+        "score": "Score",
+        "showIncidents": "Ereignismarker anzeigen"
     },
     "statistics": {
         "title": "Statistiken für",
