@@ -1,7 +1,16 @@
 <template>
     <div>
         <!-- Leaflet control map switcher on top of the screen. -->
-        <div class="leaflet-control topcenter rides-submode-switcher" v-if="subViewMode === config.subViewModes.POPULARITY_COMBINED || subViewMode === config.subViewModes.POPULARITY_AVOIDED || subViewMode === config.subViewModes.POPULARITY_CHOSEN || subViewMode === config.subViewModes.POPULARITY_SCORE">
+        <div class="leaflet-control topcenter rides-submode-switcher" v-if="
+            subViewMode === config.subViewModes.POPULARITY_COMBINED
+            || subViewMode === config.subViewModes.POPULARITY_AVOIDED
+            || subViewMode === config.subViewModes.POPULARITY_CHOSEN
+            || subViewMode === config.subViewModes.POPULARITY_SCORE
+            || subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_COMBINED
+            || subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_AVOIDED
+            || subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_CHOSEN
+            || subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_SCORE
+        ">
             <b-tabs type="is-toggle-rounded"
                     :value="subViewMode"
                     @change="$emit('update:sub-view-mode', $event)"
@@ -32,6 +41,22 @@
             <l-tile-layer
                 v-if="subViewMode === config.subViewModes.POPULARITY_SCORE"
                 :url="TILE_URL + '/tiles/popularity-score/{z}/{x}/{y}.png'"
+            />
+            <l-tile-layer
+                v-if="subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_COMBINED"
+                :url="TILE_URL + '/tiles/popularity_w-incidents_combined/{z}/{x}/{y}.png'"
+            />
+            <l-tile-layer
+                v-if="subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_AVOIDED"
+                :url="TILE_URL + '/tiles/popularity-original_w-incidents_avoided/{z}/{x}/{y}.png'"
+            />
+            <l-tile-layer
+                v-if="subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_CHOSEN"
+                :url="TILE_URL + '/tiles/popularity-original_w-incidents_chosen/{z}/{x}/{y}.png'"
+            />
+            <l-tile-layer
+                v-if="subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_SCORE"
+                :url="TILE_URL + '/tiles/popularity_w-incidents_score/{z}/{x}/{y}.png'"
             />
 
             <!-- Show all incidents -->
@@ -137,6 +162,14 @@ export default {
     computed: {
         TILE_URL() {
             return process.env.VUE_APP_TILE_URL;
+        },
+        computedSubViewMode: {
+            get() {
+                return this.subViewMode;
+            },
+            set(value) {
+                this.$emit("update:sub-view-mode", value);
+            }
         }
     },
     methods: {
@@ -198,6 +231,42 @@ export default {
                     break;
             }
         },
+        switchToView(viewId) {
+            this.$emit("update:sub-view-mode", viewId);
+            console.log("Switched sub view to ", viewId);
+        },
+        /** 
+         *  Switches to the map, overlayed with incidents, corresponding to
+         *  the currently active map.
+         */
+        popularitySubViewSwitcher() {
+            switch (this.subViewMode) {
+                case 0: // combined
+                    this.switchToView(9);
+                    break;
+                case 1: // avoided
+                    this.switchToView(19);
+                    break;
+                case 2: // chosen
+                    this.switchToView(29);
+                    break;
+                case 3: // mixed score
+                    this.switchToView(39);
+                    break;
+                case 9: // combined with incidents
+                    this.switchToView(0);
+                    break;
+                case 19: // avoided with incidents
+                    this.switchToView(1);
+                    break;
+                case 29: // chosen with incidents
+                    this.switchToView(2);
+                    break;
+                case 39: // mixed score with incidents
+                    this.switchToView(3);
+                    break;
+            }
+        }
     },
     async mounted() {
         this.apiWorker = new Worker("/ApiWorker.js");
@@ -210,6 +279,7 @@ export default {
                 this.loadIncidents();
         },
         incidentsVisible() {
+            this.popularitySubViewSwitcher();
             return this.incidentsVisible;
         }
     }

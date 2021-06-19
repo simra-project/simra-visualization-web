@@ -88,7 +88,7 @@
         </template>
 
         <!-- Popularity score p_score -->
-        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode === config.subViewModes.POPULARITY_COMBINED">
+        <template v-if="viewMode === config.viewModes.POPULARITY && (subViewMode === config.subViewModes.POPULARITY_COMBINED || subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_COMBINED)">
             <!--
             Show different incident markes, depending on zoom level.
                 16 - 18 Drop formed markers with icons.
@@ -122,7 +122,7 @@
         </template>
 
         <!-- Avoided street segment density -->
-        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode == config.subViewModes.POPULARITY_AVOIDED">
+        <template v-if="viewMode === config.viewModes.POPULARITY && (subViewMode == config.subViewModes.POPULARITY_AVOIDED || subViewMode == config.subViewModes.POPULARITY_W_INCIDENTS_AVOIDED)">
             <!--
             Show different incident markes, depending on zoom level.
                 16 - 18 Drop formed markers with icons.
@@ -153,7 +153,7 @@
         </template>
 
         <!-- Chosen street segment density -->
-        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode == config.subViewModes.POPULARITY_CHOSEN">
+        <template v-if="viewMode === config.viewModes.POPULARITY && (subViewMode == config.subViewModes.POPULARITY_CHOSEN || subViewMode == config.subViewModes.POPULARITY_W_INCIDENTS_CHOSEN)">
             <!--
             Show different incident markes, depending on zoom level.
                 16 - 18 Drop formed markers with icons.
@@ -184,7 +184,7 @@
         </template>
 
         <!-- Mixed popularity score p_mscore -->
-        <template v-if="viewMode === config.viewModes.POPULARITY && subViewMode === config.subViewModes.POPULARITY_SCORE">
+        <template v-if="viewMode === config.viewModes.POPULARITY && (subViewMode === config.subViewModes.POPULARITY_SCORE || subViewMode === config.subViewModes.POPULARITY_W_INCIDENTS_SCORE)">
             <!--
             Show different incident markes, depending on zoom level.
                 16 - 18 Drop formed markers with icons.
