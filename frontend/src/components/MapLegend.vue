@@ -145,9 +145,9 @@
             </template>
 
             <div class="symbol-container">
-                <div class="symbol symbol-box red1 one-third"/>
-                <div class="symbol symbol-box red2 two-thirds"/>
-                <div class="symbol symbol-box red3"/>
+                <div class="symbol symbol-box blue1 one-third"/>
+                <div class="symbol symbol-box blue2 two-thirds"/>
+                <div class="symbol symbol-box blue3"/>
             </div>
             <div class="text-box">{{ $t('legend.avoidedStreetSegments') }}</div>
         </template>
