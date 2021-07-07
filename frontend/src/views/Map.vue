@@ -1,35 +1,58 @@
 <template>
     <div>
-        <Navigation :map-style="mapStyle"
-                    :center="center"
-                    :zoom="zoom"
-                    @showAboutModal="showAboutModal = true"
-                    @update:map-style="mapStyle = $event; updateUrlQuery();"
+        <Navigation
+            :map-style="mapStyle"
+            :center="center"
+            :zoom="zoom"
+            @showAboutModal="showAboutModal = true"
+            @update:map-style="
+                mapStyle = $event;
+                updateUrlQuery();
+            "
         />
 
         <div class="main-layout" style="display:flex;">
-            <Sidebar v-model.sync="viewMode" ref="sidebar"
-                     :sub-view-mode="subViewMode"
-                     @size-changed="mapObject.invalidateSize()"
-                     @update:sub-view-mode="subViewMode = $event"
+            <!-- incidentsVisible = $event -->
+            <Sidebar
+                v-model.sync="viewMode"
+                ref="sidebar"
+                :sub-view-mode="subViewMode"
+                @size-changed="mapObject.invalidateSize()"
+                @update:sub-view-mode="subViewMode = $event"
+                @update:incidents-visible="switchVisibilityMode"
             />
 
             <section class="hero is-fullheight-with-navbar viewmode-container">
-                <l-map ref="map"
-                       style="width: 100%"
-                       :zoom="zoom"
-                       :center="center"
-                       :min-zoom="2"
-                       @update:zoom="zoom = $event"
-                       @update:center="center = $event; updateUrlQuery();"
-                       @update:bounds="bounds = $event"
-                       @click="clickedOnMap"
-                       :style="{'display: none': viewMode === config.viewModes.STATISTICS}"
+                <l-map
+                    ref="map"
+                    style="width: 100%"
+                    :zoom="zoom"
+                    :center="center"
+                    :min-zoom="2"
+                    @update:zoom="zoom = $event"
+                    @update:center="
+                        center = $event;
+                        updateUrlQuery();
+                    "
+                    @update:bounds="bounds = $event"
+                    @click="clickedOnMap"
+                    :style="{
+                        'display: none':
+                            viewMode === config.viewModes.STATISTICS
+                    }"
                 >
-                    <l-tile-layer :url="mapStyle.url" :class="{monochrome: false}" :attribution="mapStyle.attribution"/>
+                    <l-tile-layer
+                        :url="mapStyle.url"
+                        :class="{ monochrome: false }"
+                        :attribution="mapStyle.attribution"
+                    />
 
                     <div class="leaflet-control bottomcenter">
-                        <div class="loading-container" v-if="loadingProgress !== null" :class="{'invisible': loadingProgress === 100}">
+                        <div
+                            class="loading-container"
+                            v-if="loadingProgress !== null"
+                            :class="{ invisible: loadingProgress === 100 }"
+                        >
                             <div class="overlay overlay-loading">
                                 <div class="spinner-container">
                                     <scaling-squares-spinner
@@ -38,77 +61,130 @@
                                         color="hsl(217, 71%, 53%)"
                                     />
 
-                                    <div class="text">{{ $t('map.loadingMapData') }}</div>
+                                    <div class="text">
+                                        {{ $t("map.loadingMapData") }}
+                                    </div>
                                 </div>
 
-                                <b-progress type="is-primary is-small" :value="loadingProgress"/>
+                                <b-progress
+                                    type="is-primary is-small"
+                                    :value="loadingProgress"
+                                />
                             </div>
                         </div>
                     </div>
 
-                    <l-control position="bottomright" v-if="config.viewModeHasLegend(viewMode)">
-                        <MapLegend :view-mode="viewMode" :sub-view-mode="subViewMode" :zoom="zoom" class="is-hidden-mobile"/>
+                    <l-control
+                        position="bottomright"
+                        v-if="config.viewModeHasLegend(viewMode)"
+                    >
+                        <MapLegend
+                            :view-mode="viewMode"
+                            :sub-view-mode="subViewMode"
+                            :zoom="zoom"
+                            :incidents-visible="incidentsVisible"
+                            class="is-hidden-mobile"
+                        />
                     </l-control>
 
                     <!-- Because of a Vue/DOM problem, view modes have to be declared this way ... (wrapped in a tag) -->
                     <div>
-                        <RideView v-if="viewMode === config.viewModes.RIDES" ref="rideView"
-                                  :sub-view-mode="subViewMode"
-                                  @on-progress="updateLoadingView"
-                                  @update:sub-view-mode="subViewMode = $event"
+                        <RideView
+                            v-if="viewMode === config.viewModes.RIDES"
+                            ref="rideView"
+                            :sub-view-mode="subViewMode"
+                            @on-progress="updateLoadingView"
+                            @update:sub-view-mode="subViewMode = $event"
                         />
                     </div>
                     <div>
-                        <IncidentView v-if="viewMode === config.viewModes.INCIDENTS" ref="incidentView"
-                                      :zoom="zoom"
-                                      :bounds="bounds"
-                                      @on-progress="updateLoadingView"
-                                      @fit-in-view="fitMapObjectIntoView"
+                        <IncidentView
+                            v-if="viewMode === config.viewModes.INCIDENTS"
+                            ref="incidentView"
+                            :zoom="zoom"
+                            :bounds="bounds"
+                            @on-progress="updateLoadingView"
+                            @fit-in-view="fitMapObjectIntoView"
                         />
                     </div>
                     <div>
-                        <SurfaceQualityView v-if="viewMode === config.viewModes.SURFACE_QUALITY" ref="surfaceQualityView"
-                                            :sub-view-mode="subViewMode"
-                                            @on-progress="updateLoadingView"
-                                            @update:sub-view-mode="subViewMode = $event"
+                        <SurfaceQualityView
+                            v-if="viewMode === config.viewModes.SURFACE_QUALITY"
+                            ref="surfaceQualityView"
+                            :sub-view-mode="subViewMode"
+                            @on-progress="updateLoadingView"
+                            @update:sub-view-mode="subViewMode = $event"
                         />
                     </div>
                     <div>
-                        <RelativeSpeedView v-if="viewMode === config.viewModes.RELATIVE_SPEED" ref="relativeSpeedView"
-                                           :sub-view-mode="subViewMode"
-                                           @on-progress="updateLoadingView"
-                                           @update:sub-view-mode="subViewMode = $event"
+                        <RelativeSpeedView
+                            v-if="viewMode === config.viewModes.RELATIVE_SPEED"
+                            ref="relativeSpeedView"
+                            :sub-view-mode="subViewMode"
+                            @on-progress="updateLoadingView"
+                            @update:sub-view-mode="subViewMode = $event"
                         />
                     </div>
                     <div>
-                        <StopTimesView v-if="viewMode === config.viewModes.STOP_TIMES" ref="stopTimesView"
-                                       @on-progress="updateLoadingView"
+                        <StopTimesView
+                            v-if="viewMode === config.viewModes.STOP_TIMES"
+                            ref="stopTimesView"
+                            @on-progress="updateLoadingView"
                         />
                     </div>
                     <div>
-                        <BoxAnalysisView v-if="viewMode === config.viewModes.BOX_ANALYSIS" ref="boxAnalysisView"
-                                         :mapLayer="boxAnalysisMapLayer"
-                                         :sub-view-mode="subViewMode"
-                                         @on-progress="updateLoadingView"
-                                         @update:sub-view-mode="subViewMode = $event"
+                        <BoxAnalysisView
+                            v-if="viewMode === config.viewModes.BOX_ANALYSIS"
+                            ref="boxAnalysisView"
+                            :mapLayer="boxAnalysisMapLayer"
+                            :sub-view-mode="subViewMode"
+                            @on-progress="updateLoadingView"
+                            @update:sub-view-mode="subViewMode = $event"
                         />
                     </div>
                     <div>
-                        <ToolsView v-if="viewMode === config.viewModes.TOOLS" ref="toolsView"
-                                   @fit-in-view="fitMapObjectIntoView"
+                        <ToolsView
+                            v-if="viewMode === config.viewModes.TOOLS"
+                            ref="toolsView"
+                            @fit-in-view="fitMapObjectIntoView"
+                        />
+                    </div>
+                    <div>
+                        <!-- subViewMode = $event -->
+                        <PopularityView
+                            v-if="viewMode === config.viewModes.POPULARITY"
+                            ref="popularityView"
+                            :sub-view-mode="subViewMode"
+                            :zoom="zoom"
+                            :bounds="bounds"
+                            :incidents-visible="incidentsVisible"
+                            @on-progress="updateLoadingView"
+                            @update:sub-view-mode="switchPopularityView"
+                            @fit-in-view="fitMapObjectIntoView"
                         />
                     </div>
 
-                    <l-tile-layer v-if="mapStyle.hasLabelLayer" :url="mapStyle.urlLabels" pane="overlayPane"/>
+                    <l-tile-layer
+                        v-if="mapStyle.hasLabelLayer"
+                        :url="mapStyle.urlLabels"
+                        pane="overlayPane"
+                    />
                 </l-map>
 
-                <div class="statistics-container" v-if="viewMode === config.viewModes.STATISTICS">
-                    <Statistics :regions="regions" ref="statisticsView"/>
+                <div
+                    class="statistics-container"
+                    v-if="viewMode === config.viewModes.STATISTICS"
+                >
+                    <Statistics :regions="regions" ref="statisticsView" />
                 </div>
             </section>
         </div>
 
-        <b-modal :active="showAboutModal" @close="showAboutModal = false" style="z-index: 999">
+        <b-modal
+            :active="showAboutModal"
+            @close="showAboutModal = false"
+            style="z-index: 999"
+        >
             <About />
         </b-modal>
     </div>
@@ -131,6 +207,7 @@ import RelativeSpeedView from "@/viewModes/relativeSpeed/RelativeSpeedView";
 import StopTimesView from "@/viewModes/stopTimes/StopTimesView";
 import BoxAnalysisView from "@/viewModes/boxAnalysis/BoxAnalysisView";
 import ToolsView from "@/viewModes/tools/ToolsView";
+import PopularityView from "@/viewModes/popularity/PopularityView";
 import Statistics from "@/views/Statistics";
 
 export default {
@@ -152,44 +229,55 @@ export default {
         StopTimesView,
         BoxAnalysisView,
         ToolsView,
+        PopularityView,
         Statistics,
-        About,
+        About
     },
     data() {
         return {
             // General
             config: Config,
             viewMode: parseInt(this.$route.query.m) || Config.viewModes.RIDES,
-            subViewMode: parseInt(this.$route.query.sm) || Config.subViewModes.DEFAULT,
+            subViewMode:
+                parseInt(this.$route.query.sm) || Config.subViewModes.DEFAULT,
             loadingProgress: null,
             regions: null,
             showAboutModal: false,
 
             // Map
             mapObject: null,
-            mapStyle: Config.mapStyles[this.$route.query.style] || Config.getDefaultMapStyle(),
+            mapStyle:
+                Config.mapStyles[this.$route.query.style] ||
+                Config.getDefaultMapStyle(),
             zoom: parseInt(this.$route.query.z) || 15,
-            center: [this.$route.query.lat || 52.5125322, this.$route.query.lng || 13.3269446],
+            center: [
+                this.$route.query.lat || 52.5125322,
+                this.$route.query.lng || 13.3269446
+            ],
             bounds: null,
 
             // Extras for view modes
             boxAnalysisMapLayer: null,
+
+            // Whether incidents should be visible as an overlay or not
+            incidentsVisible: false,
         };
     },
     methods: {
         updateUrlQuery() {
-            this.$router.replace({
-                name: "mapQuery",
-                params: {
-                    lat: this.center.lat,
-                    lng: this.center.lng,
-                    zoom: this.zoom,
-                    style: this.mapStyle.key,
-                    viewMode: this.viewMode,
-                    subViewMode: this.subViewMode,
-                },
-            }).catch(() => {
-            });
+            this.$router
+                .replace({
+                    name: "mapQuery",
+                    params: {
+                        lat: this.center.lat,
+                        lng: this.center.lng,
+                        zoom: this.zoom,
+                        style: this.mapStyle.key,
+                        viewMode: this.viewMode,
+                        subViewMode: this.subViewMode
+                    }
+                })
+                .catch(() => {});
         },
         fitMapObjectIntoView(mapObject) {
             // Fitting a map object (e.g. a ride) into view if it's not already
@@ -201,22 +289,61 @@ export default {
         clickedOnMap(event) {
             if (this.viewMode === Config.viewModes.INCIDENTS) {
                 this.$refs.incidentView.clickedOnMap(event);
+            } else if (this.viewMode === Config.viewModes.POPULARITY) {
+                this.$refs.popularityView.clickedOnMap(event);
             }
         },
         updateLoadingView(progress, expectedTotal) {
             if (expectedTotal === 0) return;
-            let currentProgress = Math.min(Math.max(progress / expectedTotal, 0.0), 1.0);
+            let currentProgress = Math.min(
+                Math.max(progress / expectedTotal, 0.0),
+                1.0
+            );
 
             const minOffset = 0.1;
-            this.loadingProgress = Math.min(minOffset + (currentProgress * (1.0 - minOffset)), 1.0) * 100;
+            this.loadingProgress =
+                Math.min(minOffset + currentProgress * (1.0 - minOffset), 1.0) *
+                100;
 
             if (progress === expectedTotal) {
-                setTimeout(() => this.loadingProgress = null, 1200);
+                setTimeout(() => (this.loadingProgress = null), 1200);
             }
         },
+        /**
+         * Determines the clicked sub view mode with regards to whether the incident
+         * overlay is currently active or not.
+         */
+        switchPopularityView(newSubViewMode) {
+            if (this.incidentsVisible) {
+                switch(newSubViewMode) {
+                    case 0: // Popularity combined
+                        this.subViewMode = 9;
+                        break;
+                    case 1: // Avoided score
+                        this.subViewMode = 19;
+                        break;
+                    case 2: // Chosen score
+                        this.subViewMode = 29;
+                        break;
+                    case 3: // Mixed popularity score
+                        this.subViewMode = 39;
+                        break;
+                }
+            } else this.subViewMode = newSubViewMode;
+        },
+        /**
+         * Enables / disables the incident overlay and calls {@see switchPopularityView}
+         * to determine the corrisponding sub view mode.
+         */
+        switchVisibilityMode(event) {
+            this.incidentsVisible = event;
+            this.switchPopularityView(this.subViewMode);
+        }
     },
     async mounted() {
-        fetch("http://207.180.205.80:8000/api/regions/").then(r => r.json()).then(r => this.regions = r);
+        fetch("http://207.180.205.80:8000/api/regions/")
+            .then(r => r.json())
+            .then(r => (this.regions = r));
 
         this.$nextTick(() => {
             this.mapObject = this.$refs.map.mapObject;
@@ -225,136 +352,145 @@ export default {
             this.bounds = this.mapObject.getBounds();
             this.updateUrlQuery();
 
-            this.boxAnalysisMapLayer = new window.L.FeatureGroup().addTo(this.mapObject);
+            this.boxAnalysisMapLayer = new window.L.FeatureGroup().addTo(
+                this.mapObject
+            );
         });
     },
     watch: {
-        viewMode: function (newValue, oldValue) {
+        viewMode: function(newValue, oldValue) {
             this.updateUrlQuery();
             this.updateLoadingView(1, 1);
         },
-        subViewMode: function (newValue, oldValue) {
+        subViewMode: function(newValue, oldValue) {
             this.updateUrlQuery();
         }
-    },
+    }
 };
 </script>
 
 <style lang="scss">
-    $sidebar-width: 304px;
+$sidebar-width: 304px;
 
-    .viewmode-container {
-        border-top: none;
-        min-height: calc(100vh - 57px) !important;
-        width: calc(100vw - #{$sidebar-width} - 1px);
+.viewmode-container {
+    border-top: none;
+    min-height: calc(100vh - 57px) !important;
+    width: calc(100vw - #{$sidebar-width} - 1px);
+}
+
+.vue2leaflet-map {
+    height: 100%;
+    width: 100%;
+    flex: 1 0;
+
+    // The class monochrome can only be set on the element before
+    .monochrome
+        ~ .leaflet-pane.leaflet-map-pane
+        .leaflet-pane.leaflet-tile-pane
+        .leaflet-layer:nth-child(1) {
+        filter: grayscale(1);
+    }
+}
+
+.leaflet-control {
+    &.topcenter {
+        position: absolute;
+        top: 0;
+        width: 300px;
+        left: calc(50% - 150px);
+        right: calc(50% - 150px);
     }
 
-    .vue2leaflet-map {
-        height: 100%;
-        width: 100%;
-        flex: 1 0;
+    &.bottomcenter {
+        position: absolute;
+        bottom: 0;
+        width: 300px;
+        left: calc(50% - 150px);
+        right: calc(50% - 150px);
 
-        // The class monochrome can only be set on the element before
-        .monochrome ~ .leaflet-pane.leaflet-map-pane .leaflet-pane.leaflet-tile-pane .leaflet-layer:nth-child(1) {
-            filter: grayscale(1);
-        }
-    }
+        .loading-container {
+            $loadingProgressHeight: 0.4rem;
 
-    .leaflet-control {
-        &.topcenter {
-            position: absolute;
-            top: 0;
-            width: 300px;
-            left: calc(50% - 150px);
-            right: calc(50% - 150px);
-        }
+            width: 100%;
+            margin: 0 0 calc(12px + #{$loadingProgressHeight});
+            display: flex;
+            justify-content: center;
+            transition: opacity 1s ease 0.2s, filter 1s ease 0.2s;
 
-        &.bottomcenter {
-            position: absolute;
-            bottom: 0;
-            width: 300px;
-            left: calc(50% - 150px);
-            right: calc(50% - 150px);
+            &.invisible {
+                opacity: 0;
+                filter: grayscale(0.9);
 
-            .loading-container {
-                $loadingProgressHeight: 0.4rem;
+                .scaling-squares-spinner,
+                .scaling-squares-spinner .square {
+                    opacity: 0.6;
+                    transition: opacity 1s linear;
+                }
+            }
 
-                width: 100%;
-                margin: 0 0 calc(12px + #{$loadingProgressHeight});
-                display: flex;
-                justify-content: center;
-                transition: opacity 1s ease 0.2s, filter 1s ease 0.2s;
+            .overlay {
+                padding: 0;
 
-                &.invisible {
-                    opacity: 0;
-                    filter: grayscale(.9);
+                & > div {
+                    display: flex;
+                    padding: 10px 40px 10px 20px;
 
-                    .scaling-squares-spinner, .scaling-squares-spinner .square {
-                        opacity: 0.6;
-                        transition: opacity 1s linear;
+                    .scaling-squares-spinner {
+                        flex: 0 1 30px;
+                    }
+
+                    .text {
+                        flex: 1 0;
+                        font-size: 16px;
+                        align-self: center;
+                        padding-left: 20px;
                     }
                 }
 
-                .overlay {
+                .progress-wrapper {
+                    position: relative;
+                    top: $loadingProgressHeight;
+                    margin-top: -$loadingProgressHeight;
                     padding: 0;
 
-                    & > div {
-                        display: flex;
-                        padding: 10px 40px 10px 20px;
-
-                        .scaling-squares-spinner {
-                            flex: 0 1 30px;
-                        }
-
-                        .text {
-                            flex: 1 0;
-                            font-size: 16px;
-                            align-self: center;
-                            padding-left: 20px;
-                        }
-                    }
-
-                    .progress-wrapper {
-                        position: relative;
-                        top: $loadingProgressHeight;
-                        margin-top: -$loadingProgressHeight;
-                        padding: 0;
-
-                        progress {
-                            border-radius: 0 0 4px 4px;
-                            height: $loadingProgressHeight;
-                        }
+                    progress {
+                        border-radius: 0 0 4px 4px;
+                        height: $loadingProgressHeight;
                     }
                 }
             }
         }
-
-        .overlay {
-            padding: 10px;
-            background-color: white;
-            -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-            box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-            color: #4a4a4a;
-            position: relative;
-        }
-
-        &.leaflet-control-zoom {
-            display: none;
-        }
     }
 
+    .overlay {
+        padding: 10px;
+        background-color: white;
+        -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1),
+            0 0 0 1px rgba(10, 10, 10, 0.1);
+        box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1),
+            0 0 0 1px rgba(10, 10, 10, 0.1);
+        color: #4a4a4a;
+        position: relative;
+    }
+
+    &.leaflet-control-zoom {
+        display: none;
+    }
+}
+
+.statistics-container {
+    position: fixed;
+    max-height: 100%;
+    width: calc(100vw - #{$sidebar-width} - 1px);
+    overflow-y: scroll;
+    z-index: 1000;
+    background: #f3f3f3;
+}
+
+.sidebar.small + .viewmode-container {
+    &,
     .statistics-container {
-        position: fixed;
-        max-height: 100%;
-        width: calc(100vw - #{$sidebar-width} - 1px);
-        overflow-y: scroll;
-        z-index: 1000;
-        background: #f3f3f3;
+        width: calc(100vw - 72px);
     }
-
-    .sidebar.small + .viewmode-container {
-        &, .statistics-container {
-            width: calc(100vw - 72px);
-        }
-    }
+}
 </style>

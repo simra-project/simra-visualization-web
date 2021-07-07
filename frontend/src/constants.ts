@@ -1,4 +1,3 @@
-
 let viewModes = {
     NONE: 0,
     RIDES: 1,
@@ -8,6 +7,7 @@ let viewModes = {
     STOP_TIMES: 5,
     BOX_ANALYSIS: 6,
     TOOLS: 7,
+    POPULARITY: 8,
     STATISTICS: 99,
 }
 
@@ -25,6 +25,14 @@ let subViewModes = {
     BOX_ANALYSIS_ALL: 0,
     BOX_ANALYSIS_START: 1,
     BOX_ANALYSIS_STOP: 2,
+    POPULARITY_COMBINED: 0,
+    POPULARITY_AVOIDED: 1,
+    POPULARITY_CHOSEN: 2,
+    POPULARITY_SCORE: 3,
+    POPULARITY_W_INCIDENTS_COMBINED: 9,
+    POPULARITY_W_INCIDENTS_AVOIDED: 19,
+    POPULARITY_W_INCIDENTS_CHOSEN: 29,
+    POPULARITY_W_INCIDENTS_SCORE: 39,
 }
 
 let osmAttribution = " &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors";
@@ -95,7 +103,7 @@ export default {
     viewModes: viewModes,
     subViewModes: subViewModes,
     viewModeHasLegend(viewMode: number) {
-        return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS || viewMode === viewModes.SURFACE_QUALITY || viewMode === viewModes.RELATIVE_SPEED || viewMode === viewModes.STOP_TIMES;
+        return viewMode === viewModes.RIDES || viewMode === viewModes.INCIDENTS || viewMode === viewModes.SURFACE_QUALITY || viewMode === viewModes.RELATIVE_SPEED || viewMode === viewModes.STOP_TIMES || viewMode === viewModes.POPULARITY;
     },
     mapStyles: mapStyles,
     getDefaultMapStyle: () => {
