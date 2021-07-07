@@ -29,7 +29,10 @@
                 entwickelt. Ursprünglich wurde diese Webseite im Rahmen eines Studentenprojektes im Wintersemester
                 2019/2020 an der Technischen Universität Berlin mit grundlegenden Funktionen entwickelt. <br> Jedoch
                 haben erst Fördermittel der Gemeinden Zeuthen, Eichwalde und Schulzendorf die Erweiterung und
-                Entwicklung vieler neuer Funktionen ermöglicht.
+                Entwicklung vieler neuer Funktionen ermöglicht.<br>
+                Das Projekt wurde im Rahmen einer Bachelorarbeit durch Sebastian Führ 
+                (<a href="https://www.linkedin.com/in/sebastian-f%C3%BChr-578998180/">Link</a>) um Funktionalitäten 
+                zur Bestimmung der Beliebtheit von Straßensegmenten erweitert.
             </div>
         </section>
         <footer class="modal-card-foot">

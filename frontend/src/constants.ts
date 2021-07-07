@@ -1,4 +1,3 @@
-
 let viewModes = {
     NONE: 0,
     RIDES: 1,
