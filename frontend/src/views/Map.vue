@@ -12,13 +12,14 @@
         />
 
         <div class="main-layout" style="display:flex;">
+            <!-- incidentsVisible = $event -->
             <Sidebar
                 v-model.sync="viewMode"
                 ref="sidebar"
                 :sub-view-mode="subViewMode"
                 @size-changed="mapObject.invalidateSize()"
                 @update:sub-view-mode="subViewMode = $event"
-                @update:incidents-visible="incidentsVisible = $event"
+                @update:incidents-visible="switchVisibilityMode"
             />
 
             <section class="hero is-fullheight-with-navbar viewmode-container">
@@ -149,6 +150,7 @@
                         />
                     </div>
                     <div>
+                        <!-- subViewMode = $event -->
                         <PopularityView
                             v-if="viewMode === config.viewModes.POPULARITY"
                             ref="popularityView"
@@ -157,7 +159,7 @@
                             :bounds="bounds"
                             :incidents-visible="incidentsVisible"
                             @on-progress="updateLoadingView"
-                            @update:sub-view-mode="subViewMode = $event"
+                            @update:sub-view-mode="switchPopularityView"
                             @fit-in-view="fitMapObjectIntoView"
                         />
                     </div>
@@ -306,6 +308,36 @@ export default {
             if (progress === expectedTotal) {
                 setTimeout(() => (this.loadingProgress = null), 1200);
             }
+        },
+        /**
+         * Determines the clicked sub view mode with regards to whether the incident
+         * overlay is currently active or not.
+         */
+        switchPopularityView(newSubViewMode) {
+            if (this.incidentsVisible) {
+                switch(newSubViewMode) {
+                    case 0: // Popularity combined
+                        this.subViewMode = 9;
+                        break;
+                    case 1: // Avoided score
+                        this.subViewMode = 19;
+                        break;
+                    case 2: // Chosen score
+                        this.subViewMode = 29;
+                        break;
+                    case 3: // Mixed popularity score
+                        this.subViewMode = 39;
+                        break;
+                }
+            } else this.subViewMode = newSubViewMode;
+        },
+        /**
+         * Enables / disables the incident overlay and calls {@see switchPopularityView}
+         * to determine the corrisponding sub view mode.
+         */
+        switchVisibilityMode(event) {
+            this.incidentsVisible = event;
+            this.switchPopularityView(this.subViewMode);
         }
     },
     async mounted() {
