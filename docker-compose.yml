@@ -1,0 +1,9 @@
+version: '3.6'
+
+services:
+    frontend:
+        build:
+            context: frontend
+            dockerfile: Dockerfile
+        ports:
+            - 8080:8080
